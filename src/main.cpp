@@ -13,6 +13,8 @@
 #include <ArduinoJson.h>
 #include <Preferences.h>
 #include "CST816D.h"
+#include "peers.h"
+#include "pref-manager.h"
 #include <lvgl.h>
 #include "Ui\ui.h" 
 #define TFT_HOR_RES   240
@@ -30,13 +32,6 @@ static void btn_event_cb(lv_event_t * e);
 
 void   OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status);
 void   OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len);
-
-void   SavePeers();
-void   GetPeers();
-void   RegisterPeers();
-void   ClearPeers();
-void   ClearInit();
-void   ReportAll();
 
 void   SendPing();
 bool   ToggleSwitch(struct_Periph *Periph);
@@ -60,17 +55,7 @@ void WriteStringToCharArray(String S, char *C);
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t buf[ screenWidth * screenHeight / 10 ];
 
-struct_MultiScreen Screen[MULTI_SCREENS];
-int ActiveMultiScreen = 0; 
-int PeriphToFill;
-
-
 Preferences preferences;
-
-struct_Peer   *ActivePeer, *ActivePDC, *ActiveBat, *ActiveSelection;
-struct_Periph *ActiveSens, *ActiveSwitch, *ActivePeriph;
-
-int PeerCount    =  0;
 
 bool DebugMode = true;
 bool SleepMode = false;
@@ -187,26 +172,21 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   }
 }
 void setup() {
+  Serial.begin(74880);
+
   tft.init();
   tft.setRotation(0);
   tft.setSwapBytes(true);
   tft.fillScreen(TFT_RED);
   delay(1000);
   tft.begin();
-  
-  String LVGL_Arduino = "Hello Arduino! ";
-  LVGL_Arduino += String('V') + lv_version_major() + "." + lv_version_minor() + "." + lv_version_patch();
-
-  Serial.begin(74880);
-  Serial.println( LVGL_Arduino );
-
+  Touch.begin();
+    
   lv_init();
-  
   lv_disp_draw_buf_init( &draw_buf, buf, NULL, screenWidth * screenHeight / 10 );
 
   static lv_disp_drv_t disp_drv;
   lv_disp_drv_init( &disp_drv );
-  /*Change the following line to your display resolution*/
   disp_drv.hor_res = TFT_HOR_RES;
   disp_drv.ver_res = TFT_VER_RES;
   disp_drv.flush_cb = my_disp_flush;
@@ -219,7 +199,6 @@ void setup() {
   indev_drv.read_cb = my_touchpad_read;
   lv_indev_drv_register( &indev_drv );
 
-  //------------------
   ui_init();
 
   WiFi.mode(WIFI_STA);
@@ -228,16 +207,11 @@ void setup() {
   esp_now_register_send_cb(OnDataSent);
   esp_now_register_recv_cb(OnDataRecv);    
   
-  //TFT.drawString("ESP_Now launched", 120,120);
-  
   preferences.begin("JeepifyInit", true);
   DebugMode = preferences.getBool("DebugMode", true);
   SleepMode = preferences.getBool("SleepMode", false);
   preferences.end();
 
-  Touch.begin();
-  //TFT.drawString("Touch ready", 120,140);
-  
   for (int s=0; s<MULTI_SCREENS; s++) {
     Screen[s].Id = s;
     snprintf(Screen[s].Name, sizeof(Screen[s].Name), "Scr-%d", s);
@@ -268,173 +242,13 @@ void setup() {
   RegisterPeers();
   ReportAll();
   
-  //TFT.drawString("Peers registered", 120,160);
-  
   if (PeerCount == 0) { Serial.println("PeerCount=0, RTP=True"); ReadyToPair = true; TSPair = millis();}
-
 }
 void loop() {
   lv_timer_handler(); /* let the GUI do its work */
   delay(5);
 }
 #pragma endregion Main
-#pragma region Peer-Things
-void ReportAll() {
-  char Buf[100];
-  String BufS;
-  Serial.println("Report-All");
-  preferences.begin("JeepifyPeers", true);
-  
-  for (int PNr=0; PNr< MAX_PEERS; PNr++) {
-    snprintf(Buf, sizeof(Buf), "%d:%s(%d) - ID:%d -  ", PNr, P[PNr].Name, P[PNr].Type, P[PNr].Id);
-    Serial.print(Buf);
-    for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
-      snprintf(Buf, sizeof(Buf), "P%d:%s(%d), ", Si, P[PNr].Periph[Si].Name, P[PNr].Periph[Si].Type);
-      Serial.print(Buf);
-    }
-    Serial.println();
-  }
-  
-  for (int s=0; s<MULTI_SCREENS; s++) {
-    (Screen[s].Used) ? Serial.println("used") : Serial.println("not used");
-    if (Screen[s].Used) {
-      snprintf(Buf, sizeof(Buf), "S%d:%s, Id=%d - ", s, Screen[s].Name, Screen[s].Id); Serial.println(Buf);
-      for (int p=0; p<4; p++) {
-        if (Screen[s].Periph[p]) {
-          
-          Serial.print(p);
-          snprintf(Buf, sizeof(Buf), ": PeerId=%d, PeriphId=%d, PeriphName=%s", Screen[s].Periph[p]->PeerId, Screen[s].PeriphId[p], Screen[s].Periph[p]->Name);
-          Serial.println(Buf);
-        }
-      }
-      Serial.println();
-    }
-  }
-  preferences.end();
-}
-void SavePeers() {
-  Serial.println("SavePeers...");
-  preferences.begin("JeepifyPeers", false);
-  
-  char Buf[50] = {}; String BufS;
-  
-  for (int PNr=0; PNr< MAX_PEERS; PNr++) {
-    snprintf(Buf, sizeof(Buf), "P%d", PNr);
-    Serial.print("Sizeof()"); Serial.print(PNr); Serial.print(") = "); Serial.println(sizeof(P[PNr]));
-    preferences.putBytes(Buf, &P[PNr], sizeof(P[PNr]));
-  }
-
-  Serial.println("jetzt kommt Multi");
-
-  for (int s=0; s<MULTI_SCREENS; s++) {
-    snprintf(Buf, sizeof(Buf), "S%d", s);
-    preferences.putBytes(Buf, &Screen[s], sizeof(Screen[s]));
-  }
-  preferences.end();
-}
-void GetPeers() {
-  preferences.begin("JeepifyPeers", true);
-  
-  char Buf[50] = {}; 
-  PeerCount = 0;
-
-  for (int PNr=0; PNr<MAX_PEERS; PNr++) {
-    snprintf(Buf, sizeof(Buf), "P%d", PNr); 
-    //Serial.printf("Sizeof(P[%d]=", sizeof(P[PNr]));
-    preferences.getBytes(Buf, &P[PNr], sizeof(P[PNr]));
-    if (P[PNr].Id) PeerCount++;
-    
-    
-    for (int SNr=0; SNr<MAX_PERIPHERALS; SNr++) {
-      P[PNr].Periph[SNr].PeerId = P[PNr].Id;
-
-      if (DebugMode) {
-        snprintf(Buf, sizeof(Buf), "Periph %d: Name=%s, Type=%d, Id=%d, PeerId=%d", SNr, P[PNr].Periph[SNr].Name, P[PNr].Periph[SNr].Type, P[PNr].Periph[SNr].Id, P[PNr].Periph[SNr].PeerId);
-        Serial.println(Buf);
-
-        if (isSensor(&P[PNr].Periph[SNr]) and (ActiveSens   == NULL)) ActiveSens   = &P[PNr].Periph[SNr];
-        if (isSwitch(&P[PNr].Periph[SNr]) and (ActiveSwitch == NULL)) ActiveSwitch = &P[PNr].Periph[SNr];
-      }
-    }
-  }
-  Serial.println("Multi-getpeer");
-  for (int s=0; s<MULTI_SCREENS; s++) {
-    snprintf(Buf, sizeof(Buf), "S%d", s);
-    preferences.getBytes(Buf, &Screen[s], sizeof(Screen[s]));
-    
-    for (int p=0; p<PERIPH_PER_SCREEN; p++) {      
-      if (Screen[s].PeerId[p]) {
-        Screen[s].Peer[p]   = FindPeerById(Screen[s].PeerId[p]);
-        Serial.print("Peer[p]=");   Serial.println(Screen[s].Peer[p]->Name);
-      }
-      if (Screen[s].PeriphId[p]) {
-        Screen[s].Periph[p] = FindPeriphById(Screen[s].Peer[p], Screen[s].PeriphId[p]);
-        Serial.print("Periph[p]="); Serial.println(Screen[s].Periph[p]->Name);
-      }
-    }  
-  }
-  preferences.end();
-}
-void RegisterPeers() {
-  esp_now_peer_info_t peerInfo;
-  peerInfo.channel = 1;
-  peerInfo.encrypt = false;
-  memset(&peerInfo, 0, sizeof(peerInfo));
-
-  // Register BROADCAST
-  for (int b=0; b<6; b++) peerInfo.peer_addr[b] = (uint8_t) broadcastAddressAll[b];
-    if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-      PrintMAC(peerInfo.peer_addr); Serial.println(": Failed to add peer");
-    }
-    else {
-      Serial.print (" ("); PrintMAC(peerInfo.peer_addr);  Serial.println(") added...");
-    }
-
-  // Register Peers
-  for (int PNr=0; PNr<MAX_PEERS; PNr++) {
-    if (P[PNr].Type > 0) {
-      for (int b=0; b<6; b++) peerInfo.peer_addr[b] = (uint8_t) P[PNr].BroadcastAddress[b];
-        if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-          PrintMAC(peerInfo.peer_addr); Serial.println(": Failed to add peer");
-        }
-        else {
-          Serial.print("Peer: "); Serial.print(P[PNr].Name); 
-          Serial.print (" ("); PrintMAC(peerInfo.peer_addr); Serial.println(") added...");
-        }
-    }
-  }
-}
-void ClearPeers() {
-  preferences.begin("JeepifyPeers", false);
-    preferences.clear();
-    Serial.println("JeepifyPeers cleared...");
-  preferences.end();
-}
-void DeletePeer(struct_Peer *Peer) {
-  for (int PNr=0; PNr<MAX_PEERS; PNr++) {
-    if (P[PNr].Id == Peer->Id) {
-      P[PNr].Name[0] = '\0';
-      P[PNr].Id = 0;
-      P[PNr].Type = 0;
-      for (int i; i<6; i++) P[PNr].BroadcastAddress[i] = 0;
-      P[PNr].TSLastSeen = 0;
-      P[PNr].SleepMode = false;
-      P[PNr].DebugMode = false;
-    }
-  }
-  SendCommand(Peer, "Reset");
-  
-  for (int s=0; s<MULTI_SCREENS; s++) {
-    for (int p=0; p<PERIPH_PER_SCREEN; p++) {
-      if (Screen[s].PeerId[p] == Peer->Id) {
-        Screen[s].PeerId[p] = 0;
-        Screen[s].PeriphId[p] = 0;
-        Screen[s].Periph[p] = NULL;
-      }
-    } 
-  }
-}
-#pragma endregion Peer-Things
 #pragma region Send-Things
 void SendPing() {
   StaticJsonDocument<500> doc;
