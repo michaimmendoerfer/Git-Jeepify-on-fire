@@ -333,91 +333,41 @@ void SendCommand(struct_Peer *Peer, String Cmd) {
 void ShowJSON() {
   StaticJsonDocument<500> doc;
   Serial.println("Show-JSON");
-  if ((jsondataBuf != "") or (Mode != OldMode)) {
-    ScreenChanged = true;
-    OldMode = Mode;
-
-    TFTBuffer.pushImage(0,0, 240, 240, JeepifyBackground);  
-    TFTBuffer.loadFont(AA_FONT_SMALL);
-    
-    TFTBuffer.setTextColor(TFT_RUBICON, TFT_BLACK);
-    TFTBuffer.setTextDatum(TC_DATUM);
-    
-    TFTBuffer.drawString("Debug JSON", 120, 200); 
-    
-    DeserializationError error = deserializeJson(doc, jsondataBuf);
-    if (doc["Node"] != NODE_NAME) { 
-      int sLength = jsondataBuf.length();
-
-      if (sLength) {
-        int len = 20;
-        int Abstand = 20;
-        int sLength = jsondataBuf.length();
-
-        TFTBuffer.setTextDatum(MC_DATUM);
-        TFTBuffer.setTextColor(TFT_WHITE, TFT_BLACK);
-      
-        for (int i=0 ; i<8 ; i++) {
-          if ((i+1)*len < sLength)  TFTBuffer.drawString(jsondataBuf.substring(i*len, (i+1)*len), 120,50+i*Abstand); 
-          else if (i*len < sLength) TFTBuffer.drawString(jsondataBuf.substring(i*len, sLength), 120,50+i*Abstand); 
-        }
-        jsondataBuf = "";
-      }
-    }
-    TSScreenRefresh = millis();
+  
+  DeserializationError error = deserializeJson(doc, jsondataBuf);
+  if (doc["Node"] != NODE_NAME) { 
+    //Textfeld zuweisen
+    jsondataBuf = "";
   }
+  //JSON-Screen aufrufen
 }
 void ShowPeer() {
-  if ((TSScreenRefresh - millis() > SCREEN_INTERVAL) or (Mode != OldMode)) {
-    OldMode = Mode;
-    ScreenChanged = true;
 
-    TFTBuffer.pushImage(0,0, 240, 240, JeepifyBackground);  
-    TFTBuffer.loadFont(AA_FONT_SMALL);
-    
-    TFTBuffer.setTextColor(TFT_RUBICON, TFT_BLACK);
-    TFTBuffer.setTextDatum(TC_DATUM);
-    
-    TFTBuffer.drawString(ActivePeer->Name, 120, 200); 
-
-    DrawButton(5);
-    DrawButton(6);
-    DrawButton(7);
-    DrawButton(8);
-    DrawButton(9);
-    DrawButton(10, ActivePeer->SleepMode);
-    DrawButton(14, ActivePeer->DemoMode);
-
-    TSScreenRefresh = millis();
-  }
 }
+
 void ShowPeers() {
-    
-    for (int PNr=0 ; PNr<MAX_PEERS ; PNr++) {
-      if (P[PNr].Type) {
-        TFTBuffer.setTextColor(TFT_WHITE, TFT_BLACK);
-        TFTBuffer.drawString(P[PNr].Name, 10, 80+PNr*Abstand);
-        switch (P[PNr].Type) {
-          case SWITCH_1_WAY:   ZName = "1-way PDC";   break;
-          case SWITCH_2_WAY:   ZName = "2-way PDC";   break;
-          case SWITCH_4_WAY:   ZName = "4-way PDC";   break;
-          case SWITCH_8_WAY:   ZName = "8-way PDC";   break;
-          case PDC_SENSOR_MIX: ZName = "PDC-MIX";     break;
-          case BATTERY_SENSOR: ZName = "Batt.-Sens."; break;
-        }
-        TFTBuffer.drawString(ZName, 105, 80+PNr*Abstand);
+  uint16_t PeerId[MAX_PEERS];
+  String Options = "";
+  for (int PIi=0; PIi<MAX_PEERS; PIi++) PeerId[PIi] = 0;
+
+  for (int PNr=0 ; PNr<MAX_PEERS ; PNr++) {
+    if (P[PNr].Type) {
+      (millis()- P[PNr].TSLastSeen > OFFLINE_INTERVAL) ? Options += "off:" : Options += "on: "; 
         
-        if (millis()- P[PNr].TSLastSeen > OFFLINE_INTERVAL) { 
-          TFTBuffer.setTextColor(TFT_DARKGREY,  TFT_BLACK); 
-          TFTBuffer.drawString("off", 200, 80+PNr*Abstand);
-        }
-        else { 
-          TFTBuffer.setTextColor(TFT_DARKGREEN, TFT_BLACK); 
-          TFTBuffer.drawString("on",  200, 80+PNr*Abstand); 
-        }
+      Options += P[PNr].Name;
+
+      switch (P[PNr].Type) {
+        case SWITCH_1_WAY:   Options += " (PDC-1)";   break;
+        case SWITCH_2_WAY:   Options += " (PDC-2)";   break;
+        case SWITCH_4_WAY:   Options += " (PDC-4)";   break;
+        case SWITCH_8_WAY:   Options += " (PDC-8)";   break;
+        case PDC_SENSOR_MIX: Options += " (MIX)";     break;
+        case BATTERY_SENSOR: Options += " (Sens)"; break;
       }
+      
     }
-    TSScreenRefresh = millis();
+  }
+  TSScreenRefresh = millis();
   }
 }
 #pragma endregion System-Screens
