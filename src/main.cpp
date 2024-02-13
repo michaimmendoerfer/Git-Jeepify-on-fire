@@ -357,17 +357,14 @@ void ShowPeers() {
       Options += P[PNr].Name;
 
       switch (P[PNr].Type) {
-        case SWITCH_1_WAY:   Options += " (PDC-1)";   break;
-        case SWITCH_2_WAY:   Options += " (PDC-2)";   break;
-        case SWITCH_4_WAY:   Options += " (PDC-4)";   break;
-        case SWITCH_8_WAY:   Options += " (PDC-8)";   break;
-        case PDC_SENSOR_MIX: Options += " (MIX)";     break;
-        case BATTERY_SENSOR: Options += " (Sens)"; break;
+        case SWITCH_1_WAY:   Options += " (PDC-1)\n";   break;
+        case SWITCH_2_WAY:   Options += " (PDC-2)\n";   break;
+        case SWITCH_4_WAY:   Options += " (PDC-4)\n";   break;
+        case SWITCH_8_WAY:   Options += " (PDC-8)\n";   break;
+        case PDC_SENSOR_MIX: Options += " (MIX)\n";     break;
+        case BATTERY_SENSOR: Options += " (Sens)\n"; break;
       }
-      
     }
-  }
-  TSScreenRefresh = millis();
   }
 }
 #pragma endregion System-Screens
