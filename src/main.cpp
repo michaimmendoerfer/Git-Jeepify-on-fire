@@ -345,27 +345,37 @@ void ShowPeer() {
 
 }
 
-void ShowPeers() {
+void ShowPeers(lv_event_t * e) {
   uint16_t PeerId[MAX_PEERS];
   String Options = "";
   for (int PIi=0; PIi<MAX_PEERS; PIi++) PeerId[PIi] = 0;
 
+  int PIi = 0;
+
   for (int PNr=0 ; PNr<MAX_PEERS ; PNr++) {
     if (P[PNr].Type) {
+      PeerId[PIi] = P[PNr].Id;
+      
+      if (PIi) Options += "\n";
+      PIi++;
+      
       (millis()- P[PNr].TSLastSeen > OFFLINE_INTERVAL) ? Options += "off:" : Options += "on: "; 
         
       Options += P[PNr].Name;
 
       switch (P[PNr].Type) {
-        case SWITCH_1_WAY:   Options += " (PDC-1)\n";   break;
-        case SWITCH_2_WAY:   Options += " (PDC-2)\n";   break;
-        case SWITCH_4_WAY:   Options += " (PDC-4)\n";   break;
-        case SWITCH_8_WAY:   Options += " (PDC-8)\n";   break;
-        case PDC_SENSOR_MIX: Options += " (MIX)\n";     break;
-        case BATTERY_SENSOR: Options += " (Sens)\n"; break;
+        case SWITCH_1_WAY:   Options += " (PDC-1)";   break;
+        case SWITCH_2_WAY:   Options += " (PDC-2)";   break;
+        case SWITCH_4_WAY:   Options += " (PDC-4)";   break;
+        case SWITCH_8_WAY:   Options += " (PDC-8)";   break;
+        case PDC_SENSOR_MIX: Options += " (MIX)";     break;
+        case BATTERY_SENSOR: Options += " (Sens)"; break;
       }
     }
   }
+  lv_roller_set_options(ui_RollerPeers1, Options, LV_ROLLER_MODE_NORMAL);
+  _ui_screen_change(&ui_ScrPeers, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeers_screen_init);
+    
 }
 #pragma endregion System-Screens
 
