@@ -87,7 +87,7 @@ void ui_event_ScrPeer(lv_event_t * e);
 lv_obj_t * ui_ScrPeer;
 lv_obj_t * ui_LblPeer1;
 lv_obj_t * ui_LblPeerTypeLbl;
-lv_obj_t * ui_LblPeerTypeValue;
+void ui_event_BtnPeer1(lv_event_t * e);
 lv_obj_t * ui_BtnPeer1;
 void ui_event_BtnPeer1Lbl(lv_event_t * e);
 lv_obj_t * ui_BtnPeer1Lbl;
@@ -97,6 +97,12 @@ lv_obj_t * ui_BtnPeer2Lbl1;
 void ui_event_BtnPeer3(lv_event_t * e);
 lv_obj_t * ui_BtnPeer3;
 lv_obj_t * ui_BtnPeer3Lbl1;
+void ui_event_BtnPeer4(lv_event_t * e);
+lv_obj_t * ui_BtnPeer4;
+lv_obj_t * ui_BtnPeer4Lbl1;
+void ui_event_BtnPeer5(lv_event_t * e);
+lv_obj_t * ui_BtnPeer5;
+lv_obj_t * ui_BtnPeer5Lbl1;
 
 
 // SCREEN: ui_ScrStatus
@@ -149,7 +155,7 @@ void ui_event_BtnSet2(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_CLICKED) {
-        _ui_state_modify(ui_BtnMenu2, LV_STATE_CHECKED, _UI_MODIFY_STATE_ADD);
+        Ui_Set_TogglePair(e);
     }
 }
 void ui_event_BtnSet3(lv_event_t * e)
@@ -238,7 +244,7 @@ void ui_event_ScrSingle(lv_event_t * e)
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMenu_screen_init);
+        _ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_MOVE_TOP, 500, 0, &ui_ScrMenu_screen_init);
     }
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
         lv_indev_wait_release(lv_indev_get_act());
@@ -249,6 +255,9 @@ void ui_event_ScrSingle(lv_event_t * e)
         lv_indev_wait_release(lv_indev_get_act());
         Ui_Single_Last(e);
     }
+    if(event_code == LV_EVENT_SCREEN_LOADED) {
+        Ui_Single_Prepare(e);
+    }
 }
 void ui_event_ScrMulti(lv_event_t * e)
 {
@@ -256,7 +265,15 @@ void ui_event_ScrMulti(lv_event_t * e)
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMenu_screen_init);
+        _ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_MOVE_TOP, 500, 0, &ui_ScrMenu_screen_init);
+    }
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
+        lv_indev_wait_release(lv_indev_get_act());
+        Ui_Multi_Next(e);
+    }
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT) {
+        lv_indev_wait_release(lv_indev_get_act());
+        Ui_Multi_Last(e);
     }
 }
 void ui_event_ScrPeer(lv_event_t * e)
@@ -265,6 +282,26 @@ void ui_event_ScrPeer(lv_event_t * e)
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_SCREEN_LOAD_START) {
         Ui_Peer_Prepare(e);
+    }
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
+        lv_indev_wait_release(lv_indev_get_act());
+        Ui_Peer_Next(e);
+    }
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT) {
+        lv_indev_wait_release(lv_indev_get_act());
+        Ui_Peer_Last(e);
+    }
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
+        lv_indev_wait_release(lv_indev_get_act());
+        _ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_MOVE_TOP, 500, 0, &ui_ScrMenu_screen_init);
+    }
+}
+void ui_event_BtnPeer1(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_CLICKED) {
+        Ui_Peer_Restart(e);
     }
 }
 void ui_event_BtnPeer1Lbl(lv_event_t * e)
@@ -289,6 +326,22 @@ void ui_event_BtnPeer3(lv_event_t * e)
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_CLICKED) {
         Ui_Peer_ToggleSleep(e);
+    }
+}
+void ui_event_BtnPeer4(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_CLICKED) {
+        Ui_Peer_Eichen(e);
+    }
+}
+void ui_event_BtnPeer5(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_CLICKED) {
+        Ui_Peer_Volt(e);
     }
 }
 

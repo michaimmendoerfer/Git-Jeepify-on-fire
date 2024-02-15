@@ -259,6 +259,11 @@ void setup() {
 }
 void loop() {
   lv_timer_handler(); /* let the GUI do its work */
+  if ((ReadyToPair) and (millis() - TSPair > 2000)) {
+    TSPair = 0;
+    ReadyToPair = false;
+    _ui_state_modify(ui_BtnSet2, LV_STATE_DEFAULT, _UI_MODIFY_STATE_ADD);
+  }
   delay(5);
 }
 #pragma endregion Main

@@ -35,12 +35,7 @@ void ShowPeer(lv_event_t * e)
 
 void Ui_Set_TogglePair(lv_event_t * e)
 {
-	if (TogglePairMode()) {
-		lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);
-	}
-	else {
-		lv_obj_add_state(ui_BtnSet2, LV_STATE_DEFAULT);
-	}
+	TogglePairMode();
 }
 
 void Ui_Set_Restart(lv_event_t * e)
@@ -167,4 +162,75 @@ void Ui_Peer_Reset(lv_event_t * e)
 void Ui_Peer_ToggleSleep(lv_event_t * e)
 {
 	// Your code here
+}
+
+void Ui_Multi_Next(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Multi_Last(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Peer_Next(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Peer_Last(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Peer_Eichen(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Peer_Volt(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Single_Prepare(lv_event_t * e)
+{
+	/*
+	//Write codes screen_meter_1
+	ui->screen_meter_1 = lv_meter_create(ui->screen);
+	// add scale screen_meter_1_scale_1
+	lv_meter_scale_t *screen_meter_1_scale_1 = lv_meter_add_scale(ui->screen_meter_1);
+	lv_meter_set_scale_ticks(ui->screen_meter_1, screen_meter_1_scale_1, 41, 2, 10, lv_color_hex(0xff0000));
+	lv_meter_set_scale_major_ticks(ui->screen_meter_1, screen_meter_1_scale_1, 8, 5, 15, lv_color_hex(0xffff00), 5);
+	lv_meter_set_scale_range(ui->screen_meter_1, screen_meter_1_scale_1, 0, 40, 270, 135);
+
+	// add needle line for screen_meter_1_scale_1.
+	ui->screen_meter_1_scale_1_ndline_0 = lv_meter_add_needle_line(ui->screen_meter_1, screen_meter_1_scale_1, 3, lv_color_hex(0x000000), -15);
+	lv_meter_set_indicator_value(ui->screen_meter_1, ui->screen_meter_1_scale_1_ndline_0, 0);
+
+	// add needle images for screen_meter_1_scale_1.
+	ui->screen_meter_1_scale_1_ndimg_0 = lv_meter_add_needle_img(ui->screen_meter_1, screen_meter_1_scale_1, &__alpha_60x4, 0, 0);
+	lv_meter_set_indicator_value(ui->screen_meter_1, ui->screen_meter_1_scale_1_ndimg_0, 20);
+	lv_obj_set_pos(ui->screen_meter_1, 20, 20);
+	lv_obj_set_size(ui->screen_meter_1, 194, 194);
+
+	//Write style for screen_meter_1, Part: LV_PART_MAIN, State: LV_STATE_DEFAULT.
+	lv_obj_set_style_bg_opa(ui->screen_meter_1, 255, LV_PART_MAIN|LV_STATE_DEFAULT);
+	lv_obj_set_style_bg_color(ui->screen_meter_1, lv_color_hex(0xffffff), LV_PART_MAIN|LV_STATE_DEFAULT);
+	lv_obj_set_style_radius(ui->screen_meter_1, 100, LV_PART_MAIN|LV_STATE_DEFAULT);
+	lv_obj_set_style_border_width(ui->screen_meter_1, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+	lv_obj_set_style_shadow_width(ui->screen_meter_1, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+
+	//Write style for screen_meter_1, Part: LV_PART_TICKS, State: LV_STATE_DEFAULT.
+	lv_obj_set_style_text_color(ui->screen_meter_1, lv_color_hex(0xff0000), LV_PART_TICKS|LV_STATE_DEFAULT);
+	lv_obj_set_style_text_font(ui->screen_meter_1, &lv_font_montserratMedium_12, LV_PART_TICKS|LV_STATE_DEFAULT);
+
+	//Write style for screen_meter_1, Part: LV_PART_INDICATOR, State: LV_STATE_DEFAULT.
+	lv_obj_set_style_bg_opa(ui->screen_meter_1, 255, LV_PART_INDICATOR|LV_STATE_DEFAULT);
+	lv_obj_set_style_bg_color(ui->screen_meter_1, lv_color_hex(0x000000), LV_PART_INDICATOR|LV_STATE_DEFAULT);
+
+	//Update current screen layout.
+	lv_obj_update_layout(ui->screen);
+	*/
 }

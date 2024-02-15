@@ -11,6 +11,7 @@ extern "C" {
 #endif
 
 void UI_Set_Prepare(lv_event_t * e);
+void Ui_Set_TogglePair(lv_event_t * e);
 void Ui_Set_Restart(lv_event_t * e);
 void Ui_Set_Reset(lv_event_t * e);
 void Ui_Set_ToggleDebug(lv_event_t * e);
@@ -20,10 +21,17 @@ void ShowPeer(lv_event_t * e);
 void Ui_JSON_Prepare(lv_event_t * e);
 void Ui_Single_Next(lv_event_t * e);
 void Ui_Single_Last(lv_event_t * e);
+void Ui_Single_Prepare(lv_event_t * e);
+void Ui_Multi_Next(lv_event_t * e);
+void Ui_Multi_Last(lv_event_t * e);
 void Ui_Peer_Prepare(lv_event_t * e);
+void Ui_Peer_Next(lv_event_t * e);
+void Ui_Peer_Last(lv_event_t * e);
 void Ui_Peer_Restart(lv_event_t * e);
 void Ui_Peer_Reset(lv_event_t * e);
 void Ui_Peer_ToggleSleep(lv_event_t * e);
+void Ui_Peer_Eichen(lv_event_t * e);
+void Ui_Peer_Volt(lv_event_t * e);
 
 #ifdef __cplusplus
 } /*extern "C"*/
