@@ -5,14 +5,26 @@
 
 #include "ui.h"
 #include <Arduino.h>
+#include "..\..Jeepify.h"
 
-extern uint32_t TSPair;
 extern bool ReadyToPair;
+extern bool DebugMode;
+extern bool ChangesSaved;
+
+extern struct_Peer *ActivePeer;
+extern struct_Peer *ActiveSelection;
+extern struct_Periph *ActiveSens;
+extern struct_Periph *ActiveSwitch;
+
+extern struct_Peer   P[MAX_PEERS];
 
 extern bool ToggleDebugMode();
 extern bool ToggleSleepMode();
 extern bool TogglePairMode();
+
+
 extern void SavePeers();
+extern void PrepareJSON();
 
 void ShowPeer(lv_event_t * e)
 {
@@ -48,6 +60,7 @@ void Ui_Set_ToggleDebug(lv_event_t * e)
 		lv_obj_add_state(ui_BtnSet7, V_STATE_DEFAULT);
 	}
 }
+
 void Ui_SavePeers(lv_event_t * e)
 {
 	SavePeers();
@@ -55,17 +68,56 @@ void Ui_SavePeers(lv_event_t * e)
 
 void Ui_Peers_Prepare(lv_event_t * e)
 {
-	// Your code here
+	String Options = NULL;
+
+	for (int PNr=0 ; PNr<MAX_PEERS ; PNr++) {
+    if (P[PNr].Type) {
+           
+      if (Options) Options += "\n";
+      
+      if (millis()- P[PNr].TSLastSeen > OFFLINE_INTERVAL) Options += "off: ";
+      else Options += "on:  "; 
+        
+      Options += P[PNr].Name;
+
+      switch (P[PNr].Type) {
+        case SWITCH_1_WAY:   Options += " (PDC-1)";   break;
+        case SWITCH_2_WAY:   Options += " (PDC-2)";   break;
+        case SWITCH_4_WAY:   Options += " (PDC-4)";   break;
+        case SWITCH_8_WAY:   Options += " (PDC-8)";   break;
+        case PDC_SENSOR_MIX: Options += " (MIX)";     break;
+        case BATTERY_SENSOR: Options += " (Sens)"; break;
+      }
+    }
+  }
+  lv_roller_set_options(ui_RollerPeers1, Options.c_str(), LV_ROLLER_MODE_NORMAL);
 }
 
 void Ui_JSON_Prepare(lv_event_t * e)
 {
-	// Your code here
+	PrepareJSON();
 }
 
 void UI_Set_Prepare(lv_event_t * e)
 {
-	// Your code here
+	if (ReadyToPair) {
+		lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);
+	}
+	else {
+		lv_obj_add_state(ui_BtnSet2, V_STATE_DEFAULT);
+	}
+	if (DebugMode) {
+		lv_obj_add_state(ui_BtnSet7, LV_STATE_CHECKED);
+	}
+	else {
+		lv_obj_add_state(ui_BtnSet7, V_STATE_DEFAULT);
+	}
+	if (ChangesSaved) {
+		lv_obj_add_state(ui_BtnSet8, LV_STATE_DEFAULT);
+	}
+	else {
+		lv_obj_add_state(ui_BtnSet8, V_STATE_CHECKED);
+	}
 }
 
 void Ui_Single_Next(lv_event_t * e)

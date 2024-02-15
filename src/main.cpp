@@ -46,7 +46,7 @@ void   ShowMessage(String Msg);
 void   ShowSingle(struct_Periph *Periph);
 void   ShowMulti(struct_MultiScreen *ActiveScreen);
 void   ShowEichenVolt();
-void   ShowJSON();
+void   PrepareJSON();
 void   ShowPeer();
 
 void   PrintMAC(const uint8_t * mac_addr);
@@ -343,16 +343,16 @@ void SendCommand(struct_Peer *Peer, String Cmd) {
 #pragma region Sensor-Screens
 #pragma endregion Sensor-Screens
 #pragma region System-Screens
-void ShowJSON() {
-  StaticJsonDocument<500> doc;
-  Serial.println("Show-JSON");
+void PrepareJSON() {
+  if (jsondataBuf) {
+    StaticJsonDocument<500> doc;
   
-  DeserializationError error = deserializeJson(doc, jsondataBuf);
-  if (doc["Node"] != NODE_NAME) { 
-    lv_textarea_set_placeholder_text(ui_TxtJSON1, jsondataBuf.c_str());
-    jsondataBuf = "";
+    DeserializationError error = deserializeJson(doc, jsondataBuf);
+    if (doc["Node"] != NODE_NAME) { 
+      lv_textarea_set_placeholder_text(ui_TxtJSON1, jsondataBuf.c_str());
+      jsondataBuf = NULL;
+    }
   }
-  _ui_screen_change(&ui_ScrJSON, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrJSON_screen_init);
 }
 void ShowPeer() {
 
