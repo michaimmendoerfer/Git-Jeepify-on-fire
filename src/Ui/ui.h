@@ -106,9 +106,13 @@ extern lv_obj_t * ui_BtnPeer4Lbl1;
 void ui_event_BtnPeer5(lv_event_t * e);
 extern lv_obj_t * ui_BtnPeer5;
 extern lv_obj_t * ui_BtnPeer5Lbl1;
-// SCREEN: ui_ScrStatus
-void ui_ScrStatus_screen_init(void);
-extern lv_obj_t * ui_ScrStatus;
+// SCREEN: ui_ScreenEichen
+void ui_ScreenEichen_screen_init(void);
+extern lv_obj_t * ui_ScreenEichen;
+// SCREEN: ui_ScreenVolt
+void ui_ScreenVolt_screen_init(void);
+extern lv_obj_t * ui_ScreenVolt;
+extern lv_obj_t * ui_Keyboard2;
 extern lv_obj_t * ui____initial_actions0;
 
 LV_IMG_DECLARE(ui_img_jeepifybackground_png);    // assets\JeepifyBackground.png

@@ -105,9 +105,15 @@ lv_obj_t * ui_BtnPeer5;
 lv_obj_t * ui_BtnPeer5Lbl1;
 
 
-// SCREEN: ui_ScrStatus
-void ui_ScrStatus_screen_init(void);
-lv_obj_t * ui_ScrStatus;
+// SCREEN: ui_ScreenEichen
+void ui_ScreenEichen_screen_init(void);
+lv_obj_t * ui_ScreenEichen;
+
+
+// SCREEN: ui_ScreenVolt
+void ui_ScreenVolt_screen_init(void);
+lv_obj_t * ui_ScreenVolt;
+lv_obj_t * ui_Keyboard2;
 lv_obj_t * ui____initial_actions0;
 const lv_img_dsc_t * ui_imgset_menubtn[4] = {&ui_img_menubtn1_png, &ui_img_menubtn2_png, &ui_img_menubtn3_png, &ui_img_menubtn4_png};
 
@@ -360,7 +366,8 @@ void ui_init(void)
     ui_ScrSingle_screen_init();
     ui_ScrMulti_screen_init();
     ui_ScrPeer_screen_init();
-    ui_ScrStatus_screen_init();
+    ui_ScreenEichen_screen_init();
+    ui_ScreenVolt_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
     lv_disp_load_scr(ui_ScrMenu);
 }
