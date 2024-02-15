@@ -4,8 +4,69 @@
 // Project name: Jeepify
 
 #include "ui.h"
+#include <Arduino.h>
+
+extern uint32_t TSPair;
+extern bool ReadyToPair;
+extern bool DebugMode;
 
 void ShowPeer(lv_event_t * e)
+{
+	
+}
+
+void Ui_Set_TogglePair(lv_event_t * e)
+{
+	if (ReadyToPair) {
+		ReadyToPair = false;
+		TSPair = 0;
+	}
+	else {
+		ReadyToPair = true;
+		TSPair = millis();
+	}
+}
+
+void Ui_Set_Restart(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Set_Reset(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Set_ToggleDebug(lv_event_t * e)
+{
+	DebugMode = !DebugMode;
+}
+void Ui_SavePeers(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Peers_Prepare(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_JSON_Prepare(lv_event_t * e)
+{
+	// Your code here
+}
+
+void UI_Set_Prepare(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Single_Next(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Single_Last(lv_event_t * e)
 {
 	// Your code here
 }

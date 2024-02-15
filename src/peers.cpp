@@ -1,5 +1,7 @@
 #include "peers.h"
 
+void   PrintMAC(const uint8_t * mac_addr);
+
 struct_Peer   P[MAX_PEERS];
 struct_Peer   *ActivePeer, *ActivePDC, *ActiveBat, *ActiveSelection;
 struct_Periph *ActiveSens, *ActiveSwitch, *ActivePeriph;
@@ -155,40 +157,6 @@ struct_Periph *FindPeriphById(struct_Peer *Peer, uint16_t Id) {
   if (Peer) {
     for (int SNr=0; SNr<MAX_PERIPHERALS; SNr++) {
       if (Peer->Periph[SNr].Id == Id) return &Peer->Periph[SNr];
-    }
-  }
-  return NULL;
-}
-
-struct_Periph *SelectPeriph() {
-  if (!ActivePeer) {
-    ActivePeer = FindFirstPeer();
-  }
-  if (ActivePeer) {
-    if (!ActivePeriph) {
-      ActivePeriph = FindFirstPeriph(ActivePeer, SENS_TYPE_ALL, false);
-    }
-    if (ActivePeriph) {
-      if ((TSScreenRefresh - millis() > SCREEN_INTERVAL) or (Mode != OldMode)) {
-        ScreenChanged = true;
-        TFTBuffer.pushImage(0,0, 240, 240, JeepifyBackground);
-        TFTBuffer.loadFont(AA_FONT_LARGE);
-        TFTBuffer.setTextDatum(MC_DATUM);
-        TFTBuffer.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
-        TFTBuffer.drawString(ActivePeriph->Name, 120, 120);
-        TFTBuffer.unloadFont();
-        
-        TFTBuffer.loadFont(AA_FONT_SMALL);
-        TFTBuffer.drawString(P[ActivePeriph->PeerId].Name, 120,  80);
-        
-        switch (ActivePeriph->Type) {
-          case SENS_TYPE_AMP:    TFTBuffer.drawString("Amp-Sensor",  120, 160); break;
-          case SENS_TYPE_VOLT:   TFTBuffer.drawString("Volt-Sensor", 120, 160); break;
-          case SENS_TYPE_SWITCH: TFTBuffer.drawString("Switch",      120, 160); break;
-        }
-        TSScreenRefresh = millis();      
-        return (ActivePeriph);
-      }
     }
   }
   return NULL;

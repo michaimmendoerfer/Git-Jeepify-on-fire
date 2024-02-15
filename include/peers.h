@@ -1,6 +1,7 @@
 #ifndef PEERS_H
 #define PEERS_H
 
+#include <Arduino.h>
 #include "../../jeepify.h"
 
 bool   PeriphChanged(struct_Peer *Peer, int Start, int Stop=0);
@@ -22,6 +23,5 @@ struct_Peer   *FindFirstPeer  (int Type=MODULE_ALL);
 struct_Peer   *FindNextPeer   (struct_Peer *Peer, int Type=MODULE_ALL);
 struct_Peer   *FindPrevPeer   (struct_Peer *Peer, int Type=MODULE_ALL);
 int            FindHighestPeerId();
-struct_Periph *SelectPeriph();
 
 #endif

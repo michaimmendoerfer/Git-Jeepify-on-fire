@@ -37,28 +37,55 @@ extern lv_obj_t * ui_ImgRubicon;
 void ui_ScrSettings_screen_init(void);
 void ui_event_ScrSettings(lv_event_t * e);
 extern lv_obj_t * ui_ScrSettings;
+void ui_event_BtnSet1(lv_event_t * e);
 extern lv_obj_t * ui_BtnSet1;
 extern lv_obj_t * ui_BtnSet1Lbl;
 extern lv_obj_t * ui_BtnSet2;
 extern lv_obj_t * ui_BtnSet2Lbl;
+void ui_event_BtnSet3(lv_event_t * e);
 extern lv_obj_t * ui_BtnSet3;
-extern lv_obj_t * ui_BtnSet3Lbl;
+extern lv_obj_t * ui_BtnSet3Lbl3;
+void ui_event_BtnSet4(lv_event_t * e);
 extern lv_obj_t * ui_BtnSet4;
 extern lv_obj_t * ui_BtnSet3Lbl1;
 void ui_event_BtnSet5(lv_event_t * e);
 extern lv_obj_t * ui_BtnSet5;
 extern lv_obj_t * ui_BtnSet5Lbl;
+void ui_event_BtnSet6(lv_event_t * e);
 extern lv_obj_t * ui_BtnSet6;
 extern lv_obj_t * ui_BtnSet3Lbl2;
+void ui_event_BtnSet7(lv_event_t * e);
 extern lv_obj_t * ui_BtnSet7;
 extern lv_obj_t * ui_BtnSet7Lbl;
+void ui_event_BtnSet8(lv_event_t * e);
 extern lv_obj_t * ui_BtnSet8;
 extern lv_obj_t * ui_BtnSet7Lbl1;
 // SCREEN: ui_ScrPeers
 void ui_ScrPeers_screen_init(void);
+void ui_event_ScrPeers(lv_event_t * e);
 extern lv_obj_t * ui_ScrPeers;
 void ui_event_RollerPeers1(lv_event_t * e);
 extern lv_obj_t * ui_RollerPeers1;
+extern lv_obj_t * ui_Label5;
+// SCREEN: ui_ScrJSON
+void ui_ScrJSON_screen_init(void);
+void ui_event_ScrJSON(lv_event_t * e);
+extern lv_obj_t * ui_ScrJSON;
+extern lv_obj_t * ui_TxtJSON1;
+extern lv_obj_t * ui_LblJSON2;
+// SCREEN: ui_ScrSingle
+void ui_ScrSingle_screen_init(void);
+void ui_event_ScrSingle(lv_event_t * e);
+extern lv_obj_t * ui_ScrSingle;
+extern lv_obj_t * ui_LblSingle1;
+// SCREEN: ui_ScrMulti
+void ui_ScrMulti_screen_init(void);
+void ui_event_ScrMulti(lv_event_t * e);
+extern lv_obj_t * ui_ScrMulti;
+extern lv_obj_t * ui_LblMulti1;
+// SCREEN: ui_ScrPeer
+void ui_ScrPeer_screen_init(void);
+extern lv_obj_t * ui_ScrPeer;
 extern lv_obj_t * ui____initial_actions0;
 
 LV_IMG_DECLARE(ui_img_jeepifybackground_png);    // assets\JeepifyBackground.png

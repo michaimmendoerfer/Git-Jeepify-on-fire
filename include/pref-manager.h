@@ -1,5 +1,5 @@
-#ifndef PREF-MANAGER_H
-#define PREF-MANAGER_H
+#ifndef PREF_MANAGER_H
+#define PREF_MANAGER_H
 
 #include "../../jeepify.h"
 
@@ -9,5 +9,6 @@ void   RegisterPeers();
 void   ClearPeers();
 void   ClearInit();
 void   ReportAll();
+int    GetPeerCount();
 
 #endif

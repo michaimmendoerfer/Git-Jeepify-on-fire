@@ -10,7 +10,16 @@
 extern "C" {
 #endif
 
+void UI_Set_Prepare(lv_event_t * e);
+void Ui_Set_Restart(lv_event_t * e);
+void Ui_Set_Reset(lv_event_t * e);
+void Ui_Set_ToggleDebug(lv_event_t * e);
+void Ui_SavePeers(lv_event_t * e);
+void Ui_Peers_Prepare(lv_event_t * e);
 void ShowPeer(lv_event_t * e);
+void Ui_JSON_Prepare(lv_event_t * e);
+void Ui_Single_Next(lv_event_t * e);
+void Ui_Single_Last(lv_event_t * e);
 
 #ifdef __cplusplus
 } /*extern "C"*/

@@ -17,6 +17,7 @@
 #include "pref-manager.h"
 #include <lvgl.h>
 #include "Ui\ui.h" 
+
 #define TFT_HOR_RES   240
 #define TFT_VER_RES   240
 #define DRAW_BUF_SIZE (TFT_HOR_RES * TFT_VER_RES / 10 * (LV_COLOR_DEPTH / 8))
@@ -49,18 +50,18 @@ void   ShowJSON();
 void   ShowPeer();
 
 void   PrintMAC(const uint8_t * mac_addr);
-void WriteStringToCharArray(String S, char *C);
+void   WriteStringToCharArray(String S, char *C);
 #pragma endregion Function_Definitions
 #pragma region Globals
 static lv_disp_draw_buf_t draw_buf;
-static lv_color_t buf[ screenWidth * screenHeight / 10 ];
-
-Preferences preferences;
+static lv_color_t buf[ TFT_HOR_RES * TFT_VER_RES / 10 ];
 
 bool DebugMode = true;
 bool SleepMode = false;
 bool ReadyToPair = false;
 bool ChangesSaved = true;
+
+uint8_t VoltCount;
 
 String jsondataBuf;
 
@@ -81,6 +82,18 @@ bool MsgVoltAktiv = false;
 bool MsgEichAktiv = false;
 bool MsgPairAktiv = false;
 
+extern struct_Peer   P[MAX_PEERS];
+extern struct_MultiScreen Screen[MULTI_SCREENS];
+
+extern Preferences preferences;
+extern struct_Peer *ActivePeer;
+extern struct_Peer *ActivePDC;
+extern struct_Peer *ActiveBat;
+extern struct_Peer *ActiveSelection;
+
+extern struct_Periph *ActiveSens;
+extern struct_Periph *ActiveSwitch;
+extern struct_Periph *ActivePeriph;
 
 #pragma endregion Globals
 #pragma region Main
@@ -160,7 +173,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
           
           SendPairingConfirm(Peer);
           
-          ReadyToPair = false; TSPair = 0; Mode = S_MENU;
+          ReadyToPair = false; TSPair = 0;
         }
       }
     }
@@ -183,7 +196,7 @@ void setup() {
   Touch.begin();
     
   lv_init();
-  lv_disp_draw_buf_init( &draw_buf, buf, NULL, screenWidth * screenHeight / 10 );
+  lv_disp_draw_buf_init( &draw_buf, buf, NULL, TFT_HOR_RES * TFT_VER_RES / 10 );
 
   static lv_disp_drv_t disp_drv;
   lv_disp_drv_init( &disp_drv );
@@ -242,7 +255,7 @@ void setup() {
   RegisterPeers();
   ReportAll();
   
-  if (PeerCount == 0) { Serial.println("PeerCount=0, RTP=True"); ReadyToPair = true; TSPair = millis();}
+  if (GetPeerCount() == 0) { Serial.println("PeerCount=0, RTP=True"); ReadyToPair = true; TSPair = millis();}
 }
 void loop() {
   lv_timer_handler(); /* let the GUI do its work */
@@ -336,10 +349,10 @@ void ShowJSON() {
   
   DeserializationError error = deserializeJson(doc, jsondataBuf);
   if (doc["Node"] != NODE_NAME) { 
-    //Textfeld zuweisen
+    lv_textarea_set_placeholder_text(ui_TxtJSON1, jsondataBuf.c_str());
     jsondataBuf = "";
   }
-  //JSON-Screen aufrufen
+  _ui_screen_change(&ui_ScrJSON, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrJSON_screen_init);
 }
 void ShowPeer() {
 
@@ -359,7 +372,8 @@ void ShowPeers(lv_event_t * e) {
       if (PIi) Options += "\n";
       PIi++;
       
-      (millis()- P[PNr].TSLastSeen > OFFLINE_INTERVAL) ? Options += "off:" : Options += "on: "; 
+      if (millis()- P[PNr].TSLastSeen > OFFLINE_INTERVAL) Options += "off:";
+      else Options += "on: "; 
         
       Options += P[PNr].Name;
 
@@ -373,7 +387,7 @@ void ShowPeers(lv_event_t * e) {
       }
     }
   }
-  lv_roller_set_options(ui_RollerPeers1, Options, LV_ROLLER_MODE_NORMAL);
+  lv_roller_set_options(ui_RollerPeers1, Options.c_str(), LV_ROLLER_MODE_NORMAL);
   _ui_screen_change(&ui_ScrPeers, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeers_screen_init);
     
 }
@@ -402,6 +416,8 @@ void SetDebugMode(bool Mode) {
 void AddVolt(int i) {
   StaticJsonDocument<500> doc;
   String jsondata;
+  static float VoltCalib;
+
   jsondata = "";  //clearing String after data is being sent
   doc.clear();
 
@@ -431,7 +447,6 @@ void AddVolt(int i) {
     Serial.println(jsondata);
 
     TSMsgVolt = millis();
-    Mode = S_MENU;
   }
 }
 void PrintMAC(const uint8_t * mac_addr){

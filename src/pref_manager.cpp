@@ -1,9 +1,30 @@
+#include <Arduino.h>
+#include <Preferences.h>
+#include <esp_now.h>
+#include <WiFi.h>
 #include "pref-manager.h"
+#include "peers.h"
+
+void   PrintMAC(const uint8_t * mac_addr);
 
 extern struct_Peer   P[MAX_PEERS];
 extern struct_MultiScreen Screen[MULTI_SCREENS];
 
+extern struct_Peer *ActivePeer;
+extern struct_Peer *ActivePDC;
+extern struct_Peer *ActiveBat;
+extern struct_Peer *ActiveSelection;
+
+extern struct_Periph *ActiveSens;
+extern struct_Periph *ActiveSwitch;
+extern struct_Periph *ActivePeriph;
+
+extern bool DebugMode;
+
 int PeerCount;
+Preferences preferences;
+
+int GetPeerCount() { return PeerCount; }
 
 void ReportAll() {
   char Buf[100];
@@ -136,6 +157,12 @@ void ClearPeers() {
     Serial.println("JeepifyPeers cleared...");
   preferences.end();
 }
+void ClearInit() {
+  preferences.begin("JeepifyInit", false);
+    preferences.clear();
+    Serial.println("JeepifyInit cleared...");
+  preferences.end();
+}
 void DeletePeer(struct_Peer *Peer) {
   for (int PNr=0; PNr<MAX_PEERS; PNr++) {
     if (P[PNr].Id == Peer->Id) {
@@ -148,7 +175,6 @@ void DeletePeer(struct_Peer *Peer) {
       P[PNr].DebugMode = false;
     }
   }
-  SendCommand(Peer, "Reset");
   
   for (int s=0; s<MULTI_SCREENS; s++) {
     for (int p=0; p<PERIPH_PER_SCREEN; p++) {
