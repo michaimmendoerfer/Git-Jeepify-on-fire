@@ -198,12 +198,12 @@ void Ui_Single_Prepare(lv_event_t * e)
 {
 	/*
 	//Write codes screen_meter_1
-	ui->screen_meter_1 = lv_meter_create(ui->screen);
+	ui_SingleMeter1 = lv_meter_create(ui_ScrPeer);
 	// add scale screen_meter_1_scale_1
-	lv_meter_scale_t *screen_meter_1_scale_1 = lv_meter_add_scale(ui->screen_meter_1);
-	lv_meter_set_scale_ticks(ui->screen_meter_1, screen_meter_1_scale_1, 41, 2, 10, lv_color_hex(0xff0000));
-	lv_meter_set_scale_major_ticks(ui->screen_meter_1, screen_meter_1_scale_1, 8, 5, 15, lv_color_hex(0xffff00), 5);
-	lv_meter_set_scale_range(ui->screen_meter_1, screen_meter_1_scale_1, 0, 40, 270, 135);
+	lv_meter_scale_t *screen_meter_1_scale_1 = lv_meter_add_scale(ui_SingleMeter1);
+	lv_meter_set_scale_ticks(ui_SingleMeter1, screen_meter_1_scale_1, 41, 2, 10, lv_color_hex(0xff0000));
+	lv_meter_set_scale_major_ticks(ui_SingleMeter1, screen_meter_1_scale_1, 8, 5, 15, lv_color_hex(0xffff00), 5);
+	lv_meter_set_scale_range(ui_SingleMeter1, screen_meter_1_scale_1, 0, 40, 270, 135);
 
 	// add needle line for screen_meter_1_scale_1.
 	ui->screen_meter_1_scale_1_ndline_0 = lv_meter_add_needle_line(ui->screen_meter_1, screen_meter_1_scale_1, 3, lv_color_hex(0x000000), -15);
