@@ -5,6 +5,7 @@
 
 #include "ui.h"
 #include <Arduino.h>
+#include "peers.h"
 #include "..\..Jeepify.h"
 
 extern bool ReadyToPair;
@@ -99,8 +100,11 @@ void Ui_Peers_Selected(lv_event_t * e)
 	char *buf[100];
 	
 	lv_roller_get_selected_str(ui_RollerPeers1, buf, 100);
-	
+	sscanf(buf, "<%s>", buf);
 
+	ActivePeer = FindPeerByName(buf);
+
+	if (ActivePeer) _ui_screen_change(&ui_ScrPeer, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeer_screen_init);
 }
 
 void Ui_JSON_Prepare(lv_event_t * e)
