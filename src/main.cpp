@@ -29,7 +29,6 @@ CST816D Touch(I2C_SDA, I2C_SCL, TP_RST, TP_INT);
 
 void my_disp_flush( lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p );
 void my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data );
-static void btn_event_cb(lv_event_t * e);
 
 void   OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status);
 void   OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len);
@@ -39,8 +38,9 @@ bool   ToggleSwitch(struct_Periph *Periph);
 void   SendCommand(struct_Peer *Peer, String Cmd);
 void   SendPairingConfirm(struct_Peer *Peer);
 
-void   SetSleepMode(bool Mode);
-void   SetDebugMode(bool Mode);
+bool   ToggleSleepMode();
+bool   ToggleDebugMode();
+bool   TogglePairMode();
 
 void   ShowMessage(String Msg);
 void   ShowSingle(struct_Periph *Periph);
@@ -400,17 +400,28 @@ void WriteStringToCharArray(String S, char *C) {
   int   ArrayLength = S.length()+1;    //The +1 is for the 0x00h Terminator
   S.toCharArray(C,ArrayLength);
 }
-void SetSleepMode(bool Mode) {
+
+bool ToggleSleepMode() {
   preferences.begin("JeepifyInit", false);
-    SleepMode = Mode;
+    SleepMode = !SleepMode;
     if (preferences.getBool("SleepMode", false) != SleepMode) preferences.putBool("SleepMode", SleepMode);
   preferences.end();
+  return SleepMode;
 }
-void SetDebugMode(bool Mode) {
+
+bool ToggleDebugMode() {
   preferences.begin("JeepifyInit", false);
-    DebugMode = Mode;
+    DebugMode = !DebugMode;
     if (preferences.getBool("DebugMode", false) != DebugMode) preferences.putBool("DebugMode", DebugMode);
   preferences.end();
+  return DebugMode;
+}
+
+bool TogglePairMode() {
+  PairMode = !PairMode;
+  TSPair = millis();
+
+  return PairMode;
 }
 
 void AddVolt(int i) {

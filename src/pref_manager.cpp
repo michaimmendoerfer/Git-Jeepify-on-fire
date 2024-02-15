@@ -10,14 +10,8 @@ void   PrintMAC(const uint8_t * mac_addr);
 extern struct_Peer   P[MAX_PEERS];
 extern struct_MultiScreen Screen[MULTI_SCREENS];
 
-extern struct_Peer *ActivePeer;
-extern struct_Peer *ActivePDC;
-extern struct_Peer *ActiveBat;
-extern struct_Peer *ActiveSelection;
-
 extern struct_Periph *ActiveSens;
 extern struct_Periph *ActiveSwitch;
-extern struct_Periph *ActivePeriph;
 
 extern bool DebugMode;
 
@@ -87,7 +81,6 @@ void GetPeers() {
 
   for (int PNr=0; PNr<MAX_PEERS; PNr++) {
     snprintf(Buf, sizeof(Buf), "P%d", PNr); 
-    //Serial.printf("Sizeof(P[%d]=", sizeof(P[PNr]));
     preferences.getBytes(Buf, &P[PNr], sizeof(P[PNr]));
     if (P[PNr].Id) PeerCount++;
     

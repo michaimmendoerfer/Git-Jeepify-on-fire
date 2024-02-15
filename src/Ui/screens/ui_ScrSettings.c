@@ -42,7 +42,7 @@ void ui_ScrSettings_screen_init(void)
     lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);       /// States
     lv_obj_add_flag(ui_BtnSet2, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_BtnSet2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_bg_color(ui_BtnSet2, lv_color_hex(0xAD0808), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(ui_BtnSet2, lv_color_hex(0xAD0808), LV_PART_MAIN | L  );
     lv_obj_set_style_bg_opa(ui_BtnSet2, 50, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_border_color(ui_BtnSet2, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_border_opa(ui_BtnSet2, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
