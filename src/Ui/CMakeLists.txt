@@ -5,10 +5,11 @@ SET(SOURCES screens/ui_ScrMenu.c
     screens/ui_ScrSingle.c
     screens/ui_ScrMulti.c
     screens/ui_ScrPeer.c
+    screens/ui_ScrStatus.c
     ui.c
     components/ui_comp_hook.c
     ui_helpers.c
-    ui_events.c
+    ui_events.cpp
     images/ui_img_jeepifybackground_png.c
     images/ui_img_menubtn1_png.c
     images/ui_img_menubtn2_png.c

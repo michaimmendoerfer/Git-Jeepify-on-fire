@@ -6,7 +6,7 @@
 #pragma region Includes
 #include <Arduino.h>
 #include <nvs_flash.h>
-#include "../../jeepify.h"
+#include "jeepify.h"
 #include <TFT_eSPI.h>
 #include <esp_now.h>
 #include <WiFi.h>
@@ -190,8 +190,6 @@ void setup() {
   tft.init();
   tft.setRotation(0);
   tft.setSwapBytes(true);
-  tft.fillScreen(TFT_RED);
-  delay(1000);
   tft.begin();
   Touch.begin();
     
@@ -256,6 +254,8 @@ void setup() {
   ReportAll();
   
   if (GetPeerCount() == 0) { Serial.println("PeerCount=0, RTP=True"); ReadyToPair = true; TSPair = millis();}
+  DebugMode = false;
+  ReadyToPair = false;
 }
 void loop() {
   lv_timer_handler(); /* let the GUI do its work */
@@ -350,7 +350,7 @@ void PrepareJSON() {
     DeserializationError error = deserializeJson(doc, jsondataBuf);
     if (doc["Node"] != NODE_NAME) { 
       lv_textarea_set_placeholder_text(ui_TxtJSON1, jsondataBuf.c_str());
-      jsondataBuf = NULL;
+      jsondataBuf = "";
     }
   }
 }
@@ -414,14 +414,16 @@ bool ToggleDebugMode() {
     DebugMode = !DebugMode;
     if (preferences.getBool("DebugMode", false) != DebugMode) preferences.putBool("DebugMode", DebugMode);
   preferences.end();
+  Serial.print("DebugMode changed to: "); Serial.println((bool)DebugMode);
   return DebugMode;
 }
 
 bool TogglePairMode() {
-  PairMode = !PairMode;
+  ReadyToPair = !ReadyToPair;
   TSPair = millis();
-
-  return PairMode;
+  Serial.print("ReadyToPair changed to: "); Serial.println((bool)ReadyToPair);
+  
+  return ReadyToPair;
 }
 
 void AddVolt(int i) {
@@ -497,11 +499,13 @@ void my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data ) {
         data->point.x = TFT_HOR_RES - touchX;
         data->point.y = touchY;
 
+        /*
         Serial.print( "Data x " );
         Serial.print( touchX );
 
         Serial.print( ", Data y " );
         Serial.println( touchY );
+        */
     }
 }
 

@@ -3,10 +3,11 @@
 // LVGL version: 8.3.6
 // Project name: Jeepify
 
-#include "ui.h"
 #include <Arduino.h>
+#include <String.h>
+#include "ui.h"
 #include "peers.h"
-#include "..\..Jeepify.h"
+#include "Jeepify.h"
 
 extern bool ReadyToPair;
 extern bool DebugMode;
@@ -38,7 +39,7 @@ void Ui_Set_TogglePair(lv_event_t * e)
 		lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);
 	}
 	else {
-		lv_obj_add_state(ui_BtnSet2, V_STATE_DEFAULT);
+		lv_obj_add_state(ui_BtnSet2, LV_STATE_DEFAULT);
 	}
 }
 
@@ -58,18 +59,21 @@ void Ui_Set_ToggleDebug(lv_event_t * e)
 		lv_obj_add_state(ui_BtnSet7, LV_STATE_CHECKED);
 	}
 	else {
-		lv_obj_add_state(ui_BtnSet7, V_STATE_DEFAULT);
+		lv_obj_add_state(ui_BtnSet7, LV_STATE_DEFAULT);
 	}
 }
 
 void Ui_SavePeers(lv_event_t * e)
 {
-	SavePeers();
+    ReadyToPair = false;
+    _ui_state_modify(ui_BtnSet2, LV_STATE_CHECKED, _UI_MODIFY_STATE_ADD);
+	
+	//SavePeers();
 }
 
 void Ui_Peers_Prepare(lv_event_t * e)
 {
-	String Options = NULL;
+	String Options = "";
 
 	for (int PNr=0 ; PNr<MAX_PEERS ; PNr++) {
     if (P[PNr].Type) {
@@ -88,16 +92,17 @@ void Ui_Peers_Prepare(lv_event_t * e)
         case SWITCH_8_WAY:   Options += "> PDC-8"; break;
         case PDC_SENSOR_MIX: Options += "> MIX";   break;
         case BATTERY_SENSOR: Options += "> Sens";  break;
-		case default:		 Options += "> ???";   break;
+		default:		     Options += "> ???";   break;
       }
     }
   }
-  lv_roller_set_options(ui_RollerPeers1, Options.c_str(), LV_ROLLER_MODE_NORMAL);
+  //lv_roller_set_options(ui_RollerPeers1, Options.c_str(), LV_ROLLER_MODE_NORMAL);
+  lv_roller_set_options(ui_RollerPeers1, "on:  <EPS32-1> PDC-2\noff: <EPS32-2> PDC-2", LV_ROLLER_MODE_NORMAL);
 }
 
 void Ui_Peers_Selected(lv_event_t * e)
 {
-	char *buf[100];
+	char buf[100];
 	
 	lv_roller_get_selected_str(ui_RollerPeers1, buf, 100);
 	sscanf(buf, "<%s>", buf);
@@ -118,19 +123,19 @@ void UI_Set_Prepare(lv_event_t * e)
 		lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);
 	}
 	else {
-		lv_obj_add_state(ui_BtnSet2, V_STATE_DEFAULT);
+		lv_obj_add_state(ui_BtnSet2, LV_STATE_DEFAULT);
 	}
 	if (DebugMode) {
 		lv_obj_add_state(ui_BtnSet7, LV_STATE_CHECKED);
 	}
 	else {
-		lv_obj_add_state(ui_BtnSet7, V_STATE_DEFAULT);
+		lv_obj_add_state(ui_BtnSet7, LV_STATE_DEFAULT);
 	}
 	if (ChangesSaved) {
 		lv_obj_add_state(ui_BtnSet8, LV_STATE_DEFAULT);
 	}
 	else {
-		lv_obj_add_state(ui_BtnSet8, V_STATE_CHECKED);
+		lv_obj_add_state(ui_BtnSet8, LV_STATE_CHECKED);
 	}
 }
 
@@ -140,6 +145,26 @@ void Ui_Single_Next(lv_event_t * e)
 }
 
 void Ui_Single_Last(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Peer_Prepare(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Peer_Restart(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Peer_Reset(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Peer_ToggleSleep(lv_event_t * e)
 {
 	// Your code here
 }

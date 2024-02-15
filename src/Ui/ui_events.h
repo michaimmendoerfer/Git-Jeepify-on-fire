@@ -20,6 +20,10 @@ void ShowPeer(lv_event_t * e);
 void Ui_JSON_Prepare(lv_event_t * e);
 void Ui_Single_Next(lv_event_t * e);
 void Ui_Single_Last(lv_event_t * e);
+void Ui_Peer_Prepare(lv_event_t * e);
+void Ui_Peer_Restart(lv_event_t * e);
+void Ui_Peer_Reset(lv_event_t * e);
+void Ui_Peer_ToggleSleep(lv_event_t * e);
 
 #ifdef __cplusplus
 } /*extern "C"*/

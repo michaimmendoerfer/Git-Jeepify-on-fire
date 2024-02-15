@@ -39,7 +39,8 @@ void ui_event_ScrSettings(lv_event_t * e);
 extern lv_obj_t * ui_ScrSettings;
 void ui_event_BtnSet1(lv_event_t * e);
 extern lv_obj_t * ui_BtnSet1;
-extern lv_obj_t * ui_BtnSet1Lbl;
+extern lv_obj_t * ui_BtnSet1Lbl1;
+void ui_event_BtnSet2(lv_event_t * e);
 extern lv_obj_t * ui_BtnSet2;
 extern lv_obj_t * ui_BtnSet2Lbl;
 void ui_event_BtnSet3(lv_event_t * e);
@@ -85,7 +86,23 @@ extern lv_obj_t * ui_ScrMulti;
 extern lv_obj_t * ui_LblMulti1;
 // SCREEN: ui_ScrPeer
 void ui_ScrPeer_screen_init(void);
+void ui_event_ScrPeer(lv_event_t * e);
 extern lv_obj_t * ui_ScrPeer;
+extern lv_obj_t * ui_LblPeer1;
+extern lv_obj_t * ui_LblPeerTypeLbl;
+extern lv_obj_t * ui_LblPeerTypeValue;
+extern lv_obj_t * ui_BtnPeer1;
+void ui_event_BtnPeer1Lbl(lv_event_t * e);
+extern lv_obj_t * ui_BtnPeer1Lbl;
+void ui_event_BtnPeer2(lv_event_t * e);
+extern lv_obj_t * ui_BtnPeer2;
+extern lv_obj_t * ui_BtnPeer2Lbl1;
+void ui_event_BtnPeer3(lv_event_t * e);
+extern lv_obj_t * ui_BtnPeer3;
+extern lv_obj_t * ui_BtnPeer3Lbl1;
+// SCREEN: ui_ScrStatus
+void ui_ScrStatus_screen_init(void);
+extern lv_obj_t * ui_ScrStatus;
 extern lv_obj_t * ui____initial_actions0;
 
 LV_IMG_DECLARE(ui_img_jeepifybackground_png);    // assets\JeepifyBackground.png

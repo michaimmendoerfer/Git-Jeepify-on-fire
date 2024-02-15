@@ -10,7 +10,7 @@ struct_MultiScreen Screen[MULTI_SCREENS];
 int ActiveMultiScreen = 0; 
 
 struct_Periph *FindFirstPeriph(struct_Peer *Peer, int Type, bool OnlyActual){
-  if (!Peer) Peer = FindFirstPeer();
+  if (!Peer) Peer = FindFirstPeer(MODULE_ALL);
    if (Peer) {
     for (int PNr=0; PNr<MAX_PEERS; PNr++) {
       for (int SNr=0; SNr<MAX_PERIPHERALS; SNr++) {
@@ -23,7 +23,7 @@ struct_Periph *FindFirstPeriph(struct_Peer *Peer, int Type, bool OnlyActual){
         }
       }
       if (OnlyActual) return NULL;
-      struct_Peer *TempPeer = FindNextPeer(Peer);
+      struct_Peer *TempPeer = FindNextPeer(Peer, MODULE_ALL);
       if (TempPeer == Peer) return NULL; else Peer = TempPeer;
     }
   }
@@ -60,7 +60,7 @@ struct_Periph *FindNextPeriph (struct_Periph *Periph, int Type, bool OnlyActual)
 
     for (int PNr=0; PNr<MAX_PEERS; PNr++) {
       if (!OnlyActual) {
-        struct_Peer *TempPeer = FindNextPeer(Peer);
+        struct_Peer *TempPeer = FindNextPeer(Peer, MODULE_ALL);
         if (TempPeer == Peer) return Periph; else Peer = TempPeer;
       }
         
@@ -125,7 +125,7 @@ struct_Periph *FindPrevPeriph (struct_Periph *Periph, int Type, bool OnlyActual)
 
   for (int PNr=0; PNr<MAX_PEERS; PNr++) {
     if (!OnlyActual) {
-        struct_Peer *TempPeer = FindNextPeer(Peer);
+        struct_Peer *TempPeer = FindNextPeer(Peer, MODULE_ALL);
         if (TempPeer == Peer) return Periph; else Peer = TempPeer;
       }
 
