@@ -75,22 +75,32 @@ void Ui_Peers_Prepare(lv_event_t * e)
            
       if (Options) Options += "\n";
       
-      if (millis()- P[PNr].TSLastSeen > OFFLINE_INTERVAL) Options += "off: ";
-      else Options += "on:  "; 
+      if (millis()- P[PNr].TSLastSeen > OFFLINE_INTERVAL) Options += "off: <";
+      else Options += "on:  <"; 
         
       Options += P[PNr].Name;
 
       switch (P[PNr].Type) {
-        case SWITCH_1_WAY:   Options += " (PDC-1)";   break;
-        case SWITCH_2_WAY:   Options += " (PDC-2)";   break;
-        case SWITCH_4_WAY:   Options += " (PDC-4)";   break;
-        case SWITCH_8_WAY:   Options += " (PDC-8)";   break;
-        case PDC_SENSOR_MIX: Options += " (MIX)";     break;
-        case BATTERY_SENSOR: Options += " (Sens)"; break;
+        case SWITCH_1_WAY:   Options += "> PDC-1"; break;
+        case SWITCH_2_WAY:   Options += "> PDC-2"; break;
+        case SWITCH_4_WAY:   Options += "> PDC-4"; break;
+        case SWITCH_8_WAY:   Options += "> PDC-8"; break;
+        case PDC_SENSOR_MIX: Options += "> MIX";   break;
+        case BATTERY_SENSOR: Options += "> Sens";  break;
+		case default:		 Options += "> ???";   break;
       }
     }
   }
   lv_roller_set_options(ui_RollerPeers1, Options.c_str(), LV_ROLLER_MODE_NORMAL);
+}
+
+void Ui_Peers_Selected(lv_event_t * e)
+{
+	char *buf[100];
+	
+	lv_roller_get_selected_str(ui_RollerPeers1, buf, 100);
+	
+
 }
 
 void Ui_JSON_Prepare(lv_event_t * e)
