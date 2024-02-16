@@ -16,7 +16,8 @@
 #include "peers.h"
 #include "pref-manager.h"
 #include <lvgl.h>
-#include "Ui\ui.h" 
+#include "Ui\ui.h"
+#include "Ui\ui_events.h" 
 
 #define TFT_HOR_RES   240
 #define TFT_VER_RES   240
@@ -77,7 +78,7 @@ volatile uint32_t TSMsgEich = 0;
 volatile uint32_t TSMsgPair = 0;
 volatile uint32_t TSPair    = 0;
 
-lv_timer_t WDButtonVars;
+lv_timer_t *WDButtonVars;
 
 bool MsgBatAktiv  = false;
 bool MsgPDCAktiv  = false;
@@ -262,10 +263,6 @@ void setup() {
   ReportAll();
   
   if (GetPeerCount() == 0) { Serial.println("PeerCount=0, RTP=True"); ReadyToPair = true; TSPair = millis();}
-
-  WDButtonVars = lv_timer_create_basic();
-  v_timer_set_cb(WDButtonVars, UI_Set_Prepare(LV_EVENT_REFRESH));
-  lv_timer_set_period((WDButtonVars, 1000);
     
 }
 void loop() {
@@ -436,7 +433,7 @@ bool TogglePairMode() {
   
   return ReadyToPair;
 }
-bool 
+
 void AddVolt(int i) {
   StaticJsonDocument<500> doc;
   String jsondata;

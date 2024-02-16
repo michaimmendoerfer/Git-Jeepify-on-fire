@@ -35,12 +35,11 @@ void ShowPeer(lv_event_t * e)
 
 void Ui_Set_TogglePair(lv_event_t * e)
 {
-	bool TempPairMode = TogglePairMode();
-	if (TempPairmode) {
-		_ui_state_modify(ui_BtnSet2, LV_STATE_CHECKED, _UI_MODIFY_STATE_ADD);
+	if (TogglePairMode()) {
+		lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);
 	}
 	else {
-		_ui_state_modify(ui_BtnSet2, LV_STATE_DEFAULT, _UI_MODIFY_STATE_ADD);
+		lv_obj_clear_state(ui_BtnSet2, LV_STATE_CHECKED);
 	}
 }
 
@@ -60,13 +59,14 @@ void Ui_Set_ToggleDebug(lv_event_t * e)
 		lv_obj_add_state(ui_BtnSet7, LV_STATE_CHECKED);
 	}
 	else {
-		lv_obj_add_state(ui_BtnSet7, LV_STATE_DEFAULT);
+		lv_obj_clear_state(ui_BtnSet7, LV_STATE_CHECKED);
 	}
 }
 
 void Ui_SavePeers(lv_event_t * e)
 {
     SavePeers();
+	lv_obj_clear_state(ui_BtnSet8, LV_STATE_CHECKED);
 }
 
 void Ui_Peers_Prepare(lv_event_t * e)
@@ -118,6 +118,28 @@ void Ui_JSON_Prepare(lv_event_t * e)
 void UI_Set_Prepare(lv_event_t * e)
 {
 	if (ReadyToPair) {
+		lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);
+	}
+	else {
+		lv_obj_clear_state(ui_BtnSet2, LV_STATE_CHECKED);
+	}
+
+	if (DebugMode) {
+		lv_obj_add_state(ui_BtnSet7, LV_STATE_CHECKED);
+	}
+	else {
+		lv_obj_clear_state(ui_BtnSet7, LV_STATE_CHECKED);
+	}
+
+	if (!ChangesSaved) {
+		lv_obj_add_state(ui_BtnSet8, LV_STATE_CHECKED);
+	}
+	else {
+		lv_obj_clear_state(ui_BtnSet8, LV_STATE_CHECKED);
+	}
+
+	/*
+	if (ReadyToPair) {
 		if (!lv_obj_has_state(ui_BtnSet2, LV_STATE_CHECKED)) {
 			lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);
 			lv_event_send(ui_BtnSet2, LV_EVENT_REFRESH, NULL);
@@ -155,22 +177,22 @@ void UI_Set_Prepare(lv_event_t * e)
 			lv_event_send(ui_BtnSet8, LV_EVENT_REFRESH, NULL);
 		}
 	}
+	*/
 }
 
 void Ui_Single_Next(lv_event_t * e)
 {
-	if (!ActivePeer) ActivePeer = FindFirstPeer();
-	if (!ActiveSens) ActiveSens = FindFirstPeriph()
+	if (ActiveSens) ActiveSens = FindNextPeriph(ActiveSens, SENS_TYPE_SENS, false);
 }
 
 void Ui_Single_Last(lv_event_t * e)
 {
-	// Your code here
+	if (ActiveSens) ActiveSens = FindPrevPeriph(ActiveSens, SENS_TYPE_SENS, false);
 }
 
 void Ui_Peer_Prepare(lv_event_t * e)
 {
-	// Your code here
+	lv_label_set_text_static(LblPeer1, "Active");
 }
 
 void Ui_Peer_Restart(lv_event_t * e)
