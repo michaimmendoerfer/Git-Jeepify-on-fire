@@ -103,6 +103,9 @@ lv_obj_t * ui_BtnPeer4Lbl1;
 void ui_event_BtnPeer5(lv_event_t * e);
 lv_obj_t * ui_BtnPeer5;
 lv_obj_t * ui_BtnPeer5Lbl1;
+void ui_event_BtnPeer6(lv_event_t * e);
+lv_obj_t * ui_BtnPeer6;
+lv_obj_t * ui_BtnPeer6Lbl1;
 
 
 // SCREEN: ui_ScreenEichen
@@ -260,7 +263,6 @@ void ui_event_ScrSingle(lv_event_t * e)
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT) {
         lv_indev_wait_release(lv_indev_get_act());
         Ui_Single_Last(e);
-        _ui_screen_change(&ui_ScrSingle, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 100, 0, &ui_ScrSingle_screen_init);
     }
     if(event_code == LV_EVENT_SCREEN_LOADED) {
         Ui_Single_Prepare(e);
@@ -348,7 +350,15 @@ void ui_event_BtnPeer5(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_CLICKED) {
-        Ui_Peer_Volt(e);
+        _ui_screen_change(&ui_ScreenVolt, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScreenVolt_screen_init);
+    }
+}
+void ui_event_BtnPeer6(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_CLICKED) {
+        Ui_Peer_ToggleDemo(e);
     }
 }
 

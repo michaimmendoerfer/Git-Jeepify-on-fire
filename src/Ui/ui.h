@@ -106,6 +106,9 @@ extern lv_obj_t * ui_BtnPeer4Lbl1;
 void ui_event_BtnPeer5(lv_event_t * e);
 extern lv_obj_t * ui_BtnPeer5;
 extern lv_obj_t * ui_BtnPeer5Lbl1;
+void ui_event_BtnPeer6(lv_event_t * e);
+extern lv_obj_t * ui_BtnPeer6;
+extern lv_obj_t * ui_BtnPeer6Lbl1;
 // SCREEN: ui_ScreenEichen
 void ui_ScreenEichen_screen_init(void);
 extern lv_obj_t * ui_ScreenEichen;

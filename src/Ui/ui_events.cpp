@@ -6,8 +6,10 @@
 #include <Arduino.h>
 #include <String.h>
 #include "ui.h"
+#include "lv_meter.h"
 #include "peers.h"
 #include "Jeepify.h"
+
 
 extern bool ReadyToPair;
 extern bool DebugMode;
@@ -27,6 +29,7 @@ extern bool TogglePairMode();
 
 extern void SavePeers();
 extern void PrepareJSON();
+extern void SendCommand(struct_Peer *Peer, String Cmd);
 
 void ShowPeer(lv_event_t * e)
 {
@@ -183,31 +186,47 @@ void UI_Set_Prepare(lv_event_t * e)
 void Ui_Single_Next(lv_event_t * e)
 {
 	if (ActiveSens) ActiveSens = FindNextPeriph(ActiveSens, SENS_TYPE_SENS, false);
+	_ui_screen_change(&ui_ScrSingle, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrSingle_screen_init);
+
 }
 
 void Ui_Single_Last(lv_event_t * e)
 {
 	if (ActiveSens) ActiveSens = FindPrevPeriph(ActiveSens, SENS_TYPE_SENS, false);
+	_ui_screen_change(&ui_ScrSingle, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrSingle_screen_init);
 }
 
 void Ui_Peer_Prepare(lv_event_t * e)
 {
-	lv_label_set_text_static(LblPeer1, "Active");
+	lv_label_set_text_static(ui_LblPeer1, ActivePeer->Name);
+	
+	if (ActivePeer->SleepMode) {
+		lv_obj_add_state(ui_BtnPeer3, LV_STATE_CHECKED);
+	}
+	else {
+		lv_obj_clear_state(ui_BtnPeer3, LV_STATE_CHECKED);
+	}
+	if (ActivePeer->DemoMode) {
+		lv_obj_add_state(ui_BtnPeer6, LV_STATE_CHECKED);
+	}
+	else {
+		lv_obj_clear_state(ui_BtnPeer6, LV_STATE_CHECKED);
+	}
 }
 
 void Ui_Peer_Restart(lv_event_t * e)
 {
-	// Your code here
+	SendCommand(ActivePeer, "Restart");
 }
 
 void Ui_Peer_Reset(lv_event_t * e)
 {
-	// Your code here
+	SendCommand(ActivePeer, "Reset");
 }
 
 void Ui_Peer_ToggleSleep(lv_event_t * e)
 {
-	// Your code here
+	SendCommand(ActivePeer, "SleepMode Toggle");
 }
 
 void Ui_Multi_Next(lv_event_t * e)
@@ -222,17 +241,18 @@ void Ui_Multi_Last(lv_event_t * e)
 
 void Ui_Peer_Next(lv_event_t * e)
 {
-	// Your code here
+	ActivePeer = FindNextPeer(ActivePeer, MODULE_ALL); 
+	_ui_screen_change(&ui_ScrPeer, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeer_screen_init);
 }
-
 void Ui_Peer_Last(lv_event_t * e)
 {
-	// Your code here
+	ActivePeer = FindPrevPeer(ActivePeer, MODULE_ALL); 
+	_ui_screen_change(&ui_ScrPeer, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeer_screen_init);
 }
 
 void Ui_Peer_Eichen(lv_event_t * e)
 {
-	// Your code here
+	SendCommand(ActivePeer, "Eichen");
 }
 
 void Ui_Peer_Volt(lv_event_t * e)
@@ -241,42 +261,43 @@ void Ui_Peer_Volt(lv_event_t * e)
 }
 
 void Ui_Single_Prepare(lv_event_t * e)
+{		
+	static lv_obj_t *meter = lv_meter_create(ui_ScrPeer);
+    lv_obj_center(meter);
+    lv_obj_set_size(meter, 200, 200);
+
+    /*Add a scale first*/
+    lv_meter_scale_t * scale = lv_meter_add_scale(meter);
+    lv_meter_set_scale_ticks(meter, scale, 41, 2, 10, lv_palette_main(LV_PALETTE_GREY));
+    lv_meter_set_scale_major_ticks(meter, scale, 8, 4, 15, lv_color_black(), 10);
+
+    lv_meter_indicator_t * indic;
+
+    /*Add a blue arc to the start*/
+    indic = lv_meter_add_arc(meter, scale, 3, lv_palette_main(LV_PALETTE_BLUE), 0);
+    lv_meter_set_indicator_start_value(meter, indic, 0);
+    lv_meter_set_indicator_end_value(meter, indic, 20);
+
+    /*Make the tick lines blue at the start of the scale*/
+    indic = lv_meter_add_scale_lines(meter, scale, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_BLUE), false, 0);
+    lv_meter_set_indicator_start_value(meter, indic, 0);
+    lv_meter_set_indicator_end_value(meter, indic, 20);
+
+    /*Add a red arc to the end*/
+    indic = lv_meter_add_arc(meter, scale, 3, lv_palette_main(LV_PALETTE_RED), 0);
+    lv_meter_set_indicator_start_value(meter, indic, 80);
+    lv_meter_set_indicator_end_value(meter, indic, 100);
+
+    /*Make the tick lines red at the end of the scale*/
+    indic = lv_meter_add_scale_lines(meter, scale, lv_palette_main(LV_PALETTE_RED), lv_palette_main(LV_PALETTE_RED), false, 0);
+    lv_meter_set_indicator_start_value(meter, indic, 80);
+    lv_meter_set_indicator_end_value(meter, indic, 100);
+
+    /*Add a needle line indicator*/
+    indic = lv_meter_add_needle_line(meter, scale, 4, lv_palette_main(LV_PALETTE_GREY), -10);
+}
+
+void Ui_Peer_ToggleDemo(lv_event_t * e)
 {
-	/*
-	//Write codes screen_meter_1
-	ui_SingleMeter1 = lv_meter_create(ui_ScrPeer);
-	// add scale screen_meter_1_scale_1
-	lv_meter_scale_t *screen_meter_1_scale_1 = lv_meter_add_scale(ui_SingleMeter1);
-	lv_meter_set_scale_ticks(ui_SingleMeter1, screen_meter_1_scale_1, 41, 2, 10, lv_color_hex(0xff0000));
-	lv_meter_set_scale_major_ticks(ui_SingleMeter1, screen_meter_1_scale_1, 8, 5, 15, lv_color_hex(0xffff00), 5);
-	lv_meter_set_scale_range(ui_SingleMeter1, screen_meter_1_scale_1, 0, 40, 270, 135);
-
-	// add needle line for screen_meter_1_scale_1.
-	ui->screen_meter_1_scale_1_ndline_0 = lv_meter_add_needle_line(ui->screen_meter_1, screen_meter_1_scale_1, 3, lv_color_hex(0x000000), -15);
-	lv_meter_set_indicator_value(ui->screen_meter_1, ui->screen_meter_1_scale_1_ndline_0, 0);
-
-	// add needle images for screen_meter_1_scale_1.
-	ui->screen_meter_1_scale_1_ndimg_0 = lv_meter_add_needle_img(ui->screen_meter_1, screen_meter_1_scale_1, &__alpha_60x4, 0, 0);
-	lv_meter_set_indicator_value(ui->screen_meter_1, ui->screen_meter_1_scale_1_ndimg_0, 20);
-	lv_obj_set_pos(ui->screen_meter_1, 20, 20);
-	lv_obj_set_size(ui->screen_meter_1, 194, 194);
-
-	//Write style for screen_meter_1, Part: LV_PART_MAIN, State: LV_STATE_DEFAULT.
-	lv_obj_set_style_bg_opa(ui->screen_meter_1, 255, LV_PART_MAIN|LV_STATE_DEFAULT);
-	lv_obj_set_style_bg_color(ui->screen_meter_1, lv_color_hex(0xffffff), LV_PART_MAIN|LV_STATE_DEFAULT);
-	lv_obj_set_style_radius(ui->screen_meter_1, 100, LV_PART_MAIN|LV_STATE_DEFAULT);
-	lv_obj_set_style_border_width(ui->screen_meter_1, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
-	lv_obj_set_style_shadow_width(ui->screen_meter_1, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
-
-	//Write style for screen_meter_1, Part: LV_PART_TICKS, State: LV_STATE_DEFAULT.
-	lv_obj_set_style_text_color(ui->screen_meter_1, lv_color_hex(0xff0000), LV_PART_TICKS|LV_STATE_DEFAULT);
-	lv_obj_set_style_text_font(ui->screen_meter_1, &lv_font_montserratMedium_12, LV_PART_TICKS|LV_STATE_DEFAULT);
-
-	//Write style for screen_meter_1, Part: LV_PART_INDICATOR, State: LV_STATE_DEFAULT.
-	lv_obj_set_style_bg_opa(ui->screen_meter_1, 255, LV_PART_INDICATOR|LV_STATE_DEFAULT);
-	lv_obj_set_style_bg_color(ui->screen_meter_1, lv_color_hex(0x000000), LV_PART_INDICATOR|LV_STATE_DEFAULT);
-
-	//Update current screen layout.
-	lv_obj_update_layout(ui->screen);
-	*/
+	SendCommand(ActivePeer, "DemoMode Toggle");
 }
