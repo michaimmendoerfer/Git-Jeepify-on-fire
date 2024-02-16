@@ -121,19 +121,19 @@ void UI_Set_Prepare(lv_event_t * e)
 		lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);
 	}
 	else {
-		lv_obj_add_state(ui_BtnSet2, LV_STATE_DEFAULT);
+		lv_obj_clear_state(ui_BtnSet2, LV_STATE_CHECKED);
 	}
 	if (DebugMode) {
 		lv_obj_add_state(ui_BtnSet7, LV_STATE_CHECKED);
 	}
 	else {
-		lv_obj_add_state(ui_BtnSet7, LV_STATE_DEFAULT);
+		lv_obj_clear_state(ui_BtnSet7, LV_STATE_CHECKED);
 	}
-	if (ChangesSaved) {
-		lv_obj_add_state(ui_BtnSet8, LV_STATE_DEFAULT);
+	if (!ChangesSaved) {
+		lv_obj_add_state(ui_BtnSet8, LV_STATE_CHECKED);
 	}
 	else {
-		lv_obj_add_state(ui_BtnSet8, LV_STATE_CHECKED);
+		lv_obj_clear_state(ui_BtnSet8, LV_STATE_CHECKED);
 	}
 }
 
