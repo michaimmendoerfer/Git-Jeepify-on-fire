@@ -38,6 +38,7 @@ bool   ToggleSwitch(struct_Periph *Periph);
 void   SendCommand(struct_Peer *Peer, String Cmd);
 void   SendPairingConfirm(struct_Peer *Peer);
 
+void   CheckButtonVars();
 bool   ToggleSleepMode();
 bool   ToggleDebugMode();
 bool   TogglePairMode();
@@ -75,6 +76,8 @@ volatile uint32_t TSMsgVolt = 0;
 volatile uint32_t TSMsgEich = 0;
 volatile uint32_t TSMsgPair = 0;
 volatile uint32_t TSPair    = 0;
+
+lv_timer_t WDButtonVars;
 
 bool MsgBatAktiv  = false;
 bool MsgPDCAktiv  = false;
@@ -256,6 +259,11 @@ void setup() {
   if (GetPeerCount() == 0) { Serial.println("PeerCount=0, RTP=True"); ReadyToPair = true; TSPair = millis();}
   DebugMode = false;
   ReadyToPair = false;
+
+  WDButtonVars = lv_timer_create_basic();
+  v_timer_set_cb(WDButtonVars, UI_Set_Prepare(lv_event_t *e));
+  lv_timer_set_period((WDButtonVars, 100);
+    
 }
 void loop() {
   lv_timer_handler(); /* let the GUI do its work */
@@ -430,7 +438,7 @@ bool TogglePairMode() {
   
   return ReadyToPair;
 }
-
+bool 
 void AddVolt(int i) {
   StaticJsonDocument<500> doc;
   String jsondata;

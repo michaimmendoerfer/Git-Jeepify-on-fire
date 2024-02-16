@@ -14,6 +14,7 @@ extern struct_Periph *ActiveSens;
 extern struct_Periph *ActiveSwitch;
 
 extern bool DebugMode;
+extern bool ChangesSaved;
 
 int PeerCount;
 Preferences preferences;
@@ -57,7 +58,7 @@ void SavePeers() {
   Serial.println("SavePeers...");
   preferences.begin("JeepifyPeers", false);
   
-  char Buf[50] = {}; String BufS;
+  char Buf[50] = {};
   
   for (int PNr=0; PNr< MAX_PEERS; PNr++) {
     snprintf(Buf, sizeof(Buf), "P%d", PNr);
@@ -72,6 +73,8 @@ void SavePeers() {
     preferences.putBytes(Buf, &Screen[s], sizeof(Screen[s]));
   }
   preferences.end();
+
+  ChangesSaved = true;
 }
 void GetPeers() {
   preferences.begin("JeepifyPeers", true);

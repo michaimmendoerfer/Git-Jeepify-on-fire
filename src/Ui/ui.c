@@ -260,6 +260,7 @@ void ui_event_ScrSingle(lv_event_t * e)
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT) {
         lv_indev_wait_release(lv_indev_get_act());
         Ui_Single_Last(e);
+        _ui_screen_change(&ui_ScrSingle, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 100, 0, &ui_ScrSingle_screen_init);
     }
     if(event_code == LV_EVENT_SCREEN_LOADED) {
         Ui_Single_Prepare(e);

@@ -35,7 +35,13 @@ void ShowPeer(lv_event_t * e)
 
 void Ui_Set_TogglePair(lv_event_t * e)
 {
-	TogglePairMode();
+	bool TempPairMode = TogglePairMode();
+	if (TempPairmode) {
+		_ui_state_modify(ui_BtnSet2, LV_STATE_CHECKED, _UI_MODIFY_STATE_ADD);
+	}
+	else {
+		_ui_state_modify(ui_BtnSet2, LV_STATE_DEFAULT, _UI_MODIFY_STATE_ADD);
+	}
 }
 
 void Ui_Set_Restart(lv_event_t * e)
@@ -60,10 +66,7 @@ void Ui_Set_ToggleDebug(lv_event_t * e)
 
 void Ui_SavePeers(lv_event_t * e)
 {
-    ReadyToPair = false;
-    _ui_state_modify(ui_BtnSet2, LV_STATE_CHECKED, _UI_MODIFY_STATE_ADD);
-	
-	//SavePeers();
+    SavePeers();
 }
 
 void Ui_Peers_Prepare(lv_event_t * e)
