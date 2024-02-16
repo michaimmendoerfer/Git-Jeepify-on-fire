@@ -190,6 +190,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 void setup() {
   Serial.begin(74880);
 
+  //TFT & LVGL
   tft.init();
   tft.setRotation(0);
   tft.setSwapBytes(true);
@@ -199,6 +200,7 @@ void setup() {
   lv_init();
   lv_disp_draw_buf_init( &draw_buf, buf, NULL, TFT_HOR_RES * TFT_VER_RES / 10 );
 
+  //Display-Driver
   static lv_disp_drv_t disp_drv;
   lv_disp_drv_init( &disp_drv );
   disp_drv.hor_res = TFT_HOR_RES;
@@ -207,6 +209,7 @@ void setup() {
   disp_drv.draw_buf = &draw_buf;
   lv_disp_drv_register( &disp_drv );
 
+  //Touch-Driver
   static lv_indev_drv_t indev_drv;
   lv_indev_drv_init( &indev_drv );
   indev_drv.type = LV_INDEV_TYPE_POINTER;
@@ -215,12 +218,14 @@ void setup() {
 
   ui_init();
 
+  //ESP-Now
   WiFi.mode(WIFI_STA);
   if (esp_now_init() != ESP_OK) { Serial.println("Error initializing ESP-NOW"); return; }
 
   esp_now_register_send_cb(OnDataSent);
   esp_now_register_recv_cb(OnDataRecv);    
-  
+
+  //Get saved Peers  
   preferences.begin("JeepifyInit", true);
   DebugMode = preferences.getBool("DebugMode", true);
   SleepMode = preferences.getBool("SleepMode", false);
@@ -257,21 +262,14 @@ void setup() {
   ReportAll();
   
   if (GetPeerCount() == 0) { Serial.println("PeerCount=0, RTP=True"); ReadyToPair = true; TSPair = millis();}
-  DebugMode = false;
-  ReadyToPair = false;
 
   WDButtonVars = lv_timer_create_basic();
-  v_timer_set_cb(WDButtonVars, UI_Set_Prepare(lv_event_t *e));
-  lv_timer_set_period((WDButtonVars, 100);
+  v_timer_set_cb(WDButtonVars, UI_Set_Prepare(LV_EVENT_REFRESH));
+  lv_timer_set_period((WDButtonVars, 1000);
     
 }
 void loop() {
   lv_timer_handler(); /* let the GUI do its work */
-  if ((ReadyToPair) and (millis() - TSPair > 2000)) {
-    TSPair = 0;
-    ReadyToPair = false;
-    _ui_state_modify(ui_BtnSet2, LV_STATE_DEFAULT, _UI_MODIFY_STATE_ADD);
-  }
   delay(5);
 }
 #pragma endregion Main

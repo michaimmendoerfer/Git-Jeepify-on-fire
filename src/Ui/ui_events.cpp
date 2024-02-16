@@ -118,28 +118,49 @@ void Ui_JSON_Prepare(lv_event_t * e)
 void UI_Set_Prepare(lv_event_t * e)
 {
 	if (ReadyToPair) {
-		lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);
+		if (!lv_obj_has_state(ui_BtnSet2, LV_STATE_CHECKED)) {
+			lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);
+			lv_event_send(ui_BtnSet2, LV_EVENT_REFRESH, NULL);
+		}
 	}
 	else {
-		lv_obj_clear_state(ui_BtnSet2, LV_STATE_CHECKED);
+		if (lv_obj_has_state(ui_BtnSet2, LV_STATE_CHECKED)) {
+			lv_obj_clear_state(ui_BtnSet2, LV_STATE_CHECKED);
+			lv_event_send(ui_BtnSet2, LV_EVENT_REFRESH, NULL);
+		}
 	}
+	
 	if (DebugMode) {
-		lv_obj_add_state(ui_BtnSet7, LV_STATE_CHECKED);
+		if (!lv_obj_has_state(ui_BtnSet7, LV_STATE_CHECKED)) {
+			lv_obj_add_state(ui_BtnSet7, LV_STATE_CHECKED);
+			lv_event_send(ui_BtnSet7, LV_EVENT_REFRESH, NULL);
+		}
 	}
 	else {
-		lv_obj_clear_state(ui_BtnSet7, LV_STATE_CHECKED);
+		if (lv_obj_has_state(ui_BtnSet7, LV_STATE_CHECKED)) {
+			lv_obj_clear_state(ui_BtnSet7, LV_STATE_CHECKED);
+			lv_event_send(ui_BtnSet7, LV_EVENT_REFRESH, NULL);
+		}
 	}
+
 	if (!ChangesSaved) {
-		lv_obj_add_state(ui_BtnSet8, LV_STATE_CHECKED);
+		if (!lv_obj_has_state(ui_BtnSet8, LV_STATE_CHECKED)) {
+			lv_obj_add_state(ui_BtnSet8, LV_STATE_CHECKED);
+			lv_event_send(ui_BtnSet8, LV_EVENT_REFRESH, NULL);
+		}
 	}
 	else {
-		lv_obj_clear_state(ui_BtnSet8, LV_STATE_CHECKED);
+		if (lv_obj_has_state(ui_BtnSet8, LV_STATE_CHECKED)) {
+			lv_obj_clear_state(ui_BtnSet8, LV_STATE_CHECKED);
+			lv_event_send(ui_BtnSet8, LV_EVENT_REFRESH, NULL);
+		}
 	}
 }
 
 void Ui_Single_Next(lv_event_t * e)
 {
-	// Your code here
+	if (!ActivePeer) ActivePeer = FindFirstPeer();
+	if (!ActiveSens) ActiveSens = FindFirstPeriph()
 }
 
 void Ui_Single_Last(lv_event_t * e)
