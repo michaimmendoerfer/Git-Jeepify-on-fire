@@ -142,35 +142,12 @@ void ui_ScrPeer_screen_init(void)
     lv_obj_set_style_text_color(ui_BtnPeer5Lbl1, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_BtnPeer5Lbl1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_BtnPeer6 = lv_btn_create(ui_ScrPeer);
-    lv_obj_set_width(ui_BtnPeer6, 70);
-    lv_obj_set_height(ui_BtnPeer6, 30);
-    lv_obj_set_x(ui_BtnPeer6, 40);
-    lv_obj_set_y(ui_BtnPeer6, 50);
-    lv_obj_set_align(ui_BtnPeer6, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_BtnPeer6, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
-    lv_obj_clear_flag(ui_BtnPeer6, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_bg_color(ui_BtnPeer6, lv_color_hex(0xAD0808), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_BtnPeer6, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_color(ui_BtnPeer6, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_opa(ui_BtnPeer6, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_width(ui_BtnPeer6, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_BtnPeer6Lbl1 = lv_label_create(ui_BtnPeer6);
-    lv_obj_set_width(ui_BtnPeer6Lbl1, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_BtnPeer6Lbl1, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_align(ui_BtnPeer6Lbl1, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_BtnPeer6Lbl1, "Demo");
-    lv_obj_set_style_text_color(ui_BtnPeer6Lbl1, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_BtnPeer6Lbl1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-
     lv_obj_add_event_cb(ui_BtnPeer1Lbl, ui_event_BtnPeer1Lbl, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_BtnPeer1, ui_event_BtnPeer1, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_BtnPeer2, ui_event_BtnPeer2, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_BtnPeer3, ui_event_BtnPeer3, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_BtnPeer4, ui_event_BtnPeer4, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_BtnPeer5, ui_event_BtnPeer5, LV_EVENT_ALL, NULL);
-    lv_obj_add_event_cb(ui_BtnPeer6, ui_event_BtnPeer6, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_ScrPeer, ui_event_ScrPeer, LV_EVENT_ALL, NULL);
 
 }

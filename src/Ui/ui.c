@@ -12,7 +12,6 @@
 // SCREEN: ui_ScrMenu
 void ui_ScrMenu_screen_init(void);
 lv_obj_t * ui_ScrMenu;
-void ui_event_BtnMenu1(lv_event_t * e);
 lv_obj_t * ui_BtnMenu1;
 lv_obj_t * ui_BtnMenu2;
 lv_obj_t * ui_BtnMenu3;
@@ -73,6 +72,7 @@ void ui_ScrSingle_screen_init(void);
 void ui_event_ScrSingle(lv_event_t * e);
 lv_obj_t * ui_ScrSingle;
 lv_obj_t * ui_LblSingle1;
+lv_obj_t * ui_LblSingleValue;
 
 
 // SCREEN: ui_ScrMulti
@@ -104,9 +104,6 @@ lv_obj_t * ui_BtnPeer4Lbl1;
 void ui_event_BtnPeer5(lv_event_t * e);
 lv_obj_t * ui_BtnPeer5;
 lv_obj_t * ui_BtnPeer5Lbl1;
-void ui_event_BtnPeer6(lv_event_t * e);
-lv_obj_t * ui_BtnPeer6;
-lv_obj_t * ui_BtnPeer6Lbl1;
 
 
 // SCREEN: ui_ScreenEichen
@@ -132,14 +129,6 @@ const lv_img_dsc_t * ui_imgset_menubtn[4] = {&ui_img_menubtn1_png, &ui_img_menub
 ///////////////////// ANIMATIONS ////////////////////
 
 ///////////////////// FUNCTIONS ////////////////////
-void ui_event_BtnMenu1(lv_event_t * e)
-{
-    lv_event_code_t event_code = lv_event_get_code(e);
-    lv_obj_t * target = lv_event_get_target(e);
-    if(event_code == LV_EVENT_CLICKED) {
-        _ui_screen_change(&ui_ScrSingle, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrSingle_screen_init);
-    }
-}
 void ui_event_BtnMenu4(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
@@ -276,9 +265,6 @@ void ui_event_ScrSingle(lv_event_t * e)
     if(event_code == LV_EVENT_SCREEN_LOADED) {
         Ui_Single_Prepare(e);
     }
-    if(event_code == LV_EVENT_SCREEN_UNLOAD_START) {
-        Ui_Single_Unload(e);
-    }
 }
 void ui_event_ScrMulti(lv_event_t * e)
 {
@@ -362,15 +348,7 @@ void ui_event_BtnPeer5(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_CLICKED) {
-        _ui_screen_change(&ui_ScreenVolt, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScreenVolt_screen_init);
-    }
-}
-void ui_event_BtnPeer6(lv_event_t * e)
-{
-    lv_event_code_t event_code = lv_event_get_code(e);
-    lv_obj_t * target = lv_event_get_target(e);
-    if(event_code == LV_EVENT_CLICKED) {
-        Ui_Peer_ToggleDemo(e);
+        Ui_Peer_Volt(e);
     }
 }
 

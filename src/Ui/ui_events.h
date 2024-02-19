@@ -22,7 +22,6 @@ void Ui_JSON_Prepare(lv_event_t * e);
 void Ui_Single_Next(lv_event_t * e);
 void Ui_Single_Last(lv_event_t * e);
 void Ui_Single_Prepare(lv_event_t * e);
-void Ui_Single_Unload(lv_event_t * e);
 void Ui_Multi_Next(lv_event_t * e);
 void Ui_Multi_Last(lv_event_t * e);
 void Ui_Peer_Prepare(lv_event_t * e);
@@ -32,7 +31,7 @@ void Ui_Peer_Restart(lv_event_t * e);
 void Ui_Peer_Reset(lv_event_t * e);
 void Ui_Peer_ToggleSleep(lv_event_t * e);
 void Ui_Peer_Eichen(lv_event_t * e);
-void Ui_Peer_ToggleDemo(lv_event_t * e);
+void Ui_Peer_Volt(lv_event_t * e);
 
 #ifdef __cplusplus
 } /*extern "C"*/

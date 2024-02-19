@@ -323,10 +323,22 @@ void Ui_Peer_ToggleDemo(lv_event_t * e)
 void SingleUpdateTimer(lv_timer_t * timer)
 {
 	if (ActiveSens){
-		lv_meter_set_indicator_value(SingleMeter, SingleIndic, ActiveSens->Value);
 		
+		char buf[10];
+		int nk = 0;
+		float value = ActiveSens->Value;
+
+		if      (value<10)  nk = 2;
+    	else if (value<100) nk = 1;
+    	else                nk = 0;
+
+    	if (value == -99) strcpy(buf, "--"); 
+    	else dtostrf(value, 0, nk, buf);
+
+		lv_meter_set_indicator_value(SingleMeter, SingleIndic, ActiveSens->Value);
+		lv_label_set_text(ui_LblSingleValue, buf)
 		Serial.print("Single Needle updated with:"); 
-		Serial.println(ActiveSens->Value);
+		Serial.println(buf);
 	}
 	else {
 		float RandomValue = random(35);

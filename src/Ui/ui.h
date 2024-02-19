@@ -27,7 +27,6 @@ extern "C" {
 // SCREEN: ui_ScrMenu
 void ui_ScrMenu_screen_init(void);
 extern lv_obj_t * ui_ScrMenu;
-void ui_event_BtnMenu1(lv_event_t * e);
 extern lv_obj_t * ui_BtnMenu1;
 extern lv_obj_t * ui_BtnMenu2;
 extern lv_obj_t * ui_BtnMenu3;
@@ -80,6 +79,7 @@ void ui_ScrSingle_screen_init(void);
 void ui_event_ScrSingle(lv_event_t * e);
 extern lv_obj_t * ui_ScrSingle;
 extern lv_obj_t * ui_LblSingle1;
+extern lv_obj_t * ui_LblSingleValue;
 // SCREEN: ui_ScrMulti
 void ui_ScrMulti_screen_init(void);
 void ui_event_ScrMulti(lv_event_t * e);
@@ -107,9 +107,6 @@ extern lv_obj_t * ui_BtnPeer4Lbl1;
 void ui_event_BtnPeer5(lv_event_t * e);
 extern lv_obj_t * ui_BtnPeer5;
 extern lv_obj_t * ui_BtnPeer5Lbl1;
-void ui_event_BtnPeer6(lv_event_t * e);
-extern lv_obj_t * ui_BtnPeer6;
-extern lv_obj_t * ui_BtnPeer6Lbl1;
 // SCREEN: ui_ScreenEichen
 void ui_ScreenEichen_screen_init(void);
 extern lv_obj_t * ui_ScreenEichen;
@@ -125,6 +122,7 @@ LV_IMG_DECLARE(ui_img_menubtn2_png);    // assets\MenuBtn2.png
 LV_IMG_DECLARE(ui_img_menubtn3_png);    // assets\MenuBtn3.png
 LV_IMG_DECLARE(ui_img_menubtn4_png);    // assets\MenuBtn4.png
 LV_IMG_DECLARE(ui_img_rubicon_png);    // assets\Rubicon.png
+
 
 
 void ui_init(void);
