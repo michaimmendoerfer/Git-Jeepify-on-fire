@@ -12,6 +12,7 @@
 // SCREEN: ui_ScrMenu
 void ui_ScrMenu_screen_init(void);
 lv_obj_t * ui_ScrMenu;
+void ui_event_BtnMenu1(lv_event_t * e);
 lv_obj_t * ui_BtnMenu1;
 lv_obj_t * ui_BtnMenu2;
 lv_obj_t * ui_BtnMenu3;
@@ -104,6 +105,9 @@ lv_obj_t * ui_BtnPeer4Lbl1;
 void ui_event_BtnPeer5(lv_event_t * e);
 lv_obj_t * ui_BtnPeer5;
 lv_obj_t * ui_BtnPeer5Lbl1;
+void ui_event_BtnPeer6(lv_event_t * e);
+lv_obj_t * ui_BtnPeer6;
+lv_obj_t * ui_BtnPeer6Lbl1;
 
 
 // SCREEN: ui_ScreenEichen
@@ -115,6 +119,7 @@ lv_obj_t * ui_ScreenEichen;
 void ui_ScreenVolt_screen_init(void);
 lv_obj_t * ui_ScreenVolt;
 lv_obj_t * ui_Keyboard2;
+void ui_event____initial_actions0(lv_event_t * e);
 lv_obj_t * ui____initial_actions0;
 const lv_img_dsc_t * ui_imgset_menubtn[4] = {&ui_img_menubtn1_png, &ui_img_menubtn2_png, &ui_img_menubtn3_png, &ui_img_menubtn4_png};
 
@@ -129,6 +134,14 @@ const lv_img_dsc_t * ui_imgset_menubtn[4] = {&ui_img_menubtn1_png, &ui_img_menub
 ///////////////////// ANIMATIONS ////////////////////
 
 ///////////////////// FUNCTIONS ////////////////////
+void ui_event_BtnMenu1(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_CLICKED) {
+        _ui_screen_change(&ui_ScrSingle, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrSingle_screen_init);
+    }
+}
 void ui_event_BtnMenu4(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
@@ -229,8 +242,8 @@ void ui_event_RollerPeers1(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
-    if(event_code == LV_EVENT_CLICKED) {
-        ShowPeer(e);
+    if(event_code == LV_EVENT_LONG_PRESSED) {
+        Ui_Peers_Selected(e);
     }
 }
 void ui_event_ScrJSON(lv_event_t * e)
@@ -348,7 +361,23 @@ void ui_event_BtnPeer5(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_CLICKED) {
+        _ui_screen_change(&ui_ScreenVolt, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScreenVolt_screen_init);
+    }
+}
+void ui_event_BtnPeer6(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_CLICKED) {
         Ui_Peer_Volt(e);
+    }
+}
+void ui_event____initial_actions0(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_SCREEN_LOAD_START) {
+        Ui_Init_Custom(e);
     }
 }
 
@@ -370,5 +399,8 @@ void ui_init(void)
     ui_ScreenEichen_screen_init();
     ui_ScreenVolt_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
+    lv_obj_add_event_cb(ui____initial_actions0, ui_event____initial_actions0, LV_EVENT_ALL, NULL);
+
+    lv_disp_load_scr(ui____initial_actions0);
     lv_disp_load_scr(ui_ScrMenu);
 }

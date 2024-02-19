@@ -31,7 +31,7 @@ void ui_ScrSingle_screen_init(void)
     lv_label_set_text(ui_LblSingleValue, "Value");
     lv_obj_set_style_text_color(ui_LblSingleValue, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LblSingleValue, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(ui_LblSingleValue, &lv_font_montserrat_22, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_LblSingleValue, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_ScrSingle, ui_event_ScrSingle, LV_EVENT_ALL, NULL);
 

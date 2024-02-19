@@ -12,7 +12,7 @@ void ui_ScreenVolt_screen_init(void)
     lv_obj_set_style_bg_img_src(ui_ScreenVolt, &ui_img_jeepifybackground_png, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Keyboard2 = lv_keyboard_create(ui_ScreenVolt);
-    lv_keyboard_set_mode(ui_Keyboard2, LV_KEYBOARD_MODE_USER_1);
+    lv_keyboard_set_mode(ui_Keyboard2, LV_KEYBOARD_MODE_NUMBER);
     lv_obj_set_width(ui_Keyboard2, 180);
     lv_obj_set_height(ui_Keyboard2, 141);
     lv_obj_set_align(ui_Keyboard2, LV_ALIGN_CENTER);

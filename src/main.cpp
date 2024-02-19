@@ -34,7 +34,7 @@ void my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data );
 void   OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status);
 void   OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len);
 
-void   SendPing();
+void   SendPing(lv_timer_t * timer);
 bool   ToggleSwitch(struct_Periph *Periph);
 void   SendCommand(struct_Peer *Peer, String Cmd);
 void   SendPairingConfirm(struct_Peer *Peer);
@@ -71,6 +71,7 @@ uint32_t TSPing          = 0;
 uint32_t TSMsgStart      = 0;
 
 volatile uint32_t TSMsgRcv  = 0;
+volatile uint32_t TSMsgSnd  = 0;
 volatile uint32_t TSMsgPDC  = 0;
 volatile uint32_t TSMsgBat  = 0;
 volatile uint32_t TSMsgVolt = 0;
@@ -79,12 +80,6 @@ volatile uint32_t TSMsgPair = 0;
 volatile uint32_t TSPair    = 0;
 
 lv_timer_t *WDButtonVars;
-
-bool MsgBatAktiv  = false;
-bool MsgPDCAktiv  = false;
-bool MsgVoltAktiv = false;
-bool MsgEichAktiv = false;
-bool MsgPairAktiv = false;
 
 extern struct_Peer   P[MAX_PEERS];
 extern struct_MultiScreen Screen[MULTI_SCREENS];
@@ -122,6 +117,8 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
       
       if (isBat(Peer)) TSMsgBat = TSMsgRcv;
       if (isPDC(Peer)) TSMsgPDC = TSMsgRcv;
+
+
       
       if (doc["Pairing"] == "add me") { SendPairingConfirm(Peer); }
       else {
@@ -264,14 +261,19 @@ void setup() {
   
   if (GetPeerCount() == 0) { Serial.println("PeerCount=0, RTP=True"); ReadyToPair = true; TSPair = millis();}
     
+  static uint32_t user_data = 10;
+  lv_timer_t * TimerPing = lv_timer_create(SendPing, PING_INTERVAL,  &user_data);
+
 }
 void loop() {
   lv_timer_handler(); /* let the GUI do its work */
   delay(5);
 }
 #pragma endregion Main
+#pragma region Timer-Thing
+#pragma endregion Timer-Things
 #pragma region Send-Things
-void SendPing() {
+void SendPing(lv_timer_t * timer) {
   StaticJsonDocument<500> doc;
   String jsondata;
   jsondata = "";  
@@ -348,8 +350,7 @@ void SendCommand(struct_Peer *Peer, String Cmd) {
   jsondata = "";
 }
 #pragma endregion Send-Things
-#pragma region Sensor-Screens
-#pragma endregion Sensor-Screens
+
 #pragma region System-Screens
 void PrepareJSON() {
   if (jsondataBuf) {
@@ -400,9 +401,6 @@ void ShowPeers(lv_event_t * e) {
     
 }
 #pragma endregion System-Screens
-
-#pragma region Touch-Things
-#pragma endregion Touch-Things
 #pragma region Other
 void WriteStringToCharArray(String S, char *C) {
   int   ArrayLength = S.length()+1;    //The +1 is for the 0x00h Terminator
@@ -427,8 +425,15 @@ bool ToggleDebugMode() {
 }
 
 bool TogglePairMode() {
-  ReadyToPair = !ReadyToPair;
-  TSPair = millis();
+  if (ReadyToPair) {
+    ReadyToPair = false;
+    TSPair = 0;
+  }
+  else {
+    ReadyToPair = true;
+    TSPair = millis();
+  };
+
   Serial.print("ReadyToPair changed to: "); Serial.println((bool)ReadyToPair);
   
   return ReadyToPair;

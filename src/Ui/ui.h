@@ -27,6 +27,7 @@ extern "C" {
 // SCREEN: ui_ScrMenu
 void ui_ScrMenu_screen_init(void);
 extern lv_obj_t * ui_ScrMenu;
+void ui_event_BtnMenu1(lv_event_t * e);
 extern lv_obj_t * ui_BtnMenu1;
 extern lv_obj_t * ui_BtnMenu2;
 extern lv_obj_t * ui_BtnMenu3;
@@ -107,6 +108,9 @@ extern lv_obj_t * ui_BtnPeer4Lbl1;
 void ui_event_BtnPeer5(lv_event_t * e);
 extern lv_obj_t * ui_BtnPeer5;
 extern lv_obj_t * ui_BtnPeer5Lbl1;
+void ui_event_BtnPeer6(lv_event_t * e);
+extern lv_obj_t * ui_BtnPeer6;
+extern lv_obj_t * ui_BtnPeer6Lbl1;
 // SCREEN: ui_ScreenEichen
 void ui_ScreenEichen_screen_init(void);
 extern lv_obj_t * ui_ScreenEichen;
@@ -114,6 +118,7 @@ extern lv_obj_t * ui_ScreenEichen;
 void ui_ScreenVolt_screen_init(void);
 extern lv_obj_t * ui_ScreenVolt;
 extern lv_obj_t * ui_Keyboard2;
+void ui_event____initial_actions0(lv_event_t * e);
 extern lv_obj_t * ui____initial_actions0;
 
 LV_IMG_DECLARE(ui_img_jeepifybackground_png);    // assets\JeepifyBackground.png
