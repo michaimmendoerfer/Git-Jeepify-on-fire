@@ -27,6 +27,7 @@ extern "C" {
 // SCREEN: ui_ScrMenu
 void ui_ScrMenu_screen_init(void);
 extern lv_obj_t * ui_ScrMenu;
+void ui_event_BtnMenu1(lv_event_t * e);
 extern lv_obj_t * ui_BtnMenu1;
 extern lv_obj_t * ui_BtnMenu2;
 extern lv_obj_t * ui_BtnMenu3;
@@ -124,7 +125,6 @@ LV_IMG_DECLARE(ui_img_menubtn2_png);    // assets\MenuBtn2.png
 LV_IMG_DECLARE(ui_img_menubtn3_png);    // assets\MenuBtn3.png
 LV_IMG_DECLARE(ui_img_menubtn4_png);    // assets\MenuBtn4.png
 LV_IMG_DECLARE(ui_img_rubicon_png);    // assets\Rubicon.png
-
 
 
 void ui_init(void);

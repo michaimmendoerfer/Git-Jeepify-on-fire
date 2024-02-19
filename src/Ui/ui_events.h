@@ -22,6 +22,7 @@ void Ui_JSON_Prepare(lv_event_t * e);
 void Ui_Single_Next(lv_event_t * e);
 void Ui_Single_Last(lv_event_t * e);
 void Ui_Single_Prepare(lv_event_t * e);
+void Ui_Single_Unload(lv_event_t * e);
 void Ui_Multi_Next(lv_event_t * e);
 void Ui_Multi_Last(lv_event_t * e);
 void Ui_Peer_Prepare(lv_event_t * e);
