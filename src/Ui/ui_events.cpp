@@ -265,49 +265,47 @@ void Ui_Single_Prepare(lv_event_t * e)
 											break;
 					case SENS_TYPE_VOLT:	ScaleMin  = 10;
 											ScaleMax  = 15;
-											Ticks     = 36;
+											Ticks     = 26;
 											BigTicks  = 5;
-											GreenEnd  = 20;
+											GreenEnd  = 14;
 											YellowEnd = 25;
 											break;
-
-
 				}
 				/*Add a scale first*/
 				lv_meter_scale_t * scale = lv_meter_add_scale(SingleMeter);
-				lv_meter_set_scale_range(SingleMeter, scale, 0, 35, 300, 120);
-				lv_meter_set_scale_ticks(SingleMeter, scale, 36, 2, 10, lv_palette_main(LV_PALETTE_GREY));
-				lv_meter_set_scale_major_ticks(SingleMeter, scale, 5, 4, 15, lv_color_black(), 10);
+				lv_meter_set_scale_range(SingleMeter, scale, ScaleMin, ScaleMax, 300, 120);
+				lv_meter_set_scale_ticks(SingleMeter, scale, Ticks, 2, 10, lv_palette_main(LV_PALETTE_GREY));
+				lv_meter_set_scale_major_ticks(SingleMeter, scale, BigTicks, 4, 15, lv_color_black(), 10);
 
 				/*Add a green arc to the start*/
 				SingleIndic = lv_meter_add_arc(SingleMeter, scale, 3, lv_palette_main(LV_PALETTE_GREEN), 0);
 				lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 0);
-				lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 20);
+				lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, GreenEnd);
 
 				/*Make the tick lines green at the start of the scale*/
 				SingleIndic = lv_meter_add_scale_lines(SingleMeter, scale, lv_palette_main(LV_PALETTE_GREEN), lv_palette_main(LV_PALETTE_GREEN), false, 0);
 				lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 0);
-				lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 20);
+				lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, GreenEnd);
 				
 				/*Add a yelow arc to the start*/
 				SingleIndic = lv_meter_add_arc(SingleMeter, scale, 3, lv_palette_main(LV_PALETTE_YELLOW), 0);
-				lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 20);
-				lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 25);
+				lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, GreenEnd);
+				lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, YellowEnd);
 
 				/*Make the tick lines yellow at the start of the scale*/
 				SingleIndic = lv_meter_add_scale_lines(SingleMeter, scale, lv_palette_main(LV_PALETTE_YELLOW), lv_palette_main(LV_PALETTE_YELLOW), false, 0);
-				lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 20);
-				lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 25);
+				lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, GreenEnd);
+				lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, YellowEnd);
 
 				/*Add a red arc to the end*/
 				SingleIndic = lv_meter_add_arc(SingleMeter, scale, 3, lv_palette_main(LV_PALETTE_RED), 0);
-				lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 25);
-				lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 35);
+				lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, YellowEnd);
+				lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, ScaleMax);
 
 				/*Make the tick lines red at the end of the scale*/
 				SingleIndic = lv_meter_add_scale_lines(SingleMeter, scale, lv_palette_main(LV_PALETTE_RED), lv_palette_main(LV_PALETTE_RED), false, 0);
-				lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 25);
-				lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 35);
+				lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, YellowEnd);
+				lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, ScaleMax);
 
 				/*Add a needle line indicator*/
 				SingleIndic = lv_meter_add_needle_line(SingleMeter, scale, 4, lv_palette_main(LV_PALETTE_GREY), -10);
