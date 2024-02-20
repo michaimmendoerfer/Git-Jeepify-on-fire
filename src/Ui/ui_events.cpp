@@ -220,6 +220,8 @@ void Ui_Peers_Selected(lv_event_t * e)
 }
 
 /*Screen: JSON*/
+
+//kann weg...
 void Ui_JSON_Prepare(lv_event_t * e)
 {
 	PrepareJSON();
@@ -251,18 +253,38 @@ void Ui_Single_Prepare(lv_event_t * e)
 				lv_obj_center(SingleMeter);
 				lv_obj_set_size(SingleMeter, 240,	240);
 
+				int Ticks, BigTicks, ScaleMax, ScaleMin, GreenEnd, YellowEnd;
+
+				switch (ActiveSens->Type) {
+					case SENS_TYPE_AMP:		ScaleMin  = 0;
+											ScaleMax  = 35;
+											Ticks     = 36;
+											BigTicks  = 5;
+											GreenEnd  = 20;
+											YellowEnd = 25;
+											break;
+					case SENS_TYPE_VOLT:	ScaleMin  = 10;
+											ScaleMax  = 15;
+											Ticks     = 36;
+											BigTicks  = 5;
+											GreenEnd  = 20;
+											YellowEnd = 25;
+											break;
+
+
+				}
 				/*Add a scale first*/
 				lv_meter_scale_t * scale = lv_meter_add_scale(SingleMeter);
 				lv_meter_set_scale_range(SingleMeter, scale, 0, 35, 300, 120);
 				lv_meter_set_scale_ticks(SingleMeter, scale, 36, 2, 10, lv_palette_main(LV_PALETTE_GREY));
 				lv_meter_set_scale_major_ticks(SingleMeter, scale, 5, 4, 15, lv_color_black(), 10);
 
-				/*Add a yelow arc to the start*/
+				/*Add a green arc to the start*/
 				SingleIndic = lv_meter_add_arc(SingleMeter, scale, 3, lv_palette_main(LV_PALETTE_GREEN), 0);
 				lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 0);
 				lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 20);
 
-				/*Make the tick lines yellow at the start of the scale*/
+				/*Make the tick lines green at the start of the scale*/
 				SingleIndic = lv_meter_add_scale_lines(SingleMeter, scale, lv_palette_main(LV_PALETTE_GREEN), lv_palette_main(LV_PALETTE_GREEN), false, 0);
 				lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 0);
 				lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 20);

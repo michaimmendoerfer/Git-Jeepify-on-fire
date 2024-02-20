@@ -104,6 +104,8 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   
   Serial.print("Recieved from:"); PrintMAC(mac); Serial.println(); Serial.println(jsondata);
   jsondataBuf = jsondata;
+  PrepareJSON();
+  
   DeserializationError error = deserializeJson(doc, jsondata);
 
   if (!error) {
