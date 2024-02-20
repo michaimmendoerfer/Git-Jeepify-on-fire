@@ -46,6 +46,64 @@ extern volatile uint32_t TSMsgSnd;
 extern volatile uint32_t TSPair;
 
 /* Screen: Peer*/
+void Ui_Peer_Prepare(lv_event_t * e)
+{
+	lv_label_set_text_static(ui_LblPeer1, ActivePeer->Name);
+	
+	if (ActivePeer->SleepMode) {
+		lv_obj_add_state(ui_BtnPeer3, LV_STATE_CHECKED);
+	}
+	else {
+		lv_obj_clear_state(ui_BtnPeer3, LV_STATE_CHECKED);
+	}
+	if (ActivePeer->DemoMode) {
+		lv_obj_add_state(ui_BtnPeer6, LV_STATE_CHECKED);
+	}
+	else {
+		lv_obj_clear_state(ui_BtnPeer6, LV_STATE_CHECKED);
+	}
+}
+
+void Ui_Peer_Restart(lv_event_t * e)
+{
+	SendCommand(ActivePeer, "Restart");
+}
+
+void Ui_Peer_Reset(lv_event_t * e)
+{
+	SendCommand(ActivePeer, "Reset");
+}
+
+void Ui_Peer_ToggleSleep(lv_event_t * e)
+{
+	SendCommand(ActivePeer, "SleepMode Toggle");
+}
+
+void Ui_Peer_ToggleDemo(lv_event_t * e)
+{
+	SendCommand(ActivePeer, "DemoMode Toggle");
+}
+
+void Ui_Peer_Next(lv_event_t * e)
+{
+	ActivePeer = FindNextPeer(ActivePeer, MODULE_ALL); 
+	_ui_screen_change(&ui_ScrPeer, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeer_screen_init);
+}
+void Ui_Peer_Last(lv_event_t * e)
+{
+	ActivePeer = FindPrevPeer(ActivePeer, MODULE_ALL); 
+	_ui_screen_change(&ui_ScrPeer, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeer_screen_init);
+}
+
+void Ui_Peer_Eichen(lv_event_t * e)
+{
+	SendCommand(ActivePeer, "Eichen");
+}
+
+void Ui_Peer_Volt(lv_event_t * e)
+{
+	// Your code here
+}
 
 /* ScreenÖ: Settings*/
 void UI_Set_Prepare(lv_event_t * e)
@@ -108,6 +166,7 @@ void Ui_SavePeers(lv_event_t * e)
 	lv_obj_clear_state(ui_BtnSet8, LV_STATE_CHECKED);
 }
 
+/* Screen: Peers*/
 void Ui_Peers_Prepare(lv_event_t * e)
 {
 	String Options = "";
@@ -134,7 +193,6 @@ void Ui_Peers_Prepare(lv_event_t * e)
     }
   }
   lv_roller_set_options(ui_RollerPeers1, Options.c_str(), LV_ROLLER_MODE_NORMAL);
-  //lv_roller_set_options(ui_RollerPeers1, "on:  <EPS32-1> PDC-2\noff: <EPS32-2> PDC-2", LV_ROLLER_MODE_NORMAL);
 }
 
 void Ui_Peers_Selected(lv_event_t * e)
@@ -161,11 +219,13 @@ void Ui_Peers_Selected(lv_event_t * e)
 	}
 }
 
+/*Screen: JSON*/
 void Ui_JSON_Prepare(lv_event_t * e)
 {
 	PrepareJSON();
 }
 
+/*Screen: SingleMeter*/
 void Ui_Single_Next(lv_event_t * e)
 {
 	if (ActiveSens) ActiveSens = FindNextPeriph(ActiveSens, SENS_TYPE_SENS, false);
@@ -177,70 +237,6 @@ void Ui_Single_Last(lv_event_t * e)
 {
 	if (ActiveSens) ActiveSens = FindPrevPeriph(ActiveSens, SENS_TYPE_SENS, false);
 	_ui_screen_change(&ui_ScrSingle, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrSingle_screen_init);
-}
-
-void Ui_Peer_Prepare(lv_event_t * e)
-{
-	lv_label_set_text_static(ui_LblPeer1, ActivePeer->Name);
-	
-	if (ActivePeer->SleepMode) {
-		lv_obj_add_state(ui_BtnPeer3, LV_STATE_CHECKED);
-	}
-	else {
-		lv_obj_clear_state(ui_BtnPeer3, LV_STATE_CHECKED);
-	}
-	if (ActivePeer->DemoMode) {
-		lv_obj_add_state(ui_BtnPeer6, LV_STATE_CHECKED);
-	}
-	else {
-		lv_obj_clear_state(ui_BtnPeer6, LV_STATE_CHECKED);
-	}
-}
-
-void Ui_Peer_Restart(lv_event_t * e)
-{
-	SendCommand(ActivePeer, "Restart");
-}
-
-void Ui_Peer_Reset(lv_event_t * e)
-{
-	SendCommand(ActivePeer, "Reset");
-}
-
-void Ui_Peer_ToggleSleep(lv_event_t * e)
-{
-	SendCommand(ActivePeer, "SleepMode Toggle");
-}
-
-void Ui_Multi_Next(lv_event_t * e)
-{
-	// Your code here
-}
-
-void Ui_Multi_Last(lv_event_t * e)
-{
-	// Your code here
-}
-
-void Ui_Peer_Next(lv_event_t * e)
-{
-	ActivePeer = FindNextPeer(ActivePeer, MODULE_ALL); 
-	_ui_screen_change(&ui_ScrPeer, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeer_screen_init);
-}
-void Ui_Peer_Last(lv_event_t * e)
-{
-	ActivePeer = FindPrevPeer(ActivePeer, MODULE_ALL); 
-	_ui_screen_change(&ui_ScrPeer, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeer_screen_init);
-}
-
-void Ui_Peer_Eichen(lv_event_t * e)
-{
-	SendCommand(ActivePeer, "Eichen");
-}
-
-void Ui_Peer_Volt(lv_event_t * e)
-{
-	// Your code here
 }
 
 void Ui_Single_Prepare(lv_event_t * e)
@@ -303,11 +299,6 @@ void Ui_Single_Prepare(lv_event_t * e)
 	}
 }
 
-void Ui_Peer_ToggleDemo(lv_event_t * e)
-{
-	SendCommand(ActivePeer, "DemoMode Toggle");
-}
-
 void SingleUpdateTimer(lv_timer_t * timer)
 {
 	if (ActiveSens){
@@ -340,6 +331,17 @@ void Ui_Single_Unload(lv_event_t * e)
 	// Your code here
 }
 
+/* Screen: MultiMeter*/
+void Ui_Multi_Next(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Multi_Last(lv_event_t * e)
+{
+	// Your code here
+}
+
 void Ui_Init_Custom(lv_event_t * e)
 {
 	static uint32_t user_data = 10;
@@ -365,6 +367,7 @@ void Ui_Init_Custom(lv_event_t * e)
 	
 }
 
+/* Timer*/
 void TopUpdateTimer(lv_timer_t * timer)
 {
 	if ((TSMsgSnd) and (millis() - TSMsgSnd < MSGLIGHT_INTERVAL)) {
