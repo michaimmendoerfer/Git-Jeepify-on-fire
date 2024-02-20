@@ -45,9 +45,31 @@ extern volatile uint32_t TSMsgRcv;
 extern volatile uint32_t TSMsgSnd;
 extern volatile uint32_t TSPair;
 
-void ShowPeer(lv_event_t * e)
+/* Screen: Peer*/
+
+/* ScreenÖ: Settings*/
+void UI_Set_Prepare(lv_event_t * e)
 {
-Serial.println("peer selected");	
+	if (ReadyToPair) {
+		lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);
+	}
+	else {
+		lv_obj_clear_state(ui_BtnSet2, LV_STATE_CHECKED);
+	}
+
+	if (DebugMode) {
+		lv_obj_add_state(ui_BtnSet7, LV_STATE_CHECKED);
+	}
+	else {
+		lv_obj_clear_state(ui_BtnSet7, LV_STATE_CHECKED);
+	}
+
+	if (!ChangesSaved) {
+		lv_obj_add_state(ui_BtnSet8, LV_STATE_CHECKED);
+	}
+	else {
+		lv_obj_clear_state(ui_BtnSet8, LV_STATE_CHECKED);
+	}
 }
 
 void Ui_Set_TogglePair(lv_event_t * e)
@@ -142,30 +164,6 @@ void Ui_Peers_Selected(lv_event_t * e)
 void Ui_JSON_Prepare(lv_event_t * e)
 {
 	PrepareJSON();
-}
-
-void UI_Set_Prepare(lv_event_t * e)
-{
-	if (ReadyToPair) {
-		lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);
-	}
-	else {
-		lv_obj_clear_state(ui_BtnSet2, LV_STATE_CHECKED);
-	}
-
-	if (DebugMode) {
-		lv_obj_add_state(ui_BtnSet7, LV_STATE_CHECKED);
-	}
-	else {
-		lv_obj_clear_state(ui_BtnSet7, LV_STATE_CHECKED);
-	}
-
-	if (!ChangesSaved) {
-		lv_obj_add_state(ui_BtnSet8, LV_STATE_CHECKED);
-	}
-	else {
-		lv_obj_clear_state(ui_BtnSet8, LV_STATE_CHECKED);
-	}
 }
 
 void Ui_Single_Next(lv_event_t * e)

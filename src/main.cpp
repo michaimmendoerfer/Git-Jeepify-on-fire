@@ -68,7 +68,6 @@ uint8_t VoltCount;
 String jsondataBuf;
 
 uint32_t TSPing          = 0;
-uint32_t TSMsgStart      = 0;
 
 volatile uint32_t TSMsgRcv  = 0;
 volatile uint32_t TSMsgSnd  = 0;
@@ -363,43 +362,6 @@ void PrepareJSON() {
     }
   }
 }
-void ShowPeer() {
-
-}
-
-void ShowPeers(lv_event_t * e) {
-  uint16_t PeerId[MAX_PEERS];
-  String Options = "";
-  for (int PIi=0; PIi<MAX_PEERS; PIi++) PeerId[PIi] = 0;
-
-  int PIi = 0;
-
-  for (int PNr=0 ; PNr<MAX_PEERS ; PNr++) {
-    if (P[PNr].Type) {
-      PeerId[PIi] = P[PNr].Id;
-      
-      if (PIi) Options += "\n";
-      PIi++;
-      
-      if (millis()- P[PNr].TSLastSeen > OFFLINE_INTERVAL) Options += "off:";
-      else Options += "on: "; 
-        
-      Options += P[PNr].Name;
-
-      switch (P[PNr].Type) {
-        case SWITCH_1_WAY:   Options += " (PDC-1)";   break;
-        case SWITCH_2_WAY:   Options += " (PDC-2)";   break;
-        case SWITCH_4_WAY:   Options += " (PDC-4)";   break;
-        case SWITCH_8_WAY:   Options += " (PDC-8)";   break;
-        case PDC_SENSOR_MIX: Options += " (MIX)";     break;
-        case BATTERY_SENSOR: Options += " (Sens)"; break;
-      }
-    }
-  }
-  lv_roller_set_options(ui_RollerPeers1, Options.c_str(), LV_ROLLER_MODE_NORMAL);
-  _ui_screen_change(&ui_ScrPeers, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeers_screen_init);
-    
-}
 #pragma endregion System-Screens
 #pragma region Other
 void WriteStringToCharArray(String S, char *C) {
@@ -420,7 +382,7 @@ bool ToggleDebugMode() {
     DebugMode = !DebugMode;
     if (preferences.getBool("DebugMode", false) != DebugMode) preferences.putBool("DebugMode", DebugMode);
   preferences.end();
-  Serial.print("DebugMode changed to: "); Serial.println((bool)DebugMode);
+  if (DebugMode) { Serial.print("DebugMode changed to: "); Serial.println((bool)DebugMode);}
   return DebugMode;
 }
 
@@ -434,7 +396,7 @@ bool TogglePairMode() {
     TSPair = millis();
   };
 
-  Serial.print("ReadyToPair changed to: "); Serial.println((bool)ReadyToPair);
+  if (DebugMode) { Serial.print("ReadyToPair changed to: "); Serial.println(ReadyToPair); }
   
   return ReadyToPair;
 }
@@ -482,8 +444,10 @@ void PrintMAC(const uint8_t * mac_addr){
   Serial.print(macStr);
 }
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) { 
-  //Serial.print("\r\nLast Packet Send Status:\t");
-  //Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+  if (DebugMOde) {
+    Serial.print("\r\nLast Packet Send Status:\t");
+    Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+  }
 }
 void my_disp_flush( lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p )
 {
@@ -512,7 +476,7 @@ void my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data ) {
         data->point.x = TFT_HOR_RES - touchX;
         data->point.y = touchY;
 
-        /*
+        
         Serial.print( "Data x " );
         Serial.print( touchX );
 
