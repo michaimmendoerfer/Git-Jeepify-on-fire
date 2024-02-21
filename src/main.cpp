@@ -55,7 +55,7 @@ void   WriteStringToCharArray(String S, char *C);
 #pragma endregion Function_Definitions
 #pragma region Globals
 static lv_disp_draw_buf_t draw_buf;
-static lv_color_t buf1[ TFT_HOR_RES * TFT_VER_RES / 5 ];
+static lv_color_t buf1[ TFT_HOR_RES * TFT_VER_RES / 10 ];
 //static lv_color_t buf2[ TFT_HOR_RES * TFT_VER_RES / 10 ];
 
 bool DebugMode = true;
@@ -198,7 +198,7 @@ void setup() {
     
   lv_init();
   
-  lv_disp_draw_buf_init( &draw_buf, buf1, NULL, TFT_HOR_RES * TFT_VER_RES / 5 );
+  lv_disp_draw_buf_init( &draw_buf, buf1, NULL, TFT_HOR_RES * TFT_VER_RES / 10 );
 
   //Display-Driver
   static lv_disp_drv_t disp_drv;
