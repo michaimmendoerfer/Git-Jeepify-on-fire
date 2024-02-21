@@ -12,6 +12,7 @@ extern struct_MultiScreen Screen[MULTI_SCREENS];
 
 extern struct_Periph *ActiveSens;
 extern struct_Periph *ActiveSwitch;
+extern struct_Peer   *ActivePeer;
 
 extern bool DebugMode;
 extern bool ChangesSaved;
@@ -85,7 +86,10 @@ void GetPeers() {
   for (int PNr=0; PNr<MAX_PEERS; PNr++) {
     snprintf(Buf, sizeof(Buf), "P%d", PNr); 
     preferences.getBytes(Buf, &P[PNr], sizeof(P[PNr]));
-    if (P[PNr].Id) PeerCount++;
+    if (P[PNr].Id) {
+      PeerCount++;
+      if (ActivePeer == NULL) ActivePeer = &P[PNr];
+    }
     
     
     for (int SNr=0; SNr<MAX_PERIPHERALS; SNr++) {
@@ -95,8 +99,14 @@ void GetPeers() {
         snprintf(Buf, sizeof(Buf), "Periph %d: Name=%s, Type=%d, Id=%d, PeerId=%d", SNr, P[PNr].Periph[SNr].Name, P[PNr].Periph[SNr].Type, P[PNr].Periph[SNr].Id, P[PNr].Periph[SNr].PeerId);
         Serial.println(Buf);
 
-        if (isSensor(&P[PNr].Periph[SNr]) and (ActiveSens   == NULL)) ActiveSens   = &P[PNr].Periph[SNr];
-        if (isSwitch(&P[PNr].Periph[SNr]) and (ActiveSwitch == NULL)) ActiveSwitch = &P[PNr].Periph[SNr];
+        if (isSensor(&P[PNr].Periph[SNr]) and (ActiveSens   == NULL)) { 
+          ActiveSens   = &P[PNr].Periph[SNr]; 
+          if (DebugMode) { Serial.print("ActiveSens = "); Serial.println(ActiveSens->Name); }
+        }
+        if (isSwitch(&P[PNr].Periph[SNr]) and (ActiveSwitch == NULL)) {
+          ActiveSwitch = &P[PNr].Periph[SNr];
+          if (DebugMode) { Serial.print("ActiveSwitch = "); Serial.println(ActiveSwitch->Name); }
+        }
       }
     }
   }

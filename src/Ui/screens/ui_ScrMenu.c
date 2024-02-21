@@ -95,6 +95,7 @@ void ui_ScrMenu_screen_init(void)
     lv_obj_clear_flag(ui_ImgRubicon, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     lv_obj_add_event_cb(ui_BtnMenu1, ui_event_BtnMenu1, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_BtnMenu3, ui_event_BtnMenu3, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_BtnMenu4, ui_event_BtnMenu4, LV_EVENT_ALL, NULL);
 
 }

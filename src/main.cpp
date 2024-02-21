@@ -5,7 +5,6 @@
 
 #pragma region Includes
 #include <Arduino.h>
-#include <nvs_flash.h>
 #include "jeepify.h"
 #include <TFT_eSPI.h>
 #include <esp_now.h>
@@ -56,7 +55,8 @@ void   WriteStringToCharArray(String S, char *C);
 #pragma endregion Function_Definitions
 #pragma region Globals
 static lv_disp_draw_buf_t draw_buf;
-static lv_color_t buf[ TFT_HOR_RES * TFT_VER_RES / 10 ];
+static lv_color_t buf1[ TFT_HOR_RES * TFT_VER_RES / 5 ];
+//static lv_color_t buf2[ TFT_HOR_RES * TFT_VER_RES / 10 ];
 
 bool DebugMode = true;
 bool SleepMode = false;
@@ -197,7 +197,8 @@ void setup() {
   Touch.begin();
     
   lv_init();
-  lv_disp_draw_buf_init( &draw_buf, buf, NULL, TFT_HOR_RES * TFT_VER_RES / 10 );
+  
+  lv_disp_draw_buf_init( &draw_buf, buf1, NULL, TFT_HOR_RES * TFT_VER_RES / 5 );
 
   //Display-Driver
   static lv_disp_drv_t disp_drv;
@@ -214,8 +215,6 @@ void setup() {
   indev_drv.type = LV_INDEV_TYPE_POINTER;
   indev_drv.read_cb = my_touchpad_read;
   lv_indev_drv_register( &indev_drv );
-
-  ui_init();
 
   //ESP-Now
   WiFi.mode(WIFI_STA);
@@ -264,6 +263,8 @@ void setup() {
     
   static uint32_t user_data = 10;
   lv_timer_t * TimerPing = lv_timer_create(SendPing, PING_INTERVAL,  &user_data);
+
+  ui_init();
 
 }
 void loop() {
@@ -446,7 +447,7 @@ void PrintMAC(const uint8_t * mac_addr){
   Serial.print(macStr);
 }
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) { 
-  if (DebugMOde) {
+  if (DebugMode) {
     Serial.print("\r\nLast Packet Send Status:\t");
     Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
   }
@@ -484,7 +485,7 @@ void my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data ) {
 
         Serial.print( ", Data y " );
         Serial.println( touchY );
-        */
+        
     }
 }
 

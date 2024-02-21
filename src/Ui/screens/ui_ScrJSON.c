@@ -13,7 +13,7 @@ void ui_ScrJSON_screen_init(void)
 
     ui_TxtJSON1 = lv_textarea_create(ui_ScrJSON);
     lv_obj_set_width(ui_TxtJSON1, 183);
-    lv_obj_set_height(ui_TxtJSON1, 133);
+    lv_obj_set_height(ui_TxtJSON1, 123);
     lv_obj_set_align(ui_TxtJSON1, LV_ALIGN_CENTER);
     lv_textarea_set_placeholder_text(ui_TxtJSON1, "JSON-Message");
     lv_obj_set_style_text_color(ui_TxtJSON1, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -28,7 +28,7 @@ void ui_ScrJSON_screen_init(void)
     lv_obj_set_width(ui_LblJSON2, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_LblJSON2, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_LblJSON2, 0);
-    lv_obj_set_y(ui_LblJSON2, 90);
+    lv_obj_set_y(ui_LblJSON2, 80);
     lv_obj_set_align(ui_LblJSON2, LV_ALIGN_CENTER);
     lv_label_set_text(ui_LblJSON2, "JSON");
     lv_obj_set_style_text_color(ui_LblJSON2, lv_color_hex(0xAD0808), LV_PART_MAIN | LV_STATE_DEFAULT);
