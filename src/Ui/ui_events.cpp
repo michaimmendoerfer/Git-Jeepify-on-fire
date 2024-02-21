@@ -477,7 +477,7 @@ void TopUpdateTimer(lv_timer_t * timer)
 
 void Ui_Init_Custom(lv_event_t * e)
 {
-	static uint32_t user_data = 10;
+	static uint32_t user_data = 10; 
 	char LEDSize = 10;
 	lv_timer_t * timer = lv_timer_create(TopUpdateTimer, 100,  &user_data);
 
