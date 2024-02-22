@@ -116,6 +116,12 @@ void Ui_Peer_Volt(lv_event_t * e)
 	// Your code here
 }
 #pragma endregion Screen_Peer
+#pragma region Screen_Eichen
+void Ui_Eichen_Start(lv_event_t * e)
+{
+	SendCommand(ActivePeer, "Eichen");
+}
+#pragma endregion Screen_Eichen
 #pragma region Screen_Settings
 /* Screen: Settings*/
 void UI_Set_Prepare(lv_event_t * e)
@@ -430,6 +436,7 @@ void Ui_Multi_Prepare(lv_event_t * e)
 }
 
 #pragma endregion Screen_MultiMeter
+#pragma region Screen_Timer_and_Init
 /* Timer*/
 void TopUpdateTimer(lv_timer_t * timer)
 {
@@ -512,6 +519,7 @@ void Ui_Init_Custom(lv_event_t * e)
     lv_keyboard_set_mode(ui_Keyboard, LV_KEYBOARD_MODE_USER_1);
 	lv_obj_add_event_cb(ui_Keyboard, Keyboard_cb, LV_EVENT_READY, NULL);
 }
+<<<<<<< HEAD
 
 void Keyboard_cb(lv_event_t * event)
 {
@@ -524,3 +532,6 @@ void Ui_Eichen_Start(lv_event_t * e)
 }
 
 
+=======
+#pragma endregion Screen_Timer_and_Init
+>>>>>>> e5819a07a95d2a65f20befb4323b0779c5c2248e
