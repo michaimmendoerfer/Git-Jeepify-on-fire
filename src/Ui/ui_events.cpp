@@ -116,7 +116,7 @@ void Ui_Peer_Volt(lv_event_t * e)
 #pragma region Screen_Eichen
 void Ui_Eichen_Start(lv_event_t * e)
 {
-
+	SendCommand(ActivePeer, "Eichen");
 }
 #pragma endregion Screen_Eichen
 #pragma region Screen_Settings
