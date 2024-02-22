@@ -264,8 +264,10 @@ void setup() {
   static uint32_t user_data = 10;
   lv_timer_t * TimerPing = lv_timer_create(SendPing, PING_INTERVAL,  &user_data);
 
+  Serial.println("vor init");
   ui_init();
-
+  Serial.println("nach init");
+  
 }
 void loop() {
   lv_timer_handler(); /* let the GUI do its work */

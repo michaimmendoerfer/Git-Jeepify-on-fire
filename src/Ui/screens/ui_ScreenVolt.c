@@ -11,11 +11,21 @@ void ui_ScreenVolt_screen_init(void)
     lv_obj_clear_flag(ui_ScreenVolt, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_img_src(ui_ScreenVolt, &ui_img_jeepifybackground_png, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Keyboard2 = lv_keyboard_create(ui_ScreenVolt);
-    lv_keyboard_set_mode(ui_Keyboard2, LV_KEYBOARD_MODE_NUMBER);
-    lv_obj_set_width(ui_Keyboard2, 180);
-    lv_obj_set_height(ui_Keyboard2, 141);
-    lv_obj_set_align(ui_Keyboard2, LV_ALIGN_CENTER);
+    ui_Keyboard = lv_keyboard_create(ui_ScreenVolt);
+    lv_keyboard_set_mode(ui_Keyboard, LV_KEYBOARD_MODE_USER_1);
+    lv_obj_set_width(ui_Keyboard, 180);
+    lv_obj_set_height(ui_Keyboard, 141);
+    lv_obj_set_align(ui_Keyboard, LV_ALIGN_CENTER);
 
+    ui_LblEichenPeer2 = lv_label_create(ui_ScreenVolt);
+    lv_obj_set_width(ui_LblEichenPeer2, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_LblEichenPeer2, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_LblEichenPeer2, 0);
+    lv_obj_set_y(ui_LblEichenPeer2, 80);
+    lv_obj_set_align(ui_LblEichenPeer2, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_LblEichenPeer2, "Peer");
+    lv_obj_set_style_text_color(ui_LblEichenPeer2, lv_color_hex(0xAD0808), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_LblEichenPeer2, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_LblEichenPeer2, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
 }
