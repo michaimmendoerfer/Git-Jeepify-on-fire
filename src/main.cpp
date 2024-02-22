@@ -46,7 +46,7 @@ bool   TogglePairMode();
 void   ShowMessage(String Msg);
 void   ShowSingle(struct_Periph *Periph);
 void   ShowMulti(struct_MultiScreen *ActiveScreen);
-void   ShowEichenVolt();
+void   CalibVolt();
 void   PrepareJSON();
 void   ShowPeer();
 
@@ -406,42 +406,23 @@ bool TogglePairMode() {
   return ReadyToPair;
 }
 
-void AddVolt(int i) {
+void CalibVolt() {
   StaticJsonDocument<500> doc;
   String jsondata;
-  static float VoltCalib;
 
-  jsondata = "";  //clearing String after data is being sent
+  jsondata = "";  
   doc.clear();
 
-  if ((i>=0) and (i<=9)) {
-    switch (VoltCount) {
-      case 0: VoltCalib  = (i)*10;          VoltCount++; break;
-      case 1: VoltCalib += (i);             VoltCount++; break;
-      case 2: VoltCalib += (float) (i)/10;  VoltCount++; break;
-      case 3: VoltCalib += (float) (i)/100; VoltCount++; break;
-    }
-  } 
-  else if (i==11) VoltCount++;
+  doc["Node"] = NODE_NAME;   
+  doc["Order"] = "VoltCalib";
+  doc["Value"] = lv_textarea_get_text(ui_TxtVolt);
   
-  if (VoltCount == 4) {
-    char buf[10];
-    dtostrf(VoltCalib, 5, 2, buf);
+  serializeJson(doc, jsondata);  
 
-    doc["Node"] = NODE_NAME;   
-    doc["Order"] = "VoltCalib";
-    doc["Value"] = buf;
-    
-    serializeJson(doc, jsondata);  
-  
-    esp_now_send(ActivePeer->BroadcastAddress, (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
-    Serial.println(jsondata);
-  
-    Serial.println(jsondata);
-
-    TSMsgVolt = millis();
-  }
+  esp_now_send(ActivePeer->BroadcastAddress, (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
+  if (DebugMode) Serial.println(jsondata);
 }
+
 void PrintMAC(const uint8_t * mac_addr){
   char macStr[18];
   snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",

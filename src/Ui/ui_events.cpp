@@ -29,10 +29,12 @@ extern bool TogglePairMode();
 
 extern void SavePeers();
 extern void PrepareJSON();
+extern void CalibVolt();
 extern void SendCommand(struct_Peer *Peer, String Cmd);
 
 lv_obj_t *SingleMeter;
 lv_meter_indicator_t * SingleIndic;
+lv_meter_indicator_t * SingleIndicNeedle;
 lv_meter_scale_t * scale;
 
 
@@ -44,6 +46,7 @@ lv_timer_t *SingleTimer;
 void SingleUpdateTimer(lv_timer_t * timer);
 void TopUpdateTimer(lv_timer_t * timer);
 void GenerateSingleScale(void);
+void Keyboard_cb(lv_event_t * event);
 
 extern volatile uint32_t TSMsgRcv;
 extern volatile uint32_t TSMsgSnd;
@@ -185,7 +188,7 @@ void Ui_Peers_Prepare(lv_event_t * e)
 	for (int PNr=0 ; PNr<MAX_PEERS ; PNr++) {
     if (P[PNr].Type) {
            
-      if (Options) Options += "\n";
+      if (Options != "") Options += "\n";
       
       if (millis()- P[PNr].TSLastSeen > OFFLINE_INTERVAL) Options += "off: <";
       else Options += "on:  <"; 
@@ -249,12 +252,11 @@ void Ui_Single_Next(lv_event_t * e)
 	else {
 		ActiveSens = FindFirstPeriph(ActivePeer, SENS_TYPE_SENS, false);
 	}
-	
 	GenerateSingleScale();
 
 	if (ActivePeer) lv_label_set_text(ui_LblSinglePeer, ActivePeer->Name);
 	if (ActiveSens) lv_label_set_text(ui_LblSinglePeriph, ActiveSens->Name);
-	lv_meter_set_indicator_value(SingleMeter, SingleIndic, -10);
+	//lv_meter_set_indicator_value(SingleMeter, SingleIndic, -10);
 	lv_label_set_text(ui_LblSingleValue, "---");
 }
 
@@ -271,7 +273,7 @@ void Ui_Single_Last(lv_event_t * e)
 
 	if (ActivePeer) lv_label_set_text(ui_LblSinglePeer, ActivePeer->Name);
 	if (ActiveSens) lv_label_set_text(ui_LblSinglePeriph, ActiveSens->Name);
-	lv_meter_set_indicator_value(SingleMeter, SingleIndic, -10);
+	//lv_meter_set_indicator_value(SingleMeter, SingleIndic, -10);
 	lv_label_set_text(ui_LblSingleValue, "---");
 }
 
@@ -287,7 +289,7 @@ void Ui_Single_Prepare(lv_event_t * e)
 	static uint32_t user_data = 10;
 
 	if (SingleTimer) lv_timer_pause(SingleTimer);
-	
+	GenerateSingleScale();
 	//if (DebugMode) { Serial.print("Type:"); Serial.println(ActiveSens->Type); }
 	
 	if (!SingleTimer) { 
@@ -315,13 +317,13 @@ void SingleUpdateTimer(lv_timer_t * timer)
     	if (value == -99) strcpy(buf, "--"); 
     	else dtostrf(value, 0, nk, buf);
 
-		lv_meter_set_indicator_value(SingleMeter, SingleIndic, value*10);
+		lv_meter_set_indicator_value(SingleMeter, SingleIndicNeedle, value*10);
 		lv_label_set_text(ui_LblSingleValue, buf);
-		if (DebugMode) { Serial.print("Single Needle updated with:"); Serial.println(buf); }
+		if (DebugMode) { Serial.print("Single Needle updated with:"); Serial.println(value*10); }
 	}
 	else {
 		float RandomValue = random(35);
-		lv_meter_set_indicator_value(SingleMeter, SingleIndic, RandomValue);
+		lv_meter_set_indicator_value(SingleMeter, SingleIndicNeedle, RandomValue);
 		if (DebugMode) { Serial.print("Single Needle updated with:"); Serial.println(RandomValue); }
 	}
 }
@@ -347,8 +349,8 @@ void GenerateSingleScale(void)
 	if ((ActiveSens) and (ActiveSens->Type == SENS_TYPE_AMP))
 	{
 		lv_meter_set_scale_ticks(SingleMeter, scale, 41, 2, 10, lv_palette_main(LV_PALETTE_GREY));
-    	lv_meter_set_scale_major_ticks(SingleMeter, scale, 8, 4, 15, lv_color_black(), 10);
-    	lv_meter_set_scale_range(SingleMeter, scale, 0, 350, 240, 150);
+    	lv_meter_set_scale_major_ticks(SingleMeter, scale, 5, 4, 15, lv_color_black(), 15);
+    	lv_meter_set_scale_range(SingleMeter, scale, 0, 400, 240, 150);
 	
 		/*Add a green arc to the start*/
 		SingleIndic = lv_meter_add_scale_lines(SingleMeter, scale, lv_palette_main(LV_PALETTE_GREEN), lv_palette_main(LV_PALETTE_GREEN), false, 0);
@@ -356,15 +358,45 @@ void GenerateSingleScale(void)
     	lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 250);
 
 		SingleIndic = lv_meter_add_arc(SingleMeter, scale, 3, lv_palette_main(LV_PALETTE_RED), 0);
-    	lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 280);
-    	lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 350);
+    	lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 300);
+    	lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 400);
 
 		/*Make the tick lines red at the end of the scale*/
 		SingleIndic = lv_meter_add_scale_lines(SingleMeter, scale, lv_palette_main(LV_PALETTE_RED), lv_palette_main(LV_PALETTE_RED), false, 0);
-		lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 280);
-		lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 350);
+		lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 300);
+		lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 400);
 
-		//SingleIndic = lv_meter_add_needle_line(SingleMeter, scale, 4, lv_palette_main(LV_PALETTE_GREY), -10);
+		//SingleIndicNeedle = lv_meter_add_needle_line(SingleMeter, scale, 4, lv_palette_main(LV_PALETTE_GREY), -10);
+
+		/*Add draw callback to override default values*/
+		lv_obj_add_event_cb(SingleMeter, SingleMeter_cb, LV_EVENT_DRAW_PART_BEGIN, NULL);
+	}
+
+	if ((ActiveSens) and (ActiveSens->Type == SENS_TYPE_VOLT))
+	{
+		lv_meter_set_scale_ticks(SingleMeter, scale, 31, 2, 10, lv_palette_main(LV_PALETTE_GREY));
+    	lv_meter_set_scale_major_ticks(SingleMeter, scale, 5, 4, 15, lv_color_black(), 15);
+    	lv_meter_set_scale_range(SingleMeter, scale, 90, 150, 240, 150);
+	
+		SingleIndic = lv_meter_add_scale_lines(SingleMeter, scale, lv_palette_main(LV_PALETTE_RED), lv_palette_main(LV_PALETTE_RED), false, 0);
+    	lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 90);
+    	lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 112);
+		
+		/*Add a green arc to the start*/
+		SingleIndic = lv_meter_add_scale_lines(SingleMeter, scale, lv_palette_main(LV_PALETTE_GREEN), lv_palette_main(LV_PALETTE_GREEN), false, 0);
+    	lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 112);
+    	lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 144);
+
+		SingleIndic = lv_meter_add_arc(SingleMeter, scale, 3, lv_palette_main(LV_PALETTE_RED), 0);
+    	lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 144);
+    	lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 150);
+
+		/*Make the tick lines red at the end of the scale*/
+		SingleIndic = lv_meter_add_scale_lines(SingleMeter, scale, lv_palette_main(LV_PALETTE_RED), lv_palette_main(LV_PALETTE_RED), false, 0);
+		lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 144);
+		lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 150);
+
+		//SingleIndicNeedle = lv_meter_add_needle_line(SingleMeter, scale, 4, lv_palette_main(LV_PALETTE_GREY), -10);
 
 		/*Add draw callback to override default values*/
 		lv_obj_add_event_cb(SingleMeter, SingleMeter_cb, LV_EVENT_DRAW_PART_BEGIN, NULL);
@@ -466,21 +498,29 @@ void Ui_Init_Custom(lv_event_t * e)
 	
 	lv_obj_move_background(SingleMeter);
 	lv_obj_set_style_text_color(SingleMeter, lv_color_hex(0xdbdbdb), LV_PART_TICKS);
+	SingleIndicNeedle = lv_meter_add_needle_line(SingleMeter, scale, 4, lv_palette_main(LV_PALETTE_GREY), -10);
 	
-	GenerateSingleScale();
-	SingleIndic = lv_meter_add_needle_line(SingleMeter, scale, 4, lv_palette_main(LV_PALETTE_LIGHT_BLUE), -10);	
-
 	//Keyboard
-	static const char* btnm_map[] = { "7", "8", "9", "\n",
+	static const char* kb_map[] = { "1", "2", "3", "\n",
 								"4", "5", "6", "\n",
-								"1", "2", "3", "\n",
-								"+-","0", ".", "\n",
-								"\n",
-								"Cancel", "OK", "" };
+								"7", "8", "9", "\n",
+								"." ,"0", LV_SYMBOL_BACKSPACE,"\n",
+								LV_SYMBOL_CLOSE, LV_SYMBOL_OK, "" };
+	static const lv_btnmatrix_ctrl_t kb_ctrl[] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+    
+	lv_keyboard_set_map(ui_Keyboard, LV_KEYBOARD_MODE_USER_1, kb_map, kb_ctrl);
+    lv_keyboard_set_mode(ui_Keyboard, LV_KEYBOARD_MODE_USER_1);
+	lv_obj_add_event_cb(ui_Keyboard, Keyboard_cb, LV_EVENT_READY, NULL);
 }
 
-
+void Keyboard_cb(lv_event_t * event)
+{
+    CalibVolt();
+	_ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMenu_screen_init);
+}
 void Ui_Eichen_Start(lv_event_t * e)
 {
 	// Your code here
 }
+
+

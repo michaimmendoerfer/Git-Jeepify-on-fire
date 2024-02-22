@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-#include "lvgl/lvgl.h"
+#include "lvgl.h"
 
 #include "ui_helpers.h"
 #include "ui_events.h"
@@ -119,8 +119,10 @@ extern lv_obj_t * ui_LblEichenStart;
 // SCREEN: ui_ScreenVolt
 void ui_ScreenVolt_screen_init(void);
 extern lv_obj_t * ui_ScreenVolt;
+void ui_event_Keyboard(lv_event_t * e);
 extern lv_obj_t * ui_Keyboard;
 extern lv_obj_t * ui_LblEichenPeer2;
+extern lv_obj_t * ui_TxtVolt;
 void ui_event____initial_actions0(lv_event_t * e);
 extern lv_obj_t * ui____initial_actions0;
 
