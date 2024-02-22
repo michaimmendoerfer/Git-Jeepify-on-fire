@@ -113,6 +113,12 @@ void Ui_Peer_Volt(lv_event_t * e)
 	// Your code here
 }
 #pragma endregion Screen_Peer
+#pragma region Screen_Eichen
+void Ui_Eichen_Start(lv_event_t * e)
+{
+
+}
+#pragma endregion Screen_Eichen
 #pragma region Screen_Settings
 /* Screen: Settings*/
 void UI_Set_Prepare(lv_event_t * e)
@@ -398,6 +404,7 @@ void Ui_Multi_Prepare(lv_event_t * e)
 }
 
 #pragma endregion Screen_MultiMeter
+#pragma region Screen_Timer_and_Init
 /* Timer*/
 void TopUpdateTimer(lv_timer_t * timer)
 {
@@ -478,9 +485,4 @@ void Ui_Init_Custom(lv_event_t * e)
 								"\n",
 								"Cancel", "OK", "" };
 }
-
-
-void Ui_Eichen_Start(lv_event_t * e)
-{
-	// Your code here
-}
+#pragma endregion Screen_Timer_and_Init
