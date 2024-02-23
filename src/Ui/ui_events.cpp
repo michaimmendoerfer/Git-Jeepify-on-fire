@@ -20,6 +20,7 @@ extern struct_Peer *ActivePeer;
 extern struct_Peer *ActiveSelection;
 extern struct_Periph *ActiveSens;
 extern struct_Periph *ActiveSwitch;
+extern struct_Periph *ActivePeriph;
 
 extern struct_Peer   P[MAX_PEERS];
 
@@ -302,7 +303,7 @@ void Ui_Single_Prepare(lv_event_t * e)
 
 void SingleUpdateTimer(lv_timer_t * timer)
 {
-	if (ActiveSens){
+	if (0){
 		
 		char buf[10];
 		int nk = 0;
@@ -322,7 +323,7 @@ void SingleUpdateTimer(lv_timer_t * timer)
 		if (DebugMode) { Serial.print("Single Needle updated with:"); Serial.println(value*10); }
 	}
 	else {
-		float RandomValue = random(35);
+		float RandomValue = random(20);
 		lv_meter_set_indicator_value(SingleMeter, SingleIndicNeedle, RandomValue);
 		if (DebugMode) { Serial.print("Single Needle updated with:"); Serial.println(RandomValue); }
 	}
@@ -374,15 +375,15 @@ void GenerateSingleScale(void)
 
 	if ((ActiveSens) and (ActiveSens->Type == SENS_TYPE_VOLT))
 	{
-		lv_meter_set_scale_ticks(SingleMeter, scale, 31, 2, 10, lv_palette_main(LV_PALETTE_GREY));
-    	lv_meter_set_scale_major_ticks(SingleMeter, scale, 5, 4, 15, lv_color_black(), 15);
+		//lv_meter_set_scale_ticks(SingleMeter, scale, 31, 2, 10, lv_palette_main(LV_PALETTE_GREY));
+    	//lv_meter_set_scale_major_ticks(SingleMeter, scale, 5, 4, 15, lv_color_black(), 15);
     	lv_meter_set_scale_range(SingleMeter, scale, 90, 150, 240, 150);
 	
 		SingleIndic = lv_meter_add_scale_lines(SingleMeter, scale, lv_palette_main(LV_PALETTE_RED), lv_palette_main(LV_PALETTE_RED), false, 0);
     	lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 90);
     	lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 112);
 		
-		/*Add a green arc to the start*/
+		//Add a green arc to the start
 		SingleIndic = lv_meter_add_scale_lines(SingleMeter, scale, lv_palette_main(LV_PALETTE_GREEN), lv_palette_main(LV_PALETTE_GREEN), false, 0);
     	lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 112);
     	lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 144);
@@ -391,14 +392,14 @@ void GenerateSingleScale(void)
     	lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 144);
     	lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 150);
 
-		/*Make the tick lines red at the end of the scale*/
+		//Make the tick lines red at the end of the scale
 		SingleIndic = lv_meter_add_scale_lines(SingleMeter, scale, lv_palette_main(LV_PALETTE_RED), lv_palette_main(LV_PALETTE_RED), false, 0);
 		lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 144);
 		lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 150);
 
 		//SingleIndicNeedle = lv_meter_add_needle_line(SingleMeter, scale, 4, lv_palette_main(LV_PALETTE_GREY), -10);
 
-		/*Add draw callback to override default values*/
+		//Add draw callback to override default values
 		lv_obj_add_event_cb(SingleMeter, SingleMeter_cb, LV_EVENT_DRAW_PART_BEGIN, NULL);
 	}
 }
@@ -430,6 +431,56 @@ void Ui_Multi_Prepare(lv_event_t * e)
 }
 
 #pragma endregion Screen_MultiMeter
+#pragma region Screen_PeriphChoice
+void Ui_PeriphChoice_Next(lv_event_t * e)
+{
+	if (ActivePeriph) {
+		ActivePeriph = FindNextPeriph(ActivePeriph, SENS_TYPE_ALL, false);
+		Ui_Periph_Choice_Prepare(e);
+	}
+}
+
+void Ui_PeriphChoice_Last(lv_event_t * e)
+{
+	if (ActivePeriph) {
+		ActivePeriph = FindPrevPeriph(ActivePeriph, SENS_TYPE_ALL, false);
+		Ui_Periph_Choice_Prepare(e);
+	}
+}
+
+void Ui_PeriphChoice_Click(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Periph_Choice_Prepare(lv_event_t * e)
+{
+	if (!ActivePeer) ActivePeer = FindFirstPeer(MODULE_ALL);
+	if (ActivePeer) {
+		lv_label_set_text(ui_LblPeriphChoicePeer, ActivePeer->Name);
+	
+		if (!ActivePeriph) {
+			ActivePeriph = FindFirstPeriph(ActivePeer, SENS_TYPE_ALL, false);
+		}
+	}
+	
+	if (ActivePeriph) {
+		lv_label_set_text(ui_LblPeriphChoicePeriph, ActivePeriph->Name);
+		
+		if (millis()- ActivePeer->TSLastSeen > OFFLINE_INTERVAL) 
+			lv_label_set_text(ui_LblPeriphChoiceOnline, "Offline");
+      	else 
+			lv_label_set_text(ui_LblPeriphChoiceOnline, "Offline");
+
+		switch (ActivePeriph->Type) {
+			case SENS_TYPE_SWITCH:	lv_label_set_text(ui_LblPeriphChoiceType, "Switch"); break;
+			case SENS_TYPE_AMP:		lv_label_set_text(ui_LblPeriphChoiceType, "Amp-Sensor"); break;
+			case SENS_TYPE_VOLT:	lv_label_set_text(ui_LblPeriphChoiceType, "Volt-Sensor"); break;
+			default:				lv_label_set_text(ui_LblPeriphChoiceType, "unknown type"); break;
+		}
+	}
+}
+#pragma endregion Screen_PeriphChoice
 /* Timer*/
 void TopUpdateTimer(lv_timer_t * timer)
 {
@@ -486,6 +537,7 @@ void Ui_Init_Custom(lv_event_t * e)
 	SingleMeter = lv_meter_create(ui_ScrSingle);
 	lv_obj_center(SingleMeter);
 	lv_obj_set_style_bg_color(SingleMeter, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+	lv_obj_set_style_bg_opa(SingleMeter, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 	lv_obj_set_size(SingleMeter, 240,	240);
 	scale = lv_meter_add_scale(SingleMeter);
 
@@ -520,7 +572,11 @@ void Keyboard_cb(lv_event_t * event)
 }
 void Ui_Eichen_Start(lv_event_t * e)
 {
-	// Your code here
+	SendCommand(ActivePeer, "Eichen");
+	_ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMenu_screen_init);
 }
 
-
+void Ui_Volt_Prepare(lv_event_t * e)
+{
+	if (ActivePeer) lv_label_set_text(ui_LblVoltPeer, ActivePeer->Name);
+}

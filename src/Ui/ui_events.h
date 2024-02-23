@@ -27,7 +27,6 @@ void Ui_Single_Leave(lv_event_t * e);
 void Ui_Multi_Next(lv_event_t * e);
 void Ui_Multi_Last(lv_event_t * e);
 void Ui_Multi_Prepare(lv_event_t * e);
-void Ui_Multi_Panel1_Click(lv_event_t * e);
 void Ui_Multi_Panel1_Long(lv_event_t * e);
 void Ui_Peer_Prepare(lv_event_t * e);
 void Ui_Peer_Next(lv_event_t * e);
@@ -35,7 +34,13 @@ void Ui_Peer_Last(lv_event_t * e);
 void Ui_Peer_Restart(lv_event_t * e);
 void Ui_Peer_Reset(lv_event_t * e);
 void Ui_Peer_ToggleSleep(lv_event_t * e);
-void Ui_Peer_Volt(lv_event_t * e);
+void Ui_Peer_ToggleDemo(lv_event_t * e);
+void Ui_Eichen_Start(lv_event_t * e);
+void Ui_Volt_Prepare(lv_event_t * e);
+void Ui_PeriphChoice_Next(lv_event_t * e);
+void Ui_PeriphChoice_Last(lv_event_t * e);
+void Ui_PeriphChoice_Click(lv_event_t * e);
+void Ui_Periph_Choice_Prepare(lv_event_t * e);
 
 #ifdef __cplusplus
 } /*extern "C"*/

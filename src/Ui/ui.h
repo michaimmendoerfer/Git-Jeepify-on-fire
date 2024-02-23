@@ -118,15 +118,31 @@ extern lv_obj_t * ui_BtnPeer5Lbl1;
 void ui_event_BtnPeer6(lv_event_t * e);
 extern lv_obj_t * ui_BtnPeer6;
 extern lv_obj_t * ui_BtnPeer6Lbl1;
-// SCREEN: ui_ScreenEichen
-void ui_ScreenEichen_screen_init(void);
-extern lv_obj_t * ui_ScreenEichen;
-// SCREEN: ui_ScreenVolt
-void ui_ScreenVolt_screen_init(void);
-extern lv_obj_t * ui_ScreenVolt;
+// SCREEN: ui_ScrEichen
+void ui_ScrEichen_screen_init(void);
+extern lv_obj_t * ui_ScrEichen;
+extern lv_obj_t * ui_Label1;
+void ui_event_BtnEichenStart(lv_event_t * e);
+extern lv_obj_t * ui_BtnEichenStart;
+extern lv_obj_t * ui_BtnPeer4Lbl3;
+extern lv_obj_t * ui_LblEichenPeer;
+// SCREEN: ui_ScrVolt
+void ui_ScrVolt_screen_init(void);
+void ui_event_ScrVolt(lv_event_t * e);
+extern lv_obj_t * ui_ScrVolt;
 extern lv_obj_t * ui_Keyboard;
 extern lv_obj_t * ui_TxtVolt;
-extern lv_obj_t * ui_LblPeerName2;
+void ui_event_LblVoltPeer(lv_event_t * e);
+extern lv_obj_t * ui_LblVoltPeer;
+// SCREEN: ui_ScrPeriph
+void ui_ScrPeriph_screen_init(void);
+void ui_event_ScrPeriph(lv_event_t * e);
+extern lv_obj_t * ui_ScrPeriph;
+extern lv_obj_t * ui_ImgPeerChoice;
+extern lv_obj_t * ui_LblPeriphChoicePeer;
+extern lv_obj_t * ui_LblPeriphChoiceType;
+extern lv_obj_t * ui_LblPeriphChoiceOnline;
+extern lv_obj_t * ui_LblPeriphChoicePeriph;
 void ui_event____initial_actions0(lv_event_t * e);
 extern lv_obj_t * ui____initial_actions0;
 
@@ -136,7 +152,7 @@ LV_IMG_DECLARE(ui_img_menubtn2_png);    // assets\MenuBtn2.png
 LV_IMG_DECLARE(ui_img_menubtn3_png);    // assets\MenuBtn3.png
 LV_IMG_DECLARE(ui_img_menubtn4_png);    // assets\MenuBtn4.png
 LV_IMG_DECLARE(ui_img_rubicon_png);    // assets\Rubicon.png
-LV_IMG_DECLARE(ui_img_1404430020);    // assets\voltmeter-alt.png
+LV_IMG_DECLARE(ui_img_pdc_png);    // assets\pdc.png
 
 
 
