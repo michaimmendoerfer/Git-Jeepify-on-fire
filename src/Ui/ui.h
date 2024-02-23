@@ -10,7 +10,17 @@
 extern "C" {
 #endif
 
+#if defined __has_include
+#if __has_include("lvgl.h")
 #include "lvgl.h"
+#elif __has_include("lvgl/lvgl.h")
+#include "lvgl/lvgl.h"
+#else
+#include "lvgl.h"
+#endif
+#else
+#include "lvgl.h"
+#endif
 
 #include "ui_helpers.h"
 #include "ui_events.h"
@@ -111,18 +121,12 @@ extern lv_obj_t * ui_BtnPeer6Lbl1;
 // SCREEN: ui_ScreenEichen
 void ui_ScreenEichen_screen_init(void);
 extern lv_obj_t * ui_ScreenEichen;
-extern lv_obj_t * ui_LblEichenPeer;
-extern lv_obj_t * ui_Label2;
-void ui_event_BtnEichenStart(lv_event_t * e);
-extern lv_obj_t * ui_BtnEichenStart;
-extern lv_obj_t * ui_LblEichenStart;
 // SCREEN: ui_ScreenVolt
 void ui_ScreenVolt_screen_init(void);
 extern lv_obj_t * ui_ScreenVolt;
-void ui_event_Keyboard(lv_event_t * e);
 extern lv_obj_t * ui_Keyboard;
-extern lv_obj_t * ui_LblEichenPeer2;
 extern lv_obj_t * ui_TxtVolt;
+extern lv_obj_t * ui_LblPeerName2;
 void ui_event____initial_actions0(lv_event_t * e);
 extern lv_obj_t * ui____initial_actions0;
 
@@ -132,6 +136,7 @@ LV_IMG_DECLARE(ui_img_menubtn2_png);    // assets\MenuBtn2.png
 LV_IMG_DECLARE(ui_img_menubtn3_png);    // assets\MenuBtn3.png
 LV_IMG_DECLARE(ui_img_menubtn4_png);    // assets\MenuBtn4.png
 LV_IMG_DECLARE(ui_img_rubicon_png);    // assets\Rubicon.png
+LV_IMG_DECLARE(ui_img_1404430020);    // assets\voltmeter-alt.png
 
 
 
