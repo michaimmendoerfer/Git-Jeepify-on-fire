@@ -3,3 +3,8 @@
 // LVGL version: 8.3.6
 // Project name: Jeepify
 
+#include "../ui.h"
+
+void ui_comp_ImgButtonSwitchSmall_create_hook(lv_obj_t * comp)
+{
+}

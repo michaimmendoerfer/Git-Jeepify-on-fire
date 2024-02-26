@@ -1,4 +1,6 @@
-SET(SOURCES screens/ui_ScrMenu.c
+SET(SOURCES components/ui_comp_imgbuttonswitchsmall.c
+    components/ui_comp.c
+    screens/ui_ScrMenu.c
     screens/ui_ScrSettings.c
     screens/ui_ScrPeers.c
     screens/ui_ScrJSON.c
@@ -8,6 +10,7 @@ SET(SOURCES screens/ui_ScrMenu.c
     screens/ui_ScrEichen.c
     screens/ui_ScrVolt.c
     screens/ui_ScrPeriph.c
+    screens/ui_ScrSwitch.c
     ui.c
     components/ui_comp_hook.c
     ui_helpers.c
@@ -18,6 +21,10 @@ SET(SOURCES screens/ui_ScrMenu.c
     images/ui_img_menubtn3_png.c
     images/ui_img_menubtn4_png.c
     images/ui_img_rubicon_png.c
-    images/ui_img_pdc_png.c)
+    images/ui_img_418886360.c
+    images/ui_img_149381092.c
+    images/ui_img_pdc_png.c
+    images/ui_img_btn_off_png.c
+    images/ui_img_btn_png.c)
 
 add_library(ui ${SOURCES})

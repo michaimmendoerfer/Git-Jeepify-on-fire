@@ -24,4 +24,6 @@ struct_Peer   *FindNextPeer   (struct_Peer *Peer, int Type);
 struct_Peer   *FindPrevPeer   (struct_Peer *Peer, int Type);
 int            FindHighestPeerId();
 
+extern struct_MultiScreen Screen[MULTI_SCREENS];
+extern int ActiveMultiScreen; 
 #endif

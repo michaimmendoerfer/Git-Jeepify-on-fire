@@ -115,6 +115,7 @@ struct struct_Periph {
     float       OldValue;
     bool        Changed;
     int         PeerId;
+    void        *Peer;
 };
 typedef struct struct_Periph struct_Periph;
 
@@ -133,7 +134,7 @@ struct struct_Peer {
 };
 typedef struct struct_Peer struct_Peer;
 
-#define MULTI_SCREENS 20 // MAX_PEERS+10 0-9 Peers, 10-19 Multi
+#define MULTI_SCREENS 10 // MAX_PEERS+10 0-9 Peers, 10-19 Multi
 #define MULTI_SCREEN_ROWS 2
 #define MULTI_SCREEN_COLS 2
 #define PERIPH_PER_SCREEN MULTI_SCREEN_COLS*MULTI_SCREEN_ROWS

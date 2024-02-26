@@ -37,19 +37,15 @@ void   SendPing(lv_timer_t * timer);
 bool   ToggleSwitch(struct_Periph *Periph);
 void   SendCommand(struct_Peer *Peer, String Cmd);
 void   SendPairingConfirm(struct_Peer *Peer);
+void   MultiScreenAddPeriph(struct_Periph *Periph, uint8_t Pos);
 
 void   CheckButtonVars();
 bool   ToggleSleepMode();
 bool   ToggleDebugMode();
 bool   TogglePairMode();
 
-void   ShowMessage(String Msg);
-void   ShowSingle(struct_Periph *Periph);
-void   ShowMulti(struct_MultiScreen *ActiveScreen);
 void   CalibVolt();
 void   PrepareJSON();
-void   ShowPeer();
-
 void   PrintMAC(const uint8_t * mac_addr);
 void   WriteStringToCharArray(String S, char *C);
 #pragma endregion Function_Definitions
@@ -274,6 +270,14 @@ void loop() {
   delay(5);
 }
 #pragma endregion Main
+void MultiScreenAddPeriph(struct_Periph *Periph, uint8_t Pos)
+{
+    Screen[ActiveMultiScreen].Periph[Pos]   = Periph;
+    Screen[ActiveMultiScreen].PeriphId[Pos] = Periph->Id;
+    Screen[ActiveMultiScreen].Peer[Pos]     = FindPeerById(Periph->PeerId);
+    Screen[ActiveMultiScreen].PeerId[Pos]   = Periph->PeerId;
+    Screen[ActiveMultiScreen].Used          = true;
+}
 #pragma region Timer-Thing
 #pragma endregion Timer-Things
 #pragma region Send-Things

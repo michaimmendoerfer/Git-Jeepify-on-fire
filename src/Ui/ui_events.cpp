@@ -32,11 +32,13 @@ extern void SavePeers();
 extern void PrepareJSON();
 extern void CalibVolt();
 extern void SendCommand(struct_Peer *Peer, String Cmd);
+extern void MultiScreenAddPeriph(struct_Periph *Periph, uint8_t Pos);
 
 lv_obj_t *SingleMeter;
 lv_meter_indicator_t * SingleIndic;
 lv_meter_indicator_t * SingleIndicNeedle;
 lv_meter_scale_t * scale;
+uint8_t MultiPosToChange;
 
 
 lv_obj_t *Ui_LedSnd;
@@ -44,10 +46,17 @@ lv_obj_t *Ui_LedRcv;
 lv_obj_t *Ui_LedPair;
 
 lv_timer_t *SingleTimer;
+lv_timer_t *MultiTimer;
+lv_timer_t *SwitchTimer;
+
 void SingleUpdateTimer(lv_timer_t * timer);
+void MultiUpdateTimer(lv_timer_t * timer);
+void SwitchUpdateTimer(lv_timer_t * timer);
 void TopUpdateTimer(lv_timer_t * timer);
 void GenerateSingleScale(void);
 void Keyboard_cb(lv_event_t * event);
+void Ui_Multi_UpdatePanelValue(lv_obj_t *Panel, lv_obj_t *LabelValue, uint8_t Pos);
+
 
 extern volatile uint32_t TSMsgRcv;
 extern volatile uint32_t TSMsgSnd;
@@ -280,9 +289,7 @@ void Ui_Single_Last(lv_event_t * e)
 
 void Ui_Single_Prepare(lv_event_t * e)
 {
-	Serial.println("Single-Prepare");
-	//Serial.println(ActivePeer->Name);
-    //Serial.println(ActiveSens->Name);
+	if (DebugMode) Serial.println("Single-Prepare");
 
 	if (ActivePeer) lv_label_set_text(ui_LblSinglePeer, ActivePeer->Name);
 	if (ActiveSens) lv_label_set_text(ui_LblSinglePeriph, ActiveSens->Name);
@@ -291,7 +298,6 @@ void Ui_Single_Prepare(lv_event_t * e)
 
 	if (SingleTimer) lv_timer_pause(SingleTimer);
 	GenerateSingleScale();
-	//if (DebugMode) { Serial.print("Type:"); Serial.println(ActiveSens->Type); }
 	
 	if (!SingleTimer) { 
 		SingleTimer = lv_timer_create(SingleUpdateTimer, 500,  &user_data);
@@ -303,30 +309,28 @@ void Ui_Single_Prepare(lv_event_t * e)
 
 void SingleUpdateTimer(lv_timer_t * timer)
 {
-	if (0){
-		
 		char buf[10];
 		int nk = 0;
-		float value = ActiveSens->Value;
+		float value;
 
-		Serial.print(ActiveSens->Name);
-		Serial.println(value);
-		if      (value<10)  nk = 2;
-    	else if (value<100) nk = 1;
-    	else                nk = 0;
-
-    	if (value == -99) strcpy(buf, "--"); 
-    	else dtostrf(value, 0, nk, buf);
-
-		lv_meter_set_indicator_value(SingleMeter, SingleIndicNeedle, value*10);
-		lv_label_set_text(ui_LblSingleValue, buf);
-		if (DebugMode) { Serial.print("Single Needle updated with:"); Serial.println(value*10); }
+	if (ActiveSens){
+		value = ActiveSens->Value;
+		if (DebugMode) Serial.printf("Sensor: %s: %f\n", ActiveSens->Name, value);
 	}
 	else {
-		float RandomValue = random(20);
-		lv_meter_set_indicator_value(SingleMeter, SingleIndicNeedle, RandomValue);
-		if (DebugMode) { Serial.print("Single Needle updated with:"); Serial.println(RandomValue); }
+		value = random(20);
+		if (DebugMode) Serial.println("Sensor: filled with random value");
 	}
+
+	if      (value<10)  nk = 2;
+	else if (value<100) nk = 1;
+	else                nk = 0;
+
+	if (value == -99) strcpy(buf, "--"); 
+	else dtostrf(value, 0, nk, buf);
+
+	lv_meter_set_indicator_value(SingleMeter, SingleIndicNeedle, value*10);
+	lv_label_set_text(ui_LblSingleValue, buf);
 }
 
 void Ui_Single_Leave(lv_event_t * e)
@@ -405,32 +409,185 @@ void GenerateSingleScale(void)
 }
 #pragma endregion Screen_SingleMeter
 #pragma region Screen_MultiMeter
-/* Screen: MultiMeter*/
 void Ui_Multi_Next(lv_event_t * e)
 {
-	// Your code here
+	if (ActiveMultiScreen < MULTI_SCREENS-1)
+		ActiveMultiScreen++;
+	else ActiveMultiScreen = 0;
+	_ui_screen_change(&ui_ScrMulti, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMulti_screen_init);
 }
 
 void Ui_Multi_Last(lv_event_t * e)
 {
-	// Your code here
+	if (ActiveMultiScreen > 0)
+		ActiveMultiScreen--;
+	else ActiveMultiScreen = MULTI_SCREENS-1;
+
+	_ui_screen_change(&ui_ScrMulti, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMulti_screen_init);
 }
-void Ui_Multi_Panel1_Click(lv_event_t * e)
+void Ui_Multi_SetPanel1(lv_event_t * e)
 {
-	// Your code here
+	MultiPosToChange = 0;
+	_ui_screen_change(&ui_ScrPeriph, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeriph_screen_init);
 }
 
-void Ui_Multi_Panel1_Long(lv_event_t * e)
+void Ui_Multi_SetPanel2(lv_event_t * e)
 {
-	// Your code here
+	MultiPosToChange = 1;
+	_ui_screen_change(&ui_ScrPeriph, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeriph_screen_init);
 }
 
+void Ui_Multi_SetPanel3(lv_event_t * e)
+{
+	MultiPosToChange = 2;
+	_ui_screen_change(&ui_ScrPeriph, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeriph_screen_init);
+}
+
+void Ui_Multi_SetPanel4(lv_event_t * e)
+{
+	MultiPosToChange = 3;
+	_ui_screen_change(&ui_ScrPeriph, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeriph_screen_init);
+}
+void Ui_Multi_UpdatePanelValue(lv_obj_t *Panel, lv_obj_t *LabelValue, uint8_t Pos)
+{
+	char buf[10];
+	int nk = 0;
+	float value;
+	lv_color_t bg;
+
+	value = Screen[ActiveMultiScreen].Periph[Pos]->Value;
+	
+	if      (value<10)  nk = 2;
+	else if (value<100) nk = 1;
+	else                nk = 0;
+	if (value == -99) strcpy(buf, "--"); 
+	else dtostrf(value, 0, nk, buf);
+	
+	if (Screen[ActiveMultiScreen].Periph[Pos]->Type == SENS_TYPE_AMP) {
+		strcat(buf, " A");
+		if 		(value < 20) bg = lv_color_hex(0x135A25);
+		else if (value < 25) bg = lv_color_hex(0x7C7E26);
+		else 				 bg = lv_color_hex(0x88182C);
+		lv_obj_set_style_bg_color(Panel, bg, LV_PART_MAIN | LV_STATE_DEFAULT);
+	}
+	if (Screen[ActiveMultiScreen].Periph[Pos]->Type == SENS_TYPE_VOLT) {
+		strcat(buf, " V");
+		if 		(value < 13)   bg = lv_color_hex(0x135A25);
+		else if (value < 14.4) bg = lv_color_hex(0x7C7E26);
+		else 				   bg = lv_color_hex(0x88182C);
+		lv_obj_set_style_bg_color(Panel, bg, LV_PART_MAIN | LV_STATE_DEFAULT);
+	}
+	if (Screen[ActiveMultiScreen].Periph[Pos]->Type == SENS_TYPE_SWITCH) {
+		if (Screen[ActiveMultiScreen].Periph[Pos]->Value == 1) strcpy(buf, "on");
+		else strcpy(buf, "off");
+		lv_obj_set_style_bg_color(Panel, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+	}
+
+	lv_label_set_text(LabelValue, buf);
+}
 void Ui_Multi_Prepare(lv_event_t * e)
 {
-	// Your code here
+	static uint32_t user_data = 10;
+	if (MultiTimer) lv_timer_pause(MultiTimer);
+	
+	lv_label_set_text(ui_LblMultiName, Screen[ActiveMultiScreen].Name);
+
+	if (Screen[ActiveMultiScreen].Periph[0]) {
+		lv_label_set_text(ui_LblMultiPeriph1, Screen[ActiveMultiScreen].Periph[0]->Name);
+		lv_label_set_text(ui_LblMultiPeer1, Screen[ActiveMultiScreen].Peer[0]->Name);
+	}
+	if (Screen[ActiveMultiScreen].Periph[1]) {
+		lv_label_set_text(ui_LblMultiPeriph2, Screen[ActiveMultiScreen].Periph[1]->Name);
+		lv_label_set_text(ui_LblMultiPeer2, Screen[ActiveMultiScreen].Peer[1]->Name);
+	}
+	if (Screen[ActiveMultiScreen].Periph[2]) {
+		lv_label_set_text(ui_LblMultiPeriph3, Screen[ActiveMultiScreen].Periph[2]->Name);
+		lv_label_set_text(ui_LblMultiPeer3, Screen[ActiveMultiScreen].Peer[2]->Name);
+	}
+	if (Screen[ActiveMultiScreen].Periph[3]) {
+		lv_label_set_text(ui_LblMultiPeriph4, Screen[ActiveMultiScreen].Periph[3]->Name);
+		lv_label_set_text(ui_LblMultiPeer4, Screen[ActiveMultiScreen].Peer[3]->Name);
+	}
+
+	if (!MultiTimer) { 
+		MultiTimer = lv_timer_create(MultiUpdateTimer, 500,  &user_data);
+	}
+	else {
+		lv_timer_resume(MultiTimer);
+	}
+}
+
+void MultiUpdateTimer(lv_timer_t * timer)
+{
+	Ui_Multi_UpdatePanelValue(ui_PnlMulti1, ui_LblMultiValue1, 0);
+	Ui_Multi_UpdatePanelValue(ui_PnlMulti2, ui_LblMultiValue2, 1);
+	Ui_Multi_UpdatePanelValue(ui_PnlMulti3, ui_LblMultiValue3, 2);
+	Ui_Multi_UpdatePanelValue(ui_PnlMulti4, ui_LblMultiValue4, 3);
+}
+
+void Ui_Multi_Leave(lv_event_t * e)
+{
+	if (MultiTimer) lv_timer_pause(MultiTimer);
 }
 
 #pragma endregion Screen_MultiMeter
+#pragma region Screen_Switch
+void SwitchUpdateTimer(lv_timer_t * timer)
+{
+	if (ActiveSwitch){
+		if (ActiveSwitch->Value == 1) lv_imgbtn_set_state(ui_BtnImgSwitch, LV_IMGBTN_STATE_CHECKED_RELEASED);
+		if (ActiveSwitch->Value == 0) lv_imgbtn_set_state(ui_BtnImgSwitch, LV_IMGBTN_STATE_RELEASED);
+	}
+}
+
+void Ui_Switch_Next(lv_event_t * e)
+{
+	if (ActiveSwitch) {
+		ActiveSwitch = FindNextPeriph(ActiveSwitch, SENS_TYPE_SWITCH, false);
+	}
+	else {
+		ActiveSwitch = FindFirstPeriph(ActivePeer, SENS_TYPE_SWITCH, false);
+	}
+	
+	if (ActivePeer) lv_label_set_text(ui_LblSwitchPeer, ActivePeer->Name);
+	if (ActiveSwitch) lv_label_set_text(ui_LblSwitchPeriph, ActiveSwitch->Name);
+}
+
+void Ui_Switch_Last(lv_event_t * e)
+{
+	if (ActiveSwitch) {
+		ActiveSwitch = FindPrevPeriph(ActiveSwitch, SENS_TYPE_SWITCH, false);
+	}
+	else {
+		ActiveSwitch = FindFirstPeriph(ActivePeer, SENS_TYPE_SWITCH, false);
+	}
+	
+	if (ActivePeer) lv_label_set_text(ui_LblSwitchPeer, ActivePeer->Name);
+	if (ActiveSwitch) lv_label_set_text(ui_LblSwitchPeriph, ActiveSwitch->Name);
+}
+
+void Ui_Switch_Prepare(lv_event_t * e)
+{
+	if (DebugMode) Serial.println("Switch-Prepare");
+
+	if (ActivePeer) lv_label_set_text(ui_LblSwitchPeer, ActivePeer->Name);
+	if (ActiveSwitch) lv_label_set_text(ui_LblSwitchPeriph, ActiveSwitch->Name);
+	
+	static uint32_t user_data = 10;
+	if (!SwitchTimer) { 
+		SwitchTimer = lv_timer_create(SwitchUpdateTimer, 500,  &user_data);
+	}
+	else {
+		lv_timer_resume(SwitchTimer);
+	}
+}
+
+void Ui_Switch_Leave(lv_event_t * e)
+{
+	if (SwitchTimer) lv_timer_pause(SwitchTimer);
+}
+
+#pragma endregion Screen_Switch
 #pragma region Screen_PeriphChoice
 void Ui_PeriphChoice_Next(lv_event_t * e)
 {
@@ -450,7 +607,8 @@ void Ui_PeriphChoice_Last(lv_event_t * e)
 
 void Ui_PeriphChoice_Click(lv_event_t * e)
 {
-	// Your code here
+	MultiScreenAddPeriph(ActivePeriph, MultiPosToChange);
+	_ui_screen_change(&ui_ScrMulti, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMulti_screen_init);
 }
 
 void Ui_Periph_Choice_Prepare(lv_event_t * e)
@@ -470,7 +628,7 @@ void Ui_Periph_Choice_Prepare(lv_event_t * e)
 		if (millis()- ActivePeer->TSLastSeen > OFFLINE_INTERVAL) 
 			lv_label_set_text(ui_LblPeriphChoiceOnline, "Offline");
       	else 
-			lv_label_set_text(ui_LblPeriphChoiceOnline, "Offline");
+			lv_label_set_text(ui_LblPeriphChoiceOnline, "Online");
 
 		switch (ActivePeriph->Type) {
 			case SENS_TYPE_SWITCH:	lv_label_set_text(ui_LblPeriphChoiceType, "Switch"); break;
@@ -481,7 +639,7 @@ void Ui_Periph_Choice_Prepare(lv_event_t * e)
 	}
 }
 #pragma endregion Screen_PeriphChoice
-/* Timer*/
+#pragma region System_TimerAndInit
 void TopUpdateTimer(lv_timer_t * timer)
 {
 	if ((TSMsgSnd) and (millis() - TSMsgSnd < MSGLIGHT_INTERVAL)) {
@@ -570,6 +728,8 @@ void Keyboard_cb(lv_event_t * event)
     CalibVolt();
 	_ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMenu_screen_init);
 }
+#pragma endregion System_TimerAndInit
+#pragma region System_Eichen
 void Ui_Eichen_Start(lv_event_t * e)
 {
 	SendCommand(ActivePeer, "Eichen");
@@ -580,3 +740,5 @@ void Ui_Volt_Prepare(lv_event_t * e)
 {
 	if (ActivePeer) lv_label_set_text(ui_LblVoltPeer, ActivePeer->Name);
 }
+#pragma endregion System_Eichen
+
