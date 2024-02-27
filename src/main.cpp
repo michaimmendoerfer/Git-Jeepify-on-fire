@@ -1,7 +1,7 @@
-#define NODE_NAME "Monitor-1"
+#define NODE_NAME "Monitor-2"
 #define NODE_TYPE MONITOR_ROUND
 
-#define VERSION   "V 2.01"
+#define VERSION   "V 2.51"
 
 #pragma region Includes
 #include <Arduino.h>
