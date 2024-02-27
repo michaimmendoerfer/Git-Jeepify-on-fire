@@ -1,4 +1,5 @@
-SET(SOURCES components/ui_comp_imgbuttonswitchsmall.c
+SET(SOURCES components/ui_comp_btnsenssmall.c
+    components/ui_comp_buttonswitchsmall.c
     components/ui_comp.c
     screens/ui_ScrMenu.c
     screens/ui_ScrSettings.c
@@ -21,8 +22,8 @@ SET(SOURCES components/ui_comp_imgbuttonswitchsmall.c
     images/ui_img_menubtn3_png.c
     images/ui_img_menubtn4_png.c
     images/ui_img_rubicon_png.c
-    images/ui_img_418886360.c
-    images/ui_img_149381092.c
+    images/ui_img_1527887470.c
+    images/ui_img_551600910.c
     images/ui_img_pdc_png.c
     images/ui_img_btn_off_png.c
     images/ui_img_btn_png.c)

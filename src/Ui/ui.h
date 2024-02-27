@@ -89,31 +89,15 @@ extern lv_obj_t * ui_LblSinglePeriph;
 void ui_ScrMulti_screen_init(void);
 void ui_event_ScrMulti(lv_event_t * e);
 extern lv_obj_t * ui_ScrMulti;
+extern lv_obj_t * ui_BtnSwitchSmall1;
+extern lv_obj_t * ui_BtnSwitchSmall2;
+extern lv_obj_t * ui_BtnSwitchSmall3;
+extern lv_obj_t * ui_BtnSwitchSmall4;
+extern lv_obj_t * ui_BtnSensSmall1;
+extern lv_obj_t * ui_BtnSensSmall2;
+extern lv_obj_t * ui_BtnSensSmall3;
+extern lv_obj_t * ui_BtnSensSmall4;
 extern lv_obj_t * ui_LblMultiName;
-void ui_event_PnlMulti1(lv_event_t * e);
-extern lv_obj_t * ui_PnlMulti1;
-extern lv_obj_t * ui_LblMultiPeriph1;
-extern lv_obj_t * ui_LblMultiPeer1;
-extern lv_obj_t * ui_LblMultiValue1;
-void ui_event_PnlMulti2(lv_event_t * e);
-extern lv_obj_t * ui_PnlMulti2;
-extern lv_obj_t * ui_LblMultiPeriph2;
-extern lv_obj_t * ui_LblMultiPeer2;
-extern lv_obj_t * ui_LblMultiValue2;
-void ui_event_PnlMulti3(lv_event_t * e);
-extern lv_obj_t * ui_PnlMulti3;
-extern lv_obj_t * ui_LblMultiPeriph3;
-extern lv_obj_t * ui_LblMultiPeer3;
-extern lv_obj_t * ui_LblMultiValue3;
-void ui_event_PnlMulti4(lv_event_t * e);
-extern lv_obj_t * ui_PnlMulti4;
-extern lv_obj_t * ui_LblMultiPeriph4;
-extern lv_obj_t * ui_LblMultiPeer4;
-extern lv_obj_t * ui_LblMultiValue4;
-extern lv_obj_t * ui_ImgButtonSwitchSmall1;
-extern lv_obj_t * ui_ImgButtonSwitchSmall2;
-extern lv_obj_t * ui_ImgButtonSwitchSmall3;
-extern lv_obj_t * ui_ImgButtonSwitchSmall4;
 // SCREEN: ui_ScrPeer
 void ui_ScrPeer_screen_init(void);
 void ui_event_ScrPeer(lv_event_t * e);
@@ -180,8 +164,8 @@ LV_IMG_DECLARE(ui_img_menubtn2_png);    // assets\MenuBtn2.png
 LV_IMG_DECLARE(ui_img_menubtn3_png);    // assets\MenuBtn3.png
 LV_IMG_DECLARE(ui_img_menubtn4_png);    // assets\MenuBtn4.png
 LV_IMG_DECLARE(ui_img_rubicon_png);    // assets\Rubicon.png
-LV_IMG_DECLARE(ui_img_418886360);    // assets\Btn-small-off.png
-LV_IMG_DECLARE(ui_img_149381092);    // assets\Btn-small-on.png
+LV_IMG_DECLARE(ui_img_1527887470);    // assets\Btn-small-off-100.png
+LV_IMG_DECLARE(ui_img_551600910);    // assets\Btn-small-on-100.png
 LV_IMG_DECLARE(ui_img_pdc_png);    // assets\pdc.png
 LV_IMG_DECLARE(ui_img_btn_off_png);    // assets\Btn_off.png
 LV_IMG_DECLARE(ui_img_btn_png);    // assets\Btn.png

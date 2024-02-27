@@ -55,8 +55,7 @@ void SwitchUpdateTimer(lv_timer_t * timer);
 void TopUpdateTimer(lv_timer_t * timer);
 void GenerateSingleScale(void);
 void Keyboard_cb(lv_event_t * event);
-void Ui_Multi_UpdatePanelValue(lv_obj_t *Panel, lv_obj_t *LabelValue, uint8_t Pos);
-
+void Ui_Multi_Set_Tile(uint8_t Pos);
 
 extern volatile uint32_t TSMsgRcv;
 extern volatile uint32_t TSMsgSnd;
@@ -448,43 +447,7 @@ void Ui_Multi_SetPanel4(lv_event_t * e)
 	MultiPosToChange = 3;
 	_ui_screen_change(&ui_ScrPeriph, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeriph_screen_init);
 }
-void Ui_Multi_UpdatePanelValue(lv_obj_t *Panel, lv_obj_t *LabelValue, uint8_t Pos)
-{
-	char buf[10];
-	int nk = 0;
-	float value;
-	lv_color_t bg;
 
-	value = Screen[ActiveMultiScreen].Periph[Pos]->Value;
-	
-	if      (value<10)  nk = 2;
-	else if (value<100) nk = 1;
-	else                nk = 0;
-	if (value == -99) strcpy(buf, "--"); 
-	else dtostrf(value, 0, nk, buf);
-	
-	if (Screen[ActiveMultiScreen].Periph[Pos]->Type == SENS_TYPE_AMP) {
-		strcat(buf, " A");
-		if 		(value < 20) bg = lv_color_hex(0x135A25);
-		else if (value < 25) bg = lv_color_hex(0x7C7E26);
-		else 				 bg = lv_color_hex(0x88182C);
-		lv_obj_set_style_bg_color(Panel, bg, LV_PART_MAIN | LV_STATE_DEFAULT);
-	}
-	if (Screen[ActiveMultiScreen].Periph[Pos]->Type == SENS_TYPE_VOLT) {
-		strcat(buf, " V");
-		if 		(value < 13)   bg = lv_color_hex(0x135A25);
-		else if (value < 14.4) bg = lv_color_hex(0x7C7E26);
-		else 				   bg = lv_color_hex(0x88182C);
-		lv_obj_set_style_bg_color(Panel, bg, LV_PART_MAIN | LV_STATE_DEFAULT);
-	}
-	if (Screen[ActiveMultiScreen].Periph[Pos]->Type == SENS_TYPE_SWITCH) {
-		if (Screen[ActiveMultiScreen].Periph[Pos]->Value == 1) strcpy(buf, "on");
-		else strcpy(buf, "off");
-		lv_obj_set_style_bg_color(Panel, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-	}
-
-	lv_label_set_text(LabelValue, buf);
-}
 void Ui_Multi_Prepare(lv_event_t * e)
 {
 	static uint32_t user_data = 10;
@@ -492,21 +455,8 @@ void Ui_Multi_Prepare(lv_event_t * e)
 	
 	lv_label_set_text(ui_LblMultiName, Screen[ActiveMultiScreen].Name);
 
-	if (Screen[ActiveMultiScreen].Periph[0]) {
-		lv_label_set_text(ui_LblMultiPeriph1, Screen[ActiveMultiScreen].Periph[0]->Name);
-		lv_label_set_text(ui_LblMultiPeer1, Screen[ActiveMultiScreen].Peer[0]->Name);
-	}
-	if (Screen[ActiveMultiScreen].Periph[1]) {
-		lv_label_set_text(ui_LblMultiPeriph2, Screen[ActiveMultiScreen].Periph[1]->Name);
-		lv_label_set_text(ui_LblMultiPeer2, Screen[ActiveMultiScreen].Peer[1]->Name);
-	}
-	if (Screen[ActiveMultiScreen].Periph[2]) {
-		lv_label_set_text(ui_LblMultiPeriph3, Screen[ActiveMultiScreen].Periph[2]->Name);
-		lv_label_set_text(ui_LblMultiPeer3, Screen[ActiveMultiScreen].Peer[2]->Name);
-	}
-	if (Screen[ActiveMultiScreen].Periph[3]) {
-		lv_label_set_text(ui_LblMultiPeriph4, Screen[ActiveMultiScreen].Periph[3]->Name);
-		lv_label_set_text(ui_LblMultiPeer4, Screen[ActiveMultiScreen].Peer[3]->Name);
+	for (int i=0; i<4; i++) {
+		if (Screen[ActiveMultiScreen].Periph[i]) Ui_Multi_Set_Tile(i);
 	}
 
 	if (!MultiTimer) { 
@@ -516,13 +466,86 @@ void Ui_Multi_Prepare(lv_event_t * e)
 		lv_timer_resume(MultiTimer);
 	}
 }
+void Ui_Multi_Set_Tile(uint8_t Pos)
+{
+	lv_obj_t *TileActive; 
+	lv_obj_t *TileInActive; 
+	if (Screen[ActiveMultiScreen].Periph[Pos]->Type == SENS_TYPE_SENS) 
+	{
+		TileActive   = lv_obj_get_child(lv_scr_act(), Pos+4);
+		TileInActive = lv_obj_get_child(lv_scr_act(), Pos);
+	}
+	if (Screen[ActiveMultiScreen].Periph[Pos]->Type == SENS_TYPE_SWITCH) 
+	{
+		TileActive   = lv_obj_get_child(lv_scr_act(), Pos);
+		TileInActive = lv_obj_get_child(lv_scr_act(), Pos+4);
+	}
 
+	lv_obj_clear_flag(TileActive, LV_OBJ_FLAG_HIDDEN);
+	lv_obj_add_flag(TileInActive, LV_OBJ_FLAG_HIDDEN);
+
+	lv_label_set_text(lv_obj_get_child(TileActive, 0), Screen[ActiveMultiScreen].Periph[Pos]->Name);
+	lv_label_set_text(lv_obj_get_child(TileActive, 2), Screen[ActiveMultiScreen].Peer[Pos]->Name);
+}
 void MultiUpdateTimer(lv_timer_t * timer)
 {
-	Ui_Multi_UpdatePanelValue(ui_PnlMulti1, ui_LblMultiValue1, 0);
-	Ui_Multi_UpdatePanelValue(ui_PnlMulti2, ui_LblMultiValue2, 1);
-	Ui_Multi_UpdatePanelValue(ui_PnlMulti3, ui_LblMultiValue3, 2);
-	Ui_Multi_UpdatePanelValue(ui_PnlMulti4, ui_LblMultiValue4, 3);
+	char buf[10];
+	int nk = 0;
+	float value;
+	lv_color_t bg;
+
+	for (int i=0; i<4; i++) {
+		lv_obj_t *TileActive; 
+		
+		value = Screen[ActiveMultiScreen].Periph[i]->Value;
+	
+		if      (value<10)  nk = 2;
+		else if (value<100) nk = 1;
+		else                nk = 0;
+
+		if (value == -99) strcpy(buf, "--"); 
+		else dtostrf(value, 0, nk, buf);
+
+		if (Screen[ActiveMultiScreen].Periph[i]->Type == SENS_TYPE_SENS)
+		{
+			TileActive = lv_obj_get_child(lv_scr_act(), i+4);
+			
+			if (Screen[ActiveMultiScreen].Periph[i]->Type == SENS_TYPE_AMP) 
+			{
+				strcat(buf, " A");
+				if 		(value < 20) bg = lv_color_hex(0x135A25);
+				else if (value < 25) bg = lv_color_hex(0x7C7E26);
+				else 				 bg = lv_color_hex(0x88182C);
+			}
+			if (Screen[ActiveMultiScreen].Periph[i]->Type == SENS_TYPE_VOLT) {
+				strcat(buf, " V");
+				if 		(value < 13)   bg = lv_color_hex(0x135A25);
+				else if (value < 14.4) bg = lv_color_hex(0x7C7E26);
+				else 				   bg = lv_color_hex(0x88182C);
+			}
+			lv_obj_set_style_bg_color(TileActive, bg, LV_PART_MAIN | LV_STATE_DEFAULT);
+			lv_label_set_text(lv_obj_get_child(TileActive, 2), buf);
+		}
+			
+		if (Screen[ActiveMultiScreen].Periph[i]->Type == SENS_TYPE_SWITCH) {
+			TileActive = lv_obj_get_child(lv_scr_act(), i);
+			
+			if (value == 1) 
+			{
+				lv_obj_add_state(TileActive, LV_STATE_CHECKED);
+			}
+			else
+			{
+				lv_obj_clear_state(TileActive, LV_STATE_CHECKED);
+			}
+		}
+
+		Serial.printf("MultiValueUpdate: setze Pos[%d]%s ($d) auf %s, ",
+			i, 
+			Screen[ActiveMultiScreen].Periph[i]->Name, 
+			Screen[ActiveMultiScreen].Periph[i]->Type, 
+			buf);
+	}
 }
 
 void Ui_Multi_Leave(lv_event_t * e)

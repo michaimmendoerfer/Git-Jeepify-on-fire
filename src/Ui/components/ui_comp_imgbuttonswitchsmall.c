@@ -13,12 +13,14 @@ lv_obj_t * ui_ImgButtonSwitchSmall_create(lv_obj_t * comp_parent)
 
     lv_obj_t * cui_ImgButtonSwitchSmall;
     cui_ImgButtonSwitchSmall = lv_imgbtn_create(comp_parent);
-    lv_imgbtn_set_src(cui_ImgButtonSwitchSmall, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_418886360, NULL);
-    lv_imgbtn_set_src(cui_ImgButtonSwitchSmall, LV_IMGBTN_STATE_PRESSED, NULL, &ui_img_418886360, NULL);
-    lv_imgbtn_set_src(cui_ImgButtonSwitchSmall, LV_IMGBTN_STATE_CHECKED_PRESSED, NULL, &ui_img_149381092, NULL);
-    lv_imgbtn_set_src(cui_ImgButtonSwitchSmall, LV_IMGBTN_STATE_CHECKED_RELEASED, NULL, &ui_img_149381092, NULL);
-    lv_obj_set_height(cui_ImgButtonSwitchSmall, 64);
+    lv_imgbtn_set_src(cui_ImgButtonSwitchSmall, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_1527887470, NULL);
+    lv_imgbtn_set_src(cui_ImgButtonSwitchSmall, LV_IMGBTN_STATE_PRESSED, NULL, &ui_img_1527887470, NULL);
+    lv_imgbtn_set_src(cui_ImgButtonSwitchSmall, LV_IMGBTN_STATE_CHECKED_PRESSED, NULL, &ui_img_551600910, NULL);
+    lv_imgbtn_set_src(cui_ImgButtonSwitchSmall, LV_IMGBTN_STATE_CHECKED_RELEASED, NULL, &ui_img_551600910, NULL);
+    lv_obj_set_height(cui_ImgButtonSwitchSmall, 100);
     lv_obj_set_width(cui_ImgButtonSwitchSmall, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_x(cui_ImgButtonSwitchSmall, -40);
+    lv_obj_set_y(cui_ImgButtonSwitchSmall, -36);
     lv_obj_set_align(cui_ImgButtonSwitchSmall, LV_ALIGN_CENTER);
     lv_obj_add_flag(cui_ImgButtonSwitchSmall, LV_OBJ_FLAG_CHECKABLE);     /// Flags
 
@@ -27,7 +29,7 @@ lv_obj_t * ui_ImgButtonSwitchSmall_create(lv_obj_t * comp_parent)
     lv_obj_set_width(cui_LblPeer, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(cui_LblPeer, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(cui_LblPeer, 0);
-    lv_obj_set_y(cui_LblPeer, 13);
+    lv_obj_set_y(cui_LblPeer, 10);
     lv_obj_set_align(cui_LblPeer, LV_ALIGN_CENTER);
     lv_label_set_text(cui_LblPeer, "Peer");
     lv_obj_set_style_text_color(cui_LblPeer, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -39,7 +41,7 @@ lv_obj_t * ui_ImgButtonSwitchSmall_create(lv_obj_t * comp_parent)
     lv_obj_set_width(cui_LblPeriph, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(cui_LblPeriph, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(cui_LblPeriph, 0);
-    lv_obj_set_y(cui_LblPeriph, -5);
+    lv_obj_set_y(cui_LblPeriph, -13);
     lv_obj_set_align(cui_LblPeriph, LV_ALIGN_CENTER);
     lv_obj_set_style_text_color(cui_LblPeriph, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(cui_LblPeriph, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
