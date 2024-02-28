@@ -85,19 +85,6 @@ extern lv_obj_t * ui_ScrSingle;
 extern lv_obj_t * ui_LblSinglePeer;
 extern lv_obj_t * ui_LblSingleValue;
 extern lv_obj_t * ui_LblSinglePeriph;
-// SCREEN: ui_ScrMulti
-void ui_ScrMulti_screen_init(void);
-void ui_event_ScrMulti(lv_event_t * e);
-extern lv_obj_t * ui_ScrMulti;
-extern lv_obj_t * ui_BtnSwitchSmall1;
-extern lv_obj_t * ui_BtnSwitchSmall2;
-extern lv_obj_t * ui_BtnSwitchSmall3;
-extern lv_obj_t * ui_BtnSwitchSmall4;
-extern lv_obj_t * ui_BtnSensSmall1;
-extern lv_obj_t * ui_BtnSensSmall2;
-extern lv_obj_t * ui_BtnSensSmall3;
-extern lv_obj_t * ui_BtnSensSmall4;
-extern lv_obj_t * ui_LblMultiName;
 // SCREEN: ui_ScrPeer
 void ui_ScrPeer_screen_init(void);
 void ui_event_ScrPeer(lv_event_t * e);
@@ -148,13 +135,20 @@ extern lv_obj_t * ui_LblPeriphChoicePeer;
 extern lv_obj_t * ui_LblPeriphChoiceType;
 extern lv_obj_t * ui_LblPeriphChoiceOnline;
 extern lv_obj_t * ui_LblPeriphChoicePeriph;
-// SCREEN: ui_ScrSwitch
-void ui_ScrSwitch_screen_init(void);
-void ui_event_ScrSwitch(lv_event_t * e);
-extern lv_obj_t * ui_ScrSwitch;
-extern lv_obj_t * ui_BtnImgSwitch;
-extern lv_obj_t * ui_LblSwitchPeer;
-extern lv_obj_t * ui_LblSwitchPeriph;
+// SCREEN: ui_ScrMulti
+void ui_ScrMulti_screen_init(void);
+void ui_event_ScrMulti(lv_event_t * e);
+extern lv_obj_t * ui_ScrMulti;
+extern lv_obj_t * ui_ButtonSwitchSmall1;
+extern lv_obj_t * ui_ButtonSwitchSmall2;
+extern lv_obj_t * ui_ButtonSwitchSmall3;
+extern lv_obj_t * ui_ButtonSwitchSmall4;
+extern lv_obj_t * ui_BtnSensSmall1;
+extern lv_obj_t * ui_BtnSensSmall2;
+extern lv_obj_t * ui_BtnSensSmall3;
+extern lv_obj_t * ui_BtnSensSmall4;
+extern lv_obj_t * ui_LblMultiName;
+extern lv_obj_t * ui_LblMultiName1;
 void ui_event____initial_actions0(lv_event_t * e);
 extern lv_obj_t * ui____initial_actions0;
 
@@ -164,11 +158,9 @@ LV_IMG_DECLARE(ui_img_menubtn2_png);    // assets\MenuBtn2.png
 LV_IMG_DECLARE(ui_img_menubtn3_png);    // assets\MenuBtn3.png
 LV_IMG_DECLARE(ui_img_menubtn4_png);    // assets\MenuBtn4.png
 LV_IMG_DECLARE(ui_img_rubicon_png);    // assets\Rubicon.png
+LV_IMG_DECLARE(ui_img_pdc_png);    // assets\pdc.png
 LV_IMG_DECLARE(ui_img_1527887470);    // assets\Btn-small-off-100.png
 LV_IMG_DECLARE(ui_img_551600910);    // assets\Btn-small-on-100.png
-LV_IMG_DECLARE(ui_img_pdc_png);    // assets\pdc.png
-LV_IMG_DECLARE(ui_img_btn_off_png);    // assets\Btn_off.png
-LV_IMG_DECLARE(ui_img_btn_png);    // assets\Btn.png
 
 
 

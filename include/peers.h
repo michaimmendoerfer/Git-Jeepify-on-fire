@@ -26,4 +26,16 @@ int            FindHighestPeerId();
 
 extern struct_MultiScreen Screen[MULTI_SCREENS];
 extern int ActiveMultiScreen; 
+extern struct_Peer   P[MAX_PEERS];
+extern struct_MultiScreen Screen[MULTI_SCREENS];
+
+extern struct_Peer *ActivePeer;
+extern struct_Peer *ActivePDC;
+extern struct_Peer *ActiveBat;
+extern struct_Peer *ActiveSelection;
+
+extern struct_Periph *ActiveSens;
+extern struct_Periph *ActiveSwitch;
+extern struct_Periph *ActivePeriph;
+
 #endif

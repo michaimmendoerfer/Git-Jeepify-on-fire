@@ -24,10 +24,6 @@ void Ui_Single_Next(lv_event_t * e);
 void Ui_Single_Last(lv_event_t * e);
 void Ui_Single_Prepare(lv_event_t * e);
 void Ui_Single_Leave(lv_event_t * e);
-void Ui_Multi_Next(lv_event_t * e);
-void Ui_Multi_Last(lv_event_t * e);
-void Ui_Multi_Prepare(lv_event_t * e);
-void Ui_Multi_Leave(lv_event_t * e);
 void Ui_Peer_Prepare(lv_event_t * e);
 void Ui_Peer_Next(lv_event_t * e);
 void Ui_Peer_Last(lv_event_t * e);
@@ -41,10 +37,8 @@ void Ui_PeriphChoice_Next(lv_event_t * e);
 void Ui_PeriphChoice_Last(lv_event_t * e);
 void Ui_PeriphChoice_Click(lv_event_t * e);
 void Ui_Periph_Choice_Prepare(lv_event_t * e);
-void Ui_Switch_Next(lv_event_t * e);
-void Ui_Switch_Last(lv_event_t * e);
-void Ui_Switch_Prepare(lv_event_t * e);
-void Ui_Switch_Leave(lv_event_t * e);
+void Ui_Multi_Prepare(lv_event_t * e);
+void Ui_Multi_Leave(lv_event_t * e);
 
 #ifdef __cplusplus
 } /*extern "C"*/

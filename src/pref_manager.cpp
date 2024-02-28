@@ -2,13 +2,10 @@
 #include <Preferences.h>
 #include <esp_now.h>
 #include <WiFi.h>
-#include "pref-manager.h"
+#include "pref_manager.h"
 #include "peers.h"
 
 void   PrintMAC(const uint8_t * mac_addr);
-
-extern struct_Peer   P[MAX_PEERS];
-extern struct_MultiScreen Screen[MULTI_SCREENS];
 
 extern struct_Periph *ActiveSens;
 extern struct_Periph *ActiveSwitch;
@@ -22,14 +19,24 @@ Preferences preferences;
 
 int GetPeerCount() { return PeerCount; }
 
+void testP(){
+  for (int i=0; i<MAX_PERIPHERALS; i++) 
+  {
+      Serial.printf("P[0].Periph[%d].Name = %s, &Name = ", i, P[0].Periph[i].Name);
+      Serial.println((unsigned)(&P[0].Periph[i].Name[0]), HEX);
+
+      struct_Peer *Peer = FindFirstPeer(MODULE_ALL);
+      Serial.println(Peer->Periph[2].Name);
+  }
+}
+
 void ReportAll() {
   char Buf[100];
   String BufS;
   Serial.println("Report-All");
-  preferences.begin("JeepifyPeers", true);
-  
-  for (int PNr=0; PNr< MAX_PEERS; PNr++) {
-    snprintf(Buf, sizeof(Buf), "%d:%s(%d) - ID:%d -  ", PNr, P[PNr].Name, P[PNr].Type, P[PNr].Id);
+  Serial.print("in Report &P"); Serial.print((long) &P);
+  for (int PNr=0; PNr< MAX_PEERS; PNr++) {      
+    snprintf(Buf, sizeof(Buf), "%d:%s(%d) - ID:%d ---- ", PNr, P[PNr].Name, P[PNr].Type, P[PNr].Id);
     Serial.print(Buf);
     for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
       snprintf(Buf, sizeof(Buf), "P%d:%s(%d), ", Si, P[PNr].Periph[Si].Name, P[PNr].Periph[Si].Type);
@@ -39,21 +46,42 @@ void ReportAll() {
   }
   
   for (int s=0; s<MULTI_SCREENS; s++) {
+    Serial.print(Screen[s].Name); Serial.print(": ");
     (Screen[s].Used) ? Serial.println("used") : Serial.println("not used");
+    
     if (Screen[s].Used) {
       snprintf(Buf, sizeof(Buf), "S%d:%s, Id=%d - ", s, Screen[s].Name, Screen[s].Id); Serial.println(Buf);
-      for (int p=0; p<4; p++) {
-        if (Screen[s].Periph[p]) {
-          
-          Serial.print(p);
-          snprintf(Buf, sizeof(Buf), ": PeerId=%d, PeriphId=%d, PeriphName=%s", Screen[s].Periph[p]->PeerId, Screen[s].PeriphId[p], Screen[s].Periph[p]->Name);
+      for (int p=0; p<PERIPH_PER_SCREEN; p++) {
+        if (Screen[s].Periph[p]->Type > 0) {
+          snprintf(Buf, sizeof(Buf), "---- %d: PeerId=%d, PeriphId=%d, PeriphName=%s", p, Screen[s].Periph[p]->PeerId, Screen[s].PeriphId[p], Screen[s].Periph[p]->Name);
           Serial.println(Buf);
         }
       }
       Serial.println();
     }
   }
-  preferences.end();
+}
+void ReportScreen(int s) {
+  char Buf[100];
+  String BufS;
+  Serial.println("Report-Screen");
+  
+  Serial.print(Screen[s].Name); Serial.print(": ");
+  (Screen[s].Used) ? Serial.println("used") : Serial.println("not used");
+  
+  if (Screen[s].Used) {
+    snprintf(Buf, sizeof(Buf), "S%d:%s, Id=%d - ", s, Screen[s].Name, Screen[s].Id); Serial.println(Buf);
+    for (int p=0; p<PERIPH_PER_SCREEN; p++) {
+      if (Screen[s].Periph[p]->Type > 0) {
+        Serial.print("---Value=");
+        Serial.print(Screen[s].Periph[p]->Value, 2);
+        snprintf(Buf, sizeof(Buf), ": ,Name=%s, PeerId=%d, PeriphId=%d", Screen[s].Periph[p]->Name, Screen[s].Periph[p]->PeerId, Screen[s].PeriphId[p]);
+        Serial.println(Buf);
+      }
+    }
+    Serial.println();
+  }
+
 }
 void SavePeers() {
   Serial.println("SavePeers...");
@@ -76,6 +104,7 @@ void SavePeers() {
   preferences.end();
 
   ChangesSaved = true;
+  ReportAll();
 }
 void GetPeers() {
   preferences.begin("JeepifyPeers", true);

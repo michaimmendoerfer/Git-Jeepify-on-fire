@@ -2,13 +2,6 @@
 
 void   PrintMAC(const uint8_t * mac_addr);
 
-struct_Peer   P[MAX_PEERS];
-struct_Peer   *ActivePeer, *ActivePDC, *ActiveBat, *ActiveSelection;
-struct_Periph *ActiveSens, *ActiveSwitch, *ActivePeriph;
-
-struct_MultiScreen Screen[MULTI_SCREENS];
-int ActiveMultiScreen = 0; 
-
 struct_Periph *FindFirstPeriph(struct_Peer *Peer, int Type, bool OnlyActual){
   if (!Peer) Peer = FindFirstPeer(MODULE_ALL);
    if (Peer) {

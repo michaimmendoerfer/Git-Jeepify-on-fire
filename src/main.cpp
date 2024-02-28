@@ -13,11 +13,12 @@
 #include <Preferences.h>
 #include "CST816D.h"
 #include "peers.h"
-#include "pref-manager.h"
+#include "pref_manager.h"
 #include <lvgl.h>
 #include "Ui\ui.h"
 #include "Ui\ui_events.h" 
 
+extern void testP();
 #define TFT_HOR_RES   240
 #define TFT_VER_RES   240
 #define DRAW_BUF_SIZE (TFT_HOR_RES * TFT_VER_RES / 10 * (LV_COLOR_DEPTH / 8))
@@ -50,6 +51,14 @@ void   PrintMAC(const uint8_t * mac_addr);
 void   WriteStringToCharArray(String S, char *C);
 #pragma endregion Function_Definitions
 #pragma region Globals
+
+struct_Peer   P[MAX_PEERS];
+struct_Peer   *ActivePeer, *ActivePDC, *ActiveBat, *ActiveSelection;
+struct_Periph *ActiveSens, *ActiveSwitch, *ActivePeriph;
+
+struct_MultiScreen Screen[MULTI_SCREENS];
+int ActiveMultiScreen = 0; 
+
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t buf1[ TFT_HOR_RES * TFT_VER_RES / 10 ];
 //static lv_color_t buf2[ TFT_HOR_RES * TFT_VER_RES / 10 ];
@@ -75,9 +84,6 @@ volatile uint32_t TSMsgPair = 0;
 volatile uint32_t TSPair    = 0;
 
 lv_timer_t *WDButtonVars;
-
-extern struct_Peer   P[MAX_PEERS];
-extern struct_MultiScreen Screen[MULTI_SCREENS];
 
 extern Preferences preferences;
 extern struct_Peer *ActivePeer;
@@ -115,17 +121,20 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
       if (isBat(Peer)) TSMsgBat = TSMsgRcv;
       if (isPDC(Peer)) TSMsgPDC = TSMsgRcv;
 
-
-      
       if (doc["Pairing"] == "add me") { SendPairingConfirm(Peer); }
       else {
         for (int i=0; i<MAX_PERIPHERALS; i++) {
+          
+          //Serial.print("checking for: "); Serial.println(Peer->Periph[i].Name);
+          
           if (doc.containsKey(Peer->Periph[i].Name)) {
             float TempSensor = (float)doc[Peer->Periph[i].Name];
-        
+            ////Serial.print(Peer->Periph[i].Name); Serial.print(" found = "); Serial.println(TempSensor);
             if (TempSensor != Peer->Periph[i].Value) {
               Peer->Periph[i].Value = TempSensor;
               Peer->Periph[i].Changed = true;
+              //Serial.print(Peer->Periph[i].Name); Serial.print(" is now = "); Serial.println(Peer->Periph[i].Value);
+            
             }
           }
           if (doc.containsKey("Status")) {
@@ -158,19 +167,37 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
           
           for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
             snprintf(Buf, sizeof(Buf), "T%d", Si);        // Type0
+            Serial.print("Check Pairing for: "); Serial.println(Buf);
             if (doc.containsKey(Buf)) {
+              Serial.print("Pairing found: "); Serial.println(Buf);
+            
               Peer->Periph[Si].Type = doc[Buf];
+              Serial.println("Peer->Periph["); Serial.print(Si); Serial.print("].Type is now: "); Serial.println(Peer->Periph[Si].Type);
+           
+              Serial.println("P[0].Periph[2].Name is now: "); Serial.println(P[0].Periph[2].Name);
+           
               snprintf(Buf, sizeof(Buf), "N%d", Si);      // Name0
               strcpy(Peer->Periph[Si].Name, doc[Buf]);
+              Serial.println("Peer->Periph["); Serial.print(Si); Serial.print("].Name is now: "); Serial.println(Peer->Periph[Si].Name);
+           
               Peer->Periph[Si].Id = Si+1; //PeriphId starts with 1
               Peer->Periph[Si].PeerId = Peer->Id;
             }
           }   
+
+          strcpy(P[0].Periph[2].Name, "TEst");
+          for (int i=0; i<MAX_PERIPHERALS; i++) 
+  {
+      Serial.printf("VT - P[0].Periph[%d].Name = %s, &Name = ", i, P[0].Periph[i].Name);
+      Serial.println((unsigned)(&P[0].Periph[i].Name[0]), HEX);
+  }
+  testP();
+  Serial.println(Peer->Periph[2].Name);
+          ReportAll();
           SavePeers();
           RegisterPeers();
-          
           SendPairingConfirm(Peer);
-          
+          Serial.println("n<ch pairinconf. - P[0].Periph[2].Name is now: "); Serial.println(P[0].Periph[2].Name);
           ReadyToPair = false; TSPair = 0;
         }
       }
@@ -183,7 +210,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   }
 }
 void setup() {
-  Serial.begin(74880);
+  Serial.begin(115000);
 
   //TFT & LVGL
   tft.init();
