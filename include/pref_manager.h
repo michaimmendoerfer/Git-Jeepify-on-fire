@@ -1,7 +1,7 @@
 #ifndef PREF_MANAGER_H
 #define PREF_MANAGER_H
 
-#include "../../jeepify.h"
+#include <Preferences.h>
 
 void   SavePeers();
 void   GetPeers();

@@ -11,7 +11,6 @@
 #include <esp_now.h>
 #include <WiFi.h>
 #include <ArduinoJson.h>
-#include <Preferences.h>
 #include "CST816D.h"
 #include "peers.h"
 #include "pref_manager.h"
@@ -23,6 +22,7 @@
 #define TFT_HOR_RES   240
 #define TFT_VER_RES   240
 #define DRAW_BUF_SIZE (TFT_HOR_RES * TFT_VER_RES / 10 * (LV_COLOR_DEPTH / 8))
+
 TFT_eSPI tft = TFT_eSPI(TFT_HOR_RES, TFT_VER_RES); /* TFT instance */
 CST816D Touch(I2C_SDA, I2C_SCL, TP_RST, TP_INT);
 
@@ -49,6 +49,7 @@ volatile uint32_t TSMsgPair = 0;
 volatile uint32_t TSPair    = 0;
 
 lv_timer_t *WDButtonVars;
+extern void ReportAll2();
 
 #pragma endregion Globals
 #pragma region Main
@@ -149,7 +150,6 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
                     for (int i=0; i<MAX_PERIPHERALS; i++) 
                     {
                         Serial.printf("%d-%s (%d) - &Periph.Name: ", i, Peer->Periph[i].Name, Peer->Periph[i].Type) ;
-                        Serial.println((unsigned)(&Peer.Periph[i].Name[0]), HEX);
                     }
                     
                     ReportAll();
@@ -170,84 +170,114 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 }
 void setup() 
 {
-  Serial.begin(115000);
+    Serial.begin(115000);
 
-  //TFT & LVGL
-  tft.init();
-  tft.setRotation(0);
-  tft.setSwapBytes(true);
-  tft.begin();
-  Touch.begin();
+    //TFT & LVGL
+    tft.init();
+    tft.setRotation(0);
+    tft.setSwapBytes(true);
+    tft.begin();
+    Touch.begin();
+      
+    lv_init();
     
-  lv_init();
-  
-  lv_disp_draw_buf_init( &draw_buf, buf1, NULL, TFT_HOR_RES * TFT_VER_RES / 10 );
+    lv_disp_draw_buf_init( &draw_buf, buf1, NULL, TFT_HOR_RES * TFT_VER_RES / 10 );
 
-  //Display-Driver
-  static lv_disp_drv_t disp_drv;
-  lv_disp_drv_init( &disp_drv );
-  disp_drv.hor_res = TFT_HOR_RES;
-  disp_drv.ver_res = TFT_VER_RES;
-  disp_drv.flush_cb = my_disp_flush;
-  disp_drv.draw_buf = &draw_buf;
-  lv_disp_drv_register( &disp_drv );
+    //Display-Driver
+    static lv_disp_drv_t disp_drv;
+    lv_disp_drv_init( &disp_drv );
+    disp_drv.hor_res = TFT_HOR_RES;
+    disp_drv.ver_res = TFT_VER_RES;
+    disp_drv.flush_cb = my_disp_flush;
+    disp_drv.draw_buf = &draw_buf;
+    lv_disp_drv_register( &disp_drv );
 
-  //Touch-Driver
-  static lv_indev_drv_t indev_drv;
-  lv_indev_drv_init( &indev_drv );
-  indev_drv.type = LV_INDEV_TYPE_POINTER;
-  indev_drv.read_cb = my_touchpad_read;
-  lv_indev_drv_register( &indev_drv );
+    //Touch-Driver
+    static lv_indev_drv_t indev_drv;
+    lv_indev_drv_init( &indev_drv );
+    indev_drv.type = LV_INDEV_TYPE_POINTER;
+    indev_drv.read_cb = my_touchpad_read;
+    lv_indev_drv_register( &indev_drv );
 
-  //ESP-Now
-  WiFi.mode(WIFI_STA);
-  if (esp_now_init() != ESP_OK) { Serial.println("Error initializing ESP-NOW"); return; }
+    //ESP-Now
+    WiFi.mode(WIFI_STA);
+    if (esp_now_init() != ESP_OK) { Serial.println("Error initializing ESP-NOW"); return; }
 
-  esp_now_register_send_cb(OnDataSent);
-  esp_now_register_recv_cb(OnDataRecv);    
+    esp_now_register_send_cb(OnDataSent);
+    esp_now_register_recv_cb(OnDataRecv);    
 
-  //Get saved Peers  
-  preferences.begin("JeepifyInit", true);
-  DebugMode = preferences.getBool("DebugMode", true);
-  SleepMode = preferences.getBool("SleepMode", false);
-  preferences.end();
-
-  for (int s=0; s<MULTI_SCREENS; s++) {
-    Screen[s].Id = s;
-    snprintf(Screen[s].Name, sizeof(Screen[s].Name), "Scr-%d", s);
-    Screen[s].Used = false;
-    for (int p=0; p<PERIPH_PER_SCREEN; p++) {
-      Screen[s].PeriphId[p] = 0;
-      Screen[s].Periph[p]   = NULL;
-      Screen[s].PeerId[p]   = 0;
-      Screen[s].Peer[p]     = NULL;
+    //Get saved Peers  
+    preferences.begin("JeepifyInit", true);
+    DebugMode = preferences.getBool("DebugMode", true);
+    SleepMode = preferences.getBool("SleepMode", false);
+    preferences.end();
+    Serial.print("sizeof(P)=");Serial.println(sizeof(P));
+    for (int s=0; s<MULTI_SCREENS; s++) {
+        Screen[s].Id = s;
+        snprintf(Screen[s].Name, sizeof(Screen[s].Name), "Scr-%d", s);
+        Screen[s].Used = false;
+        for (int p=0; p<PERIPH_PER_SCREEN; p++) {
+          Screen[s].PeriphId[p] = 0;
+          Screen[s].Periph[p]   = NULL;
+          Screen[s].PeerId[p]   = 0;
+          Screen[s].Peer[p]     = NULL;
+        }
     }
-  }
 
-  for (int PNr=0; PNr<MAX_PEERS; PNr++) {
-    P[PNr].Id = 0;
-    P[PNr].Type = 0;
-    P[PNr].Name[0] = '\0';
-    P[PNr].PNumber = PNr;
-    for (int i; i<6; i++) P[PNr].BroadcastAddress[i] = 0;
-    for (int SNr=0; SNr<MAX_PERIPHERALS; SNr++) {
-      P[PNr].Periph[SNr].Name[0] = '\0';
-      P[PNr].Periph[SNr].Id      = 0;
-      P[PNr].Periph[SNr].Type    = 0;
-      P[PNr].Periph[SNr].PeerId  = 0;
+    for (int PNr=0; PNr<MAX_PEERS; PNr++) {
+        P[PNr].Id = 0;
+        P[PNr].Type = 0;
+        P[PNr].Name[0] = '\0';
+        P[PNr].PNumber = PNr;
+        for (int i; i<6; i++) P[PNr].BroadcastAddress[i] = 0;
+        for (int SNr=0; SNr<MAX_PERIPHERALS; SNr++) {
+          P[PNr].Periph[SNr].Name[0] = '\0';
+          P[PNr].Periph[SNr].Id      = 0;
+          P[PNr].Periph[SNr].Type    = 0;
+          P[PNr].Periph[SNr].PeerId  = 0;
+        }
     }
-  }
-
-  GetPeers();
-  RegisterPeers();
-  ReportAll();
-  
-  if (GetPeerCount() == 0) { Serial.println("PeerCount=0, RTP=True"); ReadyToPair = true; TSPair = millis();}
     
-  static uint32_t user_data = 10;
-  lv_timer_t * TimerPing = lv_timer_create(SendPing, PING_INTERVAL,  &user_data);
 
-  ui_init(); 
+    GetPeers();
+    RegisterPeers();
+    
+    strcpy(P[0].Periph[0].Name, "Periph-0");
+    strcpy(P[0].Periph[1].Name, "Periph-1");
+    strcpy(P[0].Periph[2].Name, "Periph-2");
+    strcpy(P[0].Periph[3].Name, "Periph-3");
+
+    P[0].Periph[0].Type = 2;
+    P[0].Periph[1].Type = 2;
+    P[0].Periph[2].Type = 2;
+    P[0].Periph[3].Type = 2;
+    Serial.println("Report-All - Array-Zugriff");
+    for (int PNr=0; PNr< 9; PNr++) {      
+      Serial.printf("%d:%s(%d) - ID:%d ---- ", PNr, P[PNr].Name, P[PNr].Type, P[PNr].Id);
+      for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
+          Serial.printf("%d:%s (%d), ", Si, P[PNr].Periph[Si].Name, P[PNr].Periph[Si].Type);
+      }
+    Serial.println();
+  }
+  
+    ReportAll();
+
+    Serial.println("Report-All - Array-Zugriff2");
+    for (int PNr=0; PNr< MAX_PEERS; PNr++) {      
+      Serial.printf("%d:%s(%d) - ID:%d ---- ", PNr, P[PNr].Name, P[PNr].Type, P[PNr].Id);
+      for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
+          Serial.printf("%d:%s (%d), ", Si, P[PNr].Periph[Si].Name, P[PNr].Periph[Si].Type);
+      }
+    Serial.println();
+  }
+  ReportAll2();
+    
+    if (GetPeerCount() == 0) { Serial.println("PeerCount=0, RTP=True"); ReadyToPair = true; TSPair = millis();}
+      
+    static uint32_t user_data = 10;
+    lv_timer_t * TimerPing = lv_timer_create(SendPing, PING_INTERVAL,  &user_data);
+
+    ui_init(); 
 }
 void loop() 
 {

@@ -1,12 +1,17 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#include <esp_now.h>
+#include <WiFi.h>
+#include <lvgl.h>
+
 void   PrintMAC(const uint8_t * mac_addr);
-void   my_disp_flush( lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p );
-void   my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data );
 
 void   OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status);
 void   OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len);
+
+void   my_disp_flush( lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p );
+void   my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data );
 
 void   SendPing(lv_timer_t * timer);
 bool   ToggleSwitch(struct_Periph *Periph);
@@ -24,8 +29,12 @@ void   PrepareJSON();
 void   PrintMAC(const uint8_t * mac_addr);
 void   WriteStringToCharArray(String S, char *C);
 
-extern bool DebugMode = true;
-extern bool SleepMode = false;
-extern bool ReadyToPair = false;
-extern bool ChangesSaved = true;
+extern bool DebugMode;
+extern bool SleepMode;
+extern bool ReadyToPair;
+extern bool ChangesSaved;
+
+extern volatile uint32_t TSMsgRcv;
+extern volatile uint32_t TSMsgSnd;
+extern volatile uint32_t TSPair;
 #endif

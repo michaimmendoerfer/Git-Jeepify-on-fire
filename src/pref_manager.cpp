@@ -1,9 +1,10 @@
 #include <Arduino.h>
+#include "peers.h"
 #include <Preferences.h>
 #include <esp_now.h>
 #include <WiFi.h>
 #include "pref_manager.h"
-#include "peers.h"
+#include "main.h"
 
 int PeerCount;
 
@@ -22,9 +23,12 @@ void testP(){
   }
 }
 
-void ReportAll() {
-  char Buf[100];
-  String BufS;
+void ReportAll()
+{
+  struct_Peer *Peer = FindFirstPeer(MODULE_ALL);
+  strcpy(Peer->Periph[2].Name, "huhu");
+  strcpy(P[0].Periph[3].Name, "bin da");
+
   Serial.println("Report-All - Array-Zugriff");
   for (int PNr=0; PNr< MAX_PEERS; PNr++) {      
     Serial.printf("%d:%s(%d) - ID:%d ---- ", PNr, P[PNr].Name, P[PNr].Type, P[PNr].Id);
@@ -92,7 +96,6 @@ void SavePeers() {
   preferences.end();
 
   ChangesSaved = true;
-  ReportAll();
 }
 void GetPeers() {
   preferences.begin("JeepifyPeers", true);

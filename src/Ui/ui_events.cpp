@@ -12,28 +12,7 @@
 #include "pref_manager.h"
 #include "Jeepify.h"
 #include "ui_events.h"
-
-extern bool ReadyToPair;
-extern bool DebugMode;
-extern bool ChangesSaved;
-
-extern struct_Peer *ActivePeer;
-extern struct_Peer *ActiveSelection;
-extern struct_Periph *ActiveSens;
-extern struct_Periph *ActiveSwitch;
-extern struct_Periph *ActivePeriph;
-
-extern struct_Peer   P[MAX_PEERS];
-
-extern bool ToggleDebugMode();
-extern bool ToggleSleepMode();
-extern bool TogglePairMode();
-
-extern void SavePeers();
-extern void PrepareJSON();
-extern void CalibVolt();
-extern void SendCommand(struct_Peer *Peer, String Cmd);
-extern void MultiScreenAddPeriph(struct_Periph *Periph, uint8_t Pos);
+#include "main.h"
 
 lv_obj_t *SingleMeter;
 lv_meter_indicator_t * SingleIndic;
@@ -51,17 +30,38 @@ lv_timer_t *SingleTimer;
 lv_timer_t *MultiTimer;
 lv_timer_t *SwitchTimer;
 
-void SingleUpdateTimer(lv_timer_t * timer);
-void MultiUpdateTimer(lv_timer_t * timer);
-void SwitchUpdateTimer(lv_timer_t * timer);
-void TopUpdateTimer(lv_timer_t * timer);
 void GenerateSingleScale(void);
 void Keyboard_cb(lv_event_t * event);
-void Ui_Multi_Set_Tile(uint8_t Pos);
 
-extern volatile uint32_t TSMsgRcv;
-extern volatile uint32_t TSMsgSnd;
-extern volatile uint32_t TSPair;
+void ReportAll2()
+{
+  struct_Peer *Peer = FindFirstPeer(MODULE_ALL);
+	Serial.print("sizeof(P)=");Serial.println(sizeof(P));
+    
+  Serial.println("Report-All2 - Array-Zugriff");
+  for (int PNr=0; PNr< MAX_PEERS; PNr++) {      
+    Serial.printf("%d:%s(%d) - ID:%d ---- ", PNr, P[PNr].Name, P[PNr].Type, P[PNr].Id);
+    for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
+      Serial.printf("%d:%s (%d), ", Si, P[PNr].Periph[Si].Name, P[PNr].Periph[Si].Type);
+    }
+    Serial.println();
+  }
+  
+  for (int s=0; s<MULTI_SCREENS; s++) {
+    Serial.print(Screen[s].Name); Serial.print(": ");
+    (Screen[s].Used) ? Serial.println("used") : Serial.println("not used");
+    
+    if (Screen[s].Used) {
+      Serial.printf("S%d:%s, Id=%d ---- ", s, Screen[s].Name, Screen[s].Id);
+      for (int p=0; p<PERIPH_PER_SCREEN; p++) {
+        if (Screen[s].Periph[p]->Type > 0) {
+          Serial.printf("%d: PeerId=%d, PeriphId=%d, PeriphName=%s", p, Screen[s].Periph[p]->PeerId, Screen[s].PeriphId[p], Screen[s].Periph[p]->Name);
+        }
+      }
+      Serial.println();
+    }
+  }
+}
 
 #pragma region Screen_Peer
 /* Screen: Peer*/
@@ -190,7 +190,6 @@ void Ui_Set_SavePeers(lv_event_t * e)
 }
 #pragma endregion Screen_Settings
 #pragma region Screen_Peers
-/* Screen: Peers*/
 void Ui_Peers_Prepare(lv_event_t * e)
 {
 	String Options = "";
@@ -253,7 +252,6 @@ void Ui_JSON_Prepare(lv_event_t * e)
 }
 #pragma endregion Screen_JSON
 #pragma region Screen_SingleMeter
-/*Screen: SingleMeter*/
 void Ui_Single_Next(lv_event_t * e)
 {	
 	if (ActiveSens) {
@@ -429,10 +427,12 @@ void GenerateSingleScale(void)
 #pragma region Screen_MultiMeter
 void Ui_Multi_Next(lv_event_t * e)
 {
-	if (ActiveMultiScreen < MULTI_SCREENS-1)
+	/*if (ActiveMultiScreen < MULTI_SCREENS-1)
 		ActiveMultiScreen++;
 	else ActiveMultiScreen = 0;
 	_ui_screen_change(&ui_ScrMulti, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMulti_screen_init);
+	*/
+ReportAll();
 }
 
 void Ui_Multi_Last(lv_event_t * e)

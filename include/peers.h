@@ -28,7 +28,7 @@ void   PrintMAC(const uint8_t * mac_addr);
 
 extern struct_MultiScreen Screen[MULTI_SCREENS];
 extern int ActiveMultiScreen; 
-extern struct_Peer   P[MAX_PEERS];
+extern struct_Peer   P[10];
 
 extern struct_Peer *ActivePeer;
 extern struct_Peer *ActivePDC;

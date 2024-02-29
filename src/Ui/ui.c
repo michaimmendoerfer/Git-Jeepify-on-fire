@@ -455,6 +455,10 @@ void ui_event_ScrMulti(lv_event_t * e)
     if(event_code == LV_EVENT_SCREEN_UNLOADED) {
         Ui_Multi_Leave(e);
     }
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
+        lv_indev_wait_release(lv_indev_get_act());
+        Ui_Multi_Next(e);
+    }
 }
 void ui_event____initial_actions0(lv_event_t * e)
 {

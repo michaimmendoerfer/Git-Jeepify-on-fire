@@ -1,8 +1,10 @@
 #include "peers.h"
+#include "main.h"
+#include "Jeepify.h"
 
-struct_Peer   P[MAX_PEERS];
 struct_Peer   *ActivePeer, *ActivePDC, *ActiveBat, *ActiveSelection;
 struct_Periph *ActiveSens, *ActiveSwitch, *ActivePeriph;
+struct_Peer   P[10];
 
 struct_MultiScreen Screen[MULTI_SCREENS];
 int ActiveMultiScreen = 0; 
