@@ -6,6 +6,7 @@
 #pragma region Includes
 #include <Arduino.h>
 #include "jeepify.h"
+#include "main.h"
 #include <TFT_eSPI.h>
 #include <esp_now.h>
 #include <WiFi.h>
@@ -52,16 +53,8 @@ void   WriteStringToCharArray(String S, char *C);
 #pragma endregion Function_Definitions
 #pragma region Globals
 
-struct_Peer   P[MAX_PEERS];
-struct_Peer   *ActivePeer, *ActivePDC, *ActiveBat, *ActiveSelection;
-struct_Periph *ActiveSens, *ActiveSwitch, *ActivePeriph;
-
-struct_MultiScreen Screen[MULTI_SCREENS];
-int ActiveMultiScreen = 0; 
-
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t buf1[ TFT_HOR_RES * TFT_VER_RES / 10 ];
-//static lv_color_t buf2[ TFT_HOR_RES * TFT_VER_RES / 10 ];
 
 bool DebugMode = true;
 bool SleepMode = false;
@@ -104,7 +97,6 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   
   String BufS; char Buf[50] = {};
   
-  Serial.print("Recieved from:"); PrintMAC(mac); Serial.println(); Serial.println(jsondata);
   jsondataBuf = jsondata;
   PrepareJSON();
   
@@ -114,83 +106,83 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
     struct_Peer *Peer = FindPeerByMAC(mac);
     TSMsgRcv = millis();
 
-    if (Peer) { // Peer bekannt 
-      Peer->TSLastSeen = millis();
-      Serial.print("bekannter Node: "); Serial.print(Peer->Name); Serial.print(" - "); Serial.println(Peer->TSLastSeen);
-      
-      if (isBat(Peer)) TSMsgBat = TSMsgRcv;
-      if (isPDC(Peer)) TSMsgPDC = TSMsgRcv;
-
-      if (doc["Pairing"] == "add me") { SendPairingConfirm(Peer); }
-      else {
-        for (int i=0; i<MAX_PERIPHERALS; i++) {
-          
-          //Serial.print("checking for: "); Serial.println(Peer->Periph[i].Name);
-          
-          if (doc.containsKey(Peer->Periph[i].Name)) {
-            float TempSensor = (float)doc[Peer->Periph[i].Name];
-            ////Serial.print(Peer->Periph[i].Name); Serial.print(" found = "); Serial.println(TempSensor);
-            if (TempSensor != Peer->Periph[i].Value) {
-              Peer->Periph[i].Value = TempSensor;
-              Peer->Periph[i].Changed = true;
-              //Serial.print(Peer->Periph[i].Name); Serial.print(" is now = "); Serial.println(Peer->Periph[i].Value);
-            
-            }
-          }
-          if (doc.containsKey("Status")) {
-            int Status = doc["Status"];
-            Peer->DebugMode   = (bool) bitRead(Status, 0);
-            Peer->SleepMode   = (bool) bitRead(Status, 1);
-            Peer->DemoMode    = (bool) bitRead(Status, 2);
-            Peer->ReadyToPair = (bool) bitRead(Status, 3);
-          } 
-        } 
-      }
-    } 
-    else {      // Peer unbekannt 
-      if ((doc["Pairing"] == "add me") and (ReadyToPair)) { // neuen Peer registrieren
-        Peer = FindEmptyPeer();
+    if (Peer)      // Peer bekannt
+    { 
+        Peer->TSLastSeen = millis();
+        Serial.print("bekannter Node: "); Serial.print(Peer->Name); Serial.print(" - "); Serial.println(Peer->TSLastSeen);
         
-        if (Peer) {
-          strcpy(Peer->Name, doc["Node"]);
-          Peer->Type = doc["Type"];
+        if (isBat(Peer)) TSMsgBat = TSMsgRcv;
+        if (isPDC(Peer)) TSMsgPDC = TSMsgRcv;
 
-          Peer->Id = FindHighestPeerId()+1; // PeerId starts with 1;
-          
-          Serial.print("vergebene Id=");    Serial.println(Peer->Id);
-          //Serial.print("vergebener Slot="); Serial.println(Peer->Slot);
+        if (doc["Pairing"] == "add me") { SendPairingConfirm(Peer); }
+        else {
+            for (int i=0; i<MAX_PERIPHERALS; i++) 
+            {
+                if (doc.containsKey(Peer->Periph[i].Name)) {
+                    float TempSensor = (float)doc[Peer->Periph[i].Name];
+                    
+                    Serial.print(Peer->Periph[i].Name); Serial.print(" found = "); Serial.println(TempSensor);
+                    
+                    if (TempSensor != Peer->Periph[i].Value) {
+                        Peer->Periph[i].Value = TempSensor;
+                        Peer->Periph[i].Changed = true;
+                    }
+                }
 
-          for (int b = 0; b < 6; b++ ) Peer->BroadcastAddress[b] = mac[b];
-          Serial.println();
-
-          Peer->TSLastSeen = millis();
-          
-          for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
-            snprintf(Buf, sizeof(Buf), "T%d", Si);        // Type0
-            Serial.print("Check Pairing for: "); Serial.println(Buf);
-            if (doc.containsKey(Buf)) {
-              Serial.print("Pairing found: "); Serial.println(Buf);
+                if (doc.containsKey("Status")) 
+                {
+                    int Status = doc["Status"];
+                    Peer->DebugMode   = (bool) bitRead(Status, 0);
+                    Peer->SleepMode   = (bool) bitRead(Status, 1);
+                    Peer->DemoMode    = (bool) bitRead(Status, 2);
+                    Peer->ReadyToPair = (bool) bitRead(Status, 3);
+                } 
+            } 
+        }
+    } 
+    else           // Peer unbekannt 
+    {        
+        if ((doc["Pairing"] == "add me") and (ReadyToPair)) { // neuen Peer registrieren
+            Peer = FindEmptyPeer();
             
-              Peer->Periph[Si].Type = doc[Buf];
-              Serial.println("Peer->Periph["); Serial.print(Si); Serial.print("].Type is now: "); Serial.println(Peer->Periph[Si].Type);
-           
-              Serial.println("P[0].Periph[2].Name is now: "); Serial.println(P[0].Periph[2].Name);
-           
-              snprintf(Buf, sizeof(Buf), "N%d", Si);      // Name0
-              strcpy(Peer->Periph[Si].Name, doc[Buf]);
-              Serial.println("Peer->Periph["); Serial.print(Si); Serial.print("].Name is now: "); Serial.println(Peer->Periph[Si].Name);
-           
-              Peer->Periph[Si].Id = Si+1; //PeriphId starts with 1
-              Peer->Periph[Si].PeerId = Peer->Id;
-            }
-          }   
+            if (Peer) {
+                strcpy(Peer->Name, doc["Node"]);
+                Peer->Type = doc["Type"];
 
-          strcpy(P[0].Periph[2].Name, "TEst");
-          for (int i=0; i<MAX_PERIPHERALS; i++) 
-  {
-      Serial.printf("VT - P[0].Periph[%d].Name = %s, &Name = ", i, P[0].Periph[i].Name);
-      Serial.println((unsigned)(&P[0].Periph[i].Name[0]), HEX);
-  }
+                Peer->Id = FindHighestPeerId()+1; // PeerId starts with 1;
+                
+                Serial.print("vergebene Id=");    Serial.println(Peer->Id);
+                //Serial.print("vergebener Slot="); Serial.println(Peer->Slot);
+
+                for (int b = 0; b < 6; b++ ) Peer->BroadcastAddress[b] = mac[b];
+                Serial.println();
+
+                Peer->TSLastSeen = millis();
+                
+                for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
+                    snprintf(Buf, sizeof(Buf), "T%d", Si);        
+                    Serial.print("Check Pairing for: "); Serial.println(Buf);
+                    
+                    if (doc.containsKey(Buf)) 
+                    {
+                        Serial.print("Pairing found: "); Serial.println(Buf);
+                      
+                        Peer->Periph[Si].Type = doc[Buf];
+                        snprintf(Buf, sizeof(Buf), "N%d", Si);      // N0
+                        strcpy(Peer->Periph[Si].Name, doc[Buf]);
+                        Serial.println("Peer->Periph["); Serial.print(Si); Serial.print("].Name is now: "); Serial.println(Peer->Periph[Si].Name);
+                    
+                        Peer->Periph[Si].Id = Si+1; //PeriphId starts with 1
+                        Peer->Periph[Si].PeerId = Peer->Id;
+                    }
+                }   
+
+                strcpy(P[0].Periph[2].Name, "TEst");
+                for (int i=0; i<MAX_PERIPHERALS; i++) 
+        {
+            Serial.printf("VT - P[0].Periph[%d].Name = %s, &Name = ", i, P[0].Periph[i].Name);
+            Serial.println((unsigned)(&P[0].Periph[i].Name[0]), HEX);
+    }
   testP();
   Serial.println(Peer->Periph[2].Name);
           ReportAll();

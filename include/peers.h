@@ -24,10 +24,11 @@ struct_Peer   *FindNextPeer   (struct_Peer *Peer, int Type);
 struct_Peer   *FindPrevPeer   (struct_Peer *Peer, int Type);
 int            FindHighestPeerId();
 
+void   PrintMAC(const uint8_t * mac_addr);
+
 extern struct_MultiScreen Screen[MULTI_SCREENS];
 extern int ActiveMultiScreen; 
 extern struct_Peer   P[MAX_PEERS];
-extern struct_MultiScreen Screen[MULTI_SCREENS];
 
 extern struct_Peer *ActivePeer;
 extern struct_Peer *ActivePDC;
