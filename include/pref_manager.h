@@ -12,4 +12,5 @@ void   ReportAll();
 int    GetPeerCount();
 void   ReportScreen(int s);
 
+extern Preferences preferences;
 #endif

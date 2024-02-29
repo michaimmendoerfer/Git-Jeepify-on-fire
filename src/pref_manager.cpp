@@ -5,16 +5,8 @@
 #include "pref_manager.h"
 #include "peers.h"
 
-void   PrintMAC(const uint8_t * mac_addr);
-
-extern struct_Periph *ActiveSens;
-extern struct_Periph *ActiveSwitch;
-extern struct_Peer   *ActivePeer;
-
-extern bool DebugMode;
-extern bool ChangesSaved;
-
 int PeerCount;
+
 Preferences preferences;
 
 int GetPeerCount() { return PeerCount; }
