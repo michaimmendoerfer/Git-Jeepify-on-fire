@@ -25,14 +25,11 @@ void testP(){
 void ReportAll() {
   char Buf[100];
   String BufS;
-  Serial.println("Report-All");
-  Serial.print("in Report &P"); Serial.print((long) &P);
+  Serial.println("Report-All - Array-Zugriff");
   for (int PNr=0; PNr< MAX_PEERS; PNr++) {      
-    snprintf(Buf, sizeof(Buf), "%d:%s(%d) - ID:%d ---- ", PNr, P[PNr].Name, P[PNr].Type, P[PNr].Id);
-    Serial.print(Buf);
+    Serial.printf("%d:%s(%d) - ID:%d ---- ", PNr, P[PNr].Name, P[PNr].Type, P[PNr].Id);
     for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
-      snprintf(Buf, sizeof(Buf), "P%d:%s(%d), ", Si, P[PNr].Periph[Si].Name, P[PNr].Periph[Si].Type);
-      Serial.print(Buf);
+      Serial.printf("%d:%s (%d), ", Si, P[PNr].Periph[Si].Name, P[PNr].Periph[Si].Type);
     }
     Serial.println();
   }
@@ -42,11 +39,10 @@ void ReportAll() {
     (Screen[s].Used) ? Serial.println("used") : Serial.println("not used");
     
     if (Screen[s].Used) {
-      snprintf(Buf, sizeof(Buf), "S%d:%s, Id=%d - ", s, Screen[s].Name, Screen[s].Id); Serial.println(Buf);
+      Serial.printf("S%d:%s, Id=%d ---- ", s, Screen[s].Name, Screen[s].Id);
       for (int p=0; p<PERIPH_PER_SCREEN; p++) {
         if (Screen[s].Periph[p]->Type > 0) {
-          snprintf(Buf, sizeof(Buf), "---- %d: PeerId=%d, PeriphId=%d, PeriphName=%s", p, Screen[s].Periph[p]->PeerId, Screen[s].PeriphId[p], Screen[s].Periph[p]->Name);
-          Serial.println(Buf);
+          Serial.printf("%d: PeerId=%d, PeriphId=%d, PeriphName=%s", p, Screen[s].Periph[p]->PeerId, Screen[s].PeriphId[p], Screen[s].Periph[p]->Name);
         }
       }
       Serial.println();
