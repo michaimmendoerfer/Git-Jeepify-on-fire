@@ -4,14 +4,6 @@
 #include <Arduino.h>
 #include "Jeepify.h"
 
-extern PeerClass *ActivePeer;
-extern PeerClass *ActivePDC;
-extern PeerClass *ActiveBat;
-extern PeerClass *ActiveSelection;
-extern PeriphClass *ActiveSens;
-extern PeriphClass *ActiveSwitch;
-extern PeriphClass *ActivePeriph;
-
 class PeriphClass {
     static int  _ClassId;
 
@@ -62,7 +54,7 @@ class PeriphClass {
         int   GetPeerId() { return _PeerId; }
         void  SetPeerId(int PeerId) { _PeerId = PeerId; }
 
-        PeriphClass *PeriphClass::GetPtrToSelf() { return this; }
+        PeriphClass *GetPtrToSelf() { return this; }
 };
 
 class PeerClass 
@@ -155,5 +147,13 @@ class PeerClass
 
 PeerClass *FindPeerByMAC(const uint8_t *BroadcastAddress);
 PeerClass *FindEmptyPeer();
-//
+
+extern PeerClass *ActivePeer;
+extern PeerClass *ActivePDC;
+extern PeerClass *ActiveBat;
+extern PeerClass *ActiveSelection;
+extern PeriphClass *ActiveSens;
+extern PeriphClass *ActiveSwitch;
+extern PeriphClass *ActivePeriph;
+
 #endif

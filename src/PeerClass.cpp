@@ -13,7 +13,7 @@ PeriphClass::PeriphClass()
     _Id = _ClassId;
     _ClassId++;
 }
-void  PeerClass::SetupPeriph(int Pos, char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId)
+void  PeriphClass::Setup(int Pos, char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId)
 {
     strcpy(_Name, Name);
     _Type = Type;
@@ -41,9 +41,9 @@ void  PeerClass::Setup(char* Name, int Type, uint8_t *BroadcastAddress, bool Sle
     _PairMode  = PairMode;
 }      
 
-void  PeerClass::SetupPeriph(int P, char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId)
+void  PeerClass::SetupPeriph(int Pos, char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId)
 {
-    Periph[P].Setup(P, Name, Type, isADS, IOPort, Nullwert, VperAmp, Vin, PeerId);
+    Periph[Pos].Setup(Pos, Name, Type, isADS, IOPort, Nullwert, VperAmp, Vin, PeerId);
 }
 int   PeerClass::GetPeriphId(char *Name)
 {
