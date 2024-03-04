@@ -100,4 +100,5 @@ struct struct_MultiScreen {
 };
 typedef struct struct_MultiScreen struct_MultiScreen;
 
+extern uint8_t broadcastAddressAll[6];
 #endif

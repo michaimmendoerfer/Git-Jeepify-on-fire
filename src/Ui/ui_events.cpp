@@ -8,7 +8,7 @@
 #include <nvs_flash.h>
 #include "ui.h"
 #include "lv_meter.h"
-#include "peers.h"
+#include "PeerClass.h"
 #include "pref_manager.h"
 #include "Jeepify.h"
 #include "ui_events.h"
@@ -19,8 +19,8 @@ lv_meter_indicator_t * SingleIndic;
 lv_meter_indicator_t * SingleIndicNeedle;
 lv_meter_scale_t * scale;
 uint8_t MultiPosToChange;
-struct_Peer	  *ActivePeerSingle;
-struct_Periph *ActivePeriphSingle;
+PeerClass   *ActivePeerSingle;
+PeriphClass *ActivePeriphSingle;
 
 lv_obj_t *Ui_LedSnd;
 lv_obj_t *Ui_LedRcv;
@@ -33,50 +33,19 @@ lv_timer_t *SwitchTimer;
 void GenerateSingleScale(void);
 void Keyboard_cb(lv_event_t * event);
 
-void ReportAll2()
-{
-  struct_Peer *Peer = FindFirstPeer(MODULE_ALL);
-	Serial.print("sizeof(P)=");Serial.println(sizeof(P));
-    
-  Serial.println("Report-All2 - Array-Zugriff");
-  for (int PNr=0; PNr< MAX_PEERS; PNr++) {      
-    Serial.printf("%d:%s(%d) - ID:%d ---- ", PNr, P[PNr].Name, P[PNr].Type, P[PNr].Id);
-    for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
-      Serial.printf("%d:%s (%d), ", Si, P[PNr].Periph[Si].Name, P[PNr].Periph[Si].Type);
-    }
-    Serial.println();
-  }
-  
-  for (int s=0; s<MULTI_SCREENS; s++) {
-    Serial.print(Screen[s].Name); Serial.print(": ");
-    (Screen[s].Used) ? Serial.println("used") : Serial.println("not used");
-    
-    if (Screen[s].Used) {
-      Serial.printf("S%d:%s, Id=%d ---- ", s, Screen[s].Name, Screen[s].Id);
-      for (int p=0; p<PERIPH_PER_SCREEN; p++) {
-        if (Screen[s].Periph[p]->Type > 0) {
-          Serial.printf("%d: PeerId=%d, PeriphId=%d, PeriphName=%s", p, Screen[s].Periph[p]->PeerId, Screen[s].PeriphId[p], Screen[s].Periph[p]->Name);
-        }
-      }
-      Serial.println();
-    }
-  }
-}
-
 #pragma region Screen_Peer
-/* Screen: Peer*/
 void Ui_Peer_Prepare(lv_event_t * e)
 {
 	if (ActivePeer) {
-		lv_label_set_text_static(ui_LblPeerName, ActivePeer->Name);
+		lv_label_set_text_static(ui_LblPeerName, ActivePeer->GetName());
 	
-		if (ActivePeer->SleepMode) {
+		if (ActivePeer->GetSleepMode()) {
 			lv_obj_add_state(ui_BtnPeer3, LV_STATE_CHECKED);
 		}
 		else {
 			lv_obj_clear_state(ui_BtnPeer3, LV_STATE_CHECKED);
 		}
-		if (ActivePeer->DemoMode) {
+		if (ActivePeer->GetDemoMode()) {
 			lv_obj_add_state(ui_BtnPeer6, LV_STATE_CHECKED);
 		}
 		else {
@@ -195,16 +164,16 @@ void Ui_Peers_Prepare(lv_event_t * e)
 	String Options = "";
 
 	for (int PNr=0 ; PNr<MAX_PEERS ; PNr++) {
-    if (P[PNr].Type) {
+    if (P[PNr].GetType()) {
            
       if (Options != "") Options += "\n";
       
-      if (millis()- P[PNr].TSLastSeen > OFFLINE_INTERVAL) Options += "off: <";
+      if (millis()- P[PNr].GetTSLastSeen() > OFFLINE_INTERVAL) Options += "off: <";
       else Options += "on:  <"; 
         
-      Options += P[PNr].Name;
+      Options += P[PNr].GetName();
 
-      switch (P[PNr].Type) {
+      switch (P[PNr].GetType()) {
         case SWITCH_1_WAY:   Options += "> PDC-1"; break;
         case SWITCH_2_WAY:   Options += "> PDC-2"; break;
         case SWITCH_4_WAY:   Options += "> PDC-4"; break;
@@ -234,7 +203,7 @@ void Ui_Peers_Selected(lv_event_t * e)
 	SelectedName[End-Start-1] = 0;
 	Serial.println(SelectedName);
 
-	struct_Peer *TempPeer = FindPeerByName(SelectedName);
+	PeerClass *TempPeer = FindPeerByName(SelectedName);
 
 	if ((TempPeer) and (strcmp(SelectedName, "") != 0)) {
 		ActivePeer = TempPeer;
@@ -243,9 +212,6 @@ void Ui_Peers_Selected(lv_event_t * e)
 }
 #pragma endregion Screen_Peers
 #pragma region Screen_JSON
-/*Screen: JSON*/
-
-//kann weg...
 void Ui_JSON_Prepare(lv_event_t * e)
 {
 	PrepareJSON();

@@ -14,9 +14,9 @@ void   my_disp_flush( lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *co
 void   my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data );
 
 void   SendPing(lv_timer_t * timer);
-bool   ToggleSwitch(struct_Periph *Periph);
-void   SendCommand(struct_Peer *Peer, String Cmd);
-void   SendPairingConfirm(struct_Peer *Peer);
+bool   ToggleSwitch(PeerClass *P, int PerNr);
+void   SendCommand(PeerClass *Peer, String Cmd);
+void   SendPairingConfirm(PeerClass *Peer);
 void   MultiScreenAddPeriph(struct_Periph *Periph, uint8_t Pos);
 
 void   CheckButtonVars();
@@ -37,4 +37,6 @@ extern bool ChangesSaved;
 extern volatile uint32_t TSMsgRcv;
 extern volatile uint32_t TSMsgSnd;
 extern volatile uint32_t TSPair;
+
+extern PeerClass Peer[MAX_PEERS];
 #endif
