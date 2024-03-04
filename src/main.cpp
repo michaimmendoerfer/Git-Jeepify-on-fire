@@ -13,7 +13,7 @@
 #include <ArduinoJson.h>
 #include "CST816D.h"
 #include "pref_manager.h"
-#include "PeerClass.h""
+#include "PeerClass.h"
 #include <lvgl.h>
 #include "Ui\ui.h"
 #include "Ui\ui_events.h" 

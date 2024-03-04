@@ -4,6 +4,7 @@
 #include <esp_now.h>
 #include <WiFi.h>
 #include <lvgl.h>
+#include "PeerClass.h"
 
 void   PrintMAC(const uint8_t * mac_addr);
 

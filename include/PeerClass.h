@@ -103,9 +103,6 @@ class PeerClass
         char *GetPeriphName(int P) { return Periph[P].GetName(); }
         bool  SetPeriphName(int P, char *Name) { Periph[P].SetName(Name); return true; }
         
-        PeriphClass *GetPeriphPtr(int P);
-        PeriphClass *GetPeriphPtr(char *Name);
-        
         int   GetPeriphId(char *Name);
         int   GetPeriphId(int PosPeriph) { return Periph[PosPeriph].GetId(); }
         
