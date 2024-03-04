@@ -12,69 +12,6 @@ Preferences preferences;
 
 int GetPeerCount() { return PeerCount; }
 
-void testP(){
-  for (int i=0; i<MAX_PERIPHERALS; i++) 
-  {
-      Serial.printf("P[0].Periph[%d].Name = %s, &Name = ", i, P[0].Periph[i].Name);
-      Serial.println((unsigned)(&P[0].Periph[i].Name[0]), HEX);
-
-      struct_Peer *Peer = FindFirstPeer(MODULE_ALL);
-      Serial.println(Peer->Periph[2].Name);
-  }
-}
-
-void ReportAll()
-{
-  struct_Peer *Peer = FindFirstPeer(MODULE_ALL);
-  strcpy(Peer->Periph[2].Name, "huhu");
-  strcpy(P[0].Periph[3].Name, "bin da");
-
-  Serial.println("Report-All - Array-Zugriff");
-  for (int PNr=0; PNr< MAX_PEERS; PNr++) {      
-    Serial.printf("%d:%s(%d) - ID:%d ---- ", PNr, P[PNr].Name, P[PNr].Type, P[PNr].Id);
-    for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
-      Serial.printf("%d:%s (%d), ", Si, P[PNr].Periph[Si].Name, P[PNr].Periph[Si].Type);
-    }
-    Serial.println();
-  }
-  
-  for (int s=0; s<MULTI_SCREENS; s++) {
-    Serial.print(Screen[s].Name); Serial.print(": ");
-    (Screen[s].Used) ? Serial.println("used") : Serial.println("not used");
-    
-    if (Screen[s].Used) {
-      Serial.printf("S%d:%s, Id=%d ---- ", s, Screen[s].Name, Screen[s].Id);
-      for (int p=0; p<PERIPH_PER_SCREEN; p++) {
-        if (Screen[s].Periph[p]->Type > 0) {
-          Serial.printf("%d: PeerId=%d, PeriphId=%d, PeriphName=%s", p, Screen[s].Periph[p]->PeerId, Screen[s].PeriphId[p], Screen[s].Periph[p]->Name);
-        }
-      }
-      Serial.println();
-    }
-  }
-}
-void ReportScreen(int s) {
-  char Buf[100];
-  String BufS;
-  Serial.println("Report-Screen");
-  
-  Serial.print(Screen[s].Name); Serial.print(": ");
-  (Screen[s].Used) ? Serial.println("used") : Serial.println("not used");
-  
-  if (Screen[s].Used) {
-    snprintf(Buf, sizeof(Buf), "S%d:%s, Id=%d - ", s, Screen[s].Name, Screen[s].Id); Serial.println(Buf);
-    for (int p=0; p<PERIPH_PER_SCREEN; p++) {
-      if (Screen[s].Periph[p]->Type > 0) {
-        Serial.print("---Value=");
-        Serial.print(Screen[s].Periph[p]->Value, 2);
-        snprintf(Buf, sizeof(Buf), ": ,Name=%s, PeerId=%d, PeriphId=%d", Screen[s].Periph[p]->Name, Screen[s].Periph[p]->PeerId, Screen[s].PeriphId[p]);
-        Serial.println(Buf);
-      }
-    }
-    Serial.println();
-  }
-
-}
 void SavePeers() {
   Serial.println("SavePeers...");
   preferences.begin("JeepifyPeers", false);
@@ -165,8 +102,8 @@ void RegisterPeers() {
 
   // Register Peers
   for (int PNr=0; PNr<MAX_PEERS; PNr++) {
-    if (P[PNr].Type > 0) {
-      for (int b=0; b<6; b++) peerInfo.peer_addr[b] = (uint8_t) P[PNr].BroadcastAddress[b];
+    if (Peer[PNr].GetType() > 0) {
+      for (int b=0; b<6; b++) peerInfo.peer_addr[b] = (uint8_t) Peer[PNr].GetBroadcastAddress()+b;
         if (esp_now_add_peer(&peerInfo) != ESP_OK) {
           PrintMAC(peerInfo.peer_addr); Serial.println(": Failed to add peer");
         }
