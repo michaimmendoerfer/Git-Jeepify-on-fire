@@ -155,5 +155,5 @@ class PeerClass
 
 PeerClass *FindPeerByMAC(const uint8_t *BroadcastAddress);
 PeerClass *FindEmptyPeer();
-
+//
 #endif

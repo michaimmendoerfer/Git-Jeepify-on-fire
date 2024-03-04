@@ -184,3 +184,4 @@ PeriphClass *FindNextPeriph(PeriphClass *PeriphT, int Type, bool PeerOnly)
         }
     }
 }
+//
