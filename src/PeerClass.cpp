@@ -122,64 +122,70 @@ PeerClass *FindPeerById(int Id)
 PeerClass *FindNextPeer(PeerClass *P, int Type)
 {
     PeerClass *Peer;
-    for(int i = 0; i < PeerList.size(); i++){
+    int ActualPeerIndex;
 
-		Peer = PeerList.get(i);
-        if (Peer == P)
-        {   
-            int ActualPeerPos = i;
-            if (ActualPeerPos < PeerList.size()-1)
-                ActualPeerPos++;
-            else 
-                ActualPeerPos = 0;
-            
-            PeerClass *NextPeer = PeerList.get(ActualPeerPos);
+    for(int i = 0; i < PeerList.size(); i++) 
+    {   
+        if (PeerList.get(i) == P) ActualPeerPos = i;
+    }
 
-            Switch (Type) {
-                SWITCH_1_WAY:   if (NextPeer->GetType() == SWITCH_1_WAY)   return NextPeer; break;
-                SWITCH_2_WAY:   if (NextPeer->GetType() == SWITCH_2_WAY)   return NextPeer; break;
-                SWITCH_4_WAY:   if (NextPeer->GetType() == SWITCH_4_WAY)   return NextPeer; break;
-                SWITCH_8_WAY:   if (NextPeer->GetType() == SWITCH_8_WAY)   return NextPeer; break;
-                PDC             if (NextPeer->GetType() == PDC)            return NextPeer; break;
-                PDC_SENSOR_MIX  if (NextPeer->GetType() == PDC_SENSOR_MIX) return NextPeer; break;
-                BATTERY_SENSOR  if (NextPeer->GetType() == BATTERY_SENSOR) return NextPeer; break;
-                MONITOR_ROUND   if (NextPeer->GetType() == MONITOR_ROUND)  return NextPeer; break;
-                MONITOR_BIG     if (NextPeer->GetType() == MONITOR_BIG)    return NextPeer; break;
-                MODULE_ALL:     return NextPeer; break;
-            }
+    for(int i = 0; i < PeerList.size(); i++) 
+    {
+        if (ActualPeerPos < PeerList.size()-1)
+            ActualPeerPos++;
+        else 
+            ActualPeerPos = 0;
+        
+        PeerClass *NextPeer = PeerList.get(ActualPeerPos);
 
-        }
-
+        if (Type == MODULE_ALL)          return NextPeer;
+        if (NextPeer->GetType() == Type) return NextPeer;
     }
     return NULL;
 }
 PeerClass *FindPrevPeer(PeerClass *P, int Type)
 {
-    for (int D=0; D<MAX_PEERS; D++)
+    PeerClass *Peer;
+    int ActualPeerIndex;
+
+    for(int i = 0; i < PeerList.size(); i++) 
     {   
-        if (Peer[D].GetId() == P->GetId()) 
-        {
-            int DSearch = D;
-            for (int DNext=0; DNext<MAX_PEERS; DNext++)
-                DSearch--;
-                if (DSearch == -1) DSearch = MAX_PEERS-1;
-                if (Peer[DSearch].GetType() == Type) return &Peer[D];
-                if ((Peer[DSearch].GetType() > 0) and (Type = MODULE_ALL)) return &Peer[D];
-        }
+        if (PeerList.get(i) == P) ActualPeerPos = i;
+    }
+
+    for(int i = 0; i < PeerList.size(); i++) 
+    {
+        if (ActualPeerPos > 0)
+            ActualPeerPos--;
+        else 
+            ActualPeerPos = PeerList.size()-1;
+        
+        PeerClass *NextPeer = PeerList.get(ActualPeerPos);
+
+        if (Type == MODULE_ALL)          return NextPeer;
+        if (NextPeer->GetType() == Type) return NextPeer;
     }
     return NULL;
 }
 PeerClass *FindPeerByName(char *Name)
 {
-    for (int D=0; D<MAX_PEERS; D++)
+    PeerClass *Peer;
+    for(int i = 0; i < PeerList.size(); i++) 
     {   
-        if (strcmp(Peer[D].GetName(), Name) == 0) return &Peer[D];
+        Peer = PeerList.get(i);
+        if (strcmp(Peer->GetName(), Name) == 0) return Peer;
     }
     return NULL;
 }
 PeriphClass *FindNextPeriph(PeriphClass *PeriphT, int Type, bool PeerOnly)
 {
-    PeerClass *PeerT = FindPeerById(PeriphT->GetPeerId());
+    PeerClass *Peer = FindPeerById(PeriphT->GetPeerId());
+    
+    for (int i=PeriphT->GetPos()+1; i<MAX_PERIPHERALS; i++)
+    {   if (Peer.GetPeriphType(i) == Type) return Peer->GetPeriphPtr(i);
+
+    }
+    Peer = FindNextPeer(Peer);
     if (PeerT)
     {
         for (int P=0; P<MAX_PERIPHERALS; P++)
