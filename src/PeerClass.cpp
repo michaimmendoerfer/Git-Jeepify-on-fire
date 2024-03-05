@@ -8,6 +8,7 @@ PeriphClass *ActiveSens, *ActiveSwitch, *ActivePeriph;
 int  PeriphClass::_ClassId = 0;
 int  PeerClass::_ClassId = 0;
 
+#pragma region PeriphClass::Declaration
 PeriphClass::PeriphClass()
 {
     _Id = _ClassId;
@@ -24,7 +25,8 @@ void  PeriphClass::Setup(int Pos, char* Name, int Type, bool isADS, int IOPort, 
     _VperAmp = VperAmp;
     _PeerId = PeerId;
 }
-
+#pragma endregion PeriphClass::Declaration
+#pragma region PeerClass::Declaration
 PeerClass::PeerClass()
 {
     _Id = _ClassId;
@@ -40,7 +42,6 @@ void  PeerClass::Setup(char* Name, int Type, uint8_t *BroadcastAddress, bool Sle
     _DemoMode  = DemoMode;
     _PairMode  = PairMode;
 }      
-
 void  PeerClass::SetupPeriph(int Pos, char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId)
 {
     Periph[Pos].Setup(Pos, Name, Type, isADS, IOPort, Nullwert, VperAmp, Vin, PeerId);
@@ -93,10 +94,16 @@ PeriphClass *PeerClass::GetPeriphPtr(char *Name)
     }
     return NULL;
 }
+#pragma endregion PeerClass::Declaration
 
-
-PeerClass *FindPeerByMAC(const uint8_t *BroadcastAddress)
+PeerClass *FindPeerByMAC(uint8_t *BroadcastAddress)
 {
+    for(int i = 0; i < PeerList.size(); i++){
+
+		PeerClass *Peer = PeerList.get(i);
+
+		if ((memcmp(Peer->GetBroadcastAddress(), BroadcastAddress, 6) == 0) return Peer;
+	}
     for (int D=0; D<MAX_PEERS; D++)
     {   
         if (memcmp(Peer[D].GetBroadcastAddress(), BroadcastAddress, 6) == 0) return &Peer[D];
@@ -111,14 +118,7 @@ PeerClass *FindPeerById(int Id)
     }
     return NULL;
 }
-PeerClass *FindEmptyPeer()
-{
-    for (int D=0; D<MAX_PEERS; D++)
-    {   
-        if (Peer[D].GetType() == 0) return &Peer[D];
-    }
-    return NULL;
-}
+
 PeerClass *FindNextPeer(PeerClass *P, int Type)
 {
     for (int D=0; D<MAX_PEERS; D++)

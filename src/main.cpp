@@ -14,6 +14,7 @@
 #include "CST816D.h"
 #include "pref_manager.h"
 #include "PeerClass.h"
+#include "LinkedList.h"
 #include <lvgl.h>
 #include "Ui\ui.h"
 #include "Ui\ui_events.h" 
@@ -30,8 +31,7 @@ CST816D Touch(I2C_SDA, I2C_SCL, TP_RST, TP_INT);
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t buf1[ TFT_HOR_RES * TFT_VER_RES / 10 ];
 
-PeerClass Self;
-PeerClass Peer[MAX_PEERS];
+LinkedList<PeerClass*> PeerList = LinkedList<PeerClass*>();
 
 String jsondataBuf;
 
@@ -52,7 +52,7 @@ lv_timer_t *WDButtonVars;
 #pragma region Main
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) 
 {
-    PeerClass *PeerT;
+    PeerClass *Peer;
 
     char* buff = (char*) incomingData;   
     StaticJsonDocument<500> doc; 
@@ -67,12 +67,12 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 
     if (!error) // erfolgreich JSON
     {
-        PeerT = FindPeerByMAC(mac);
+        Peer = FindPeerByMAC(mac);
         TSMsgRcv = millis();
 
-        if (PeerT)      // Peer bekannt
+        if (Peer)      // Peer bekannt
         { 
-            PeerT->SetTSLastSeen(millis());
+            Peer->SetTSLastSeen(millis());
             Serial.print("bekannter Node: "); Serial.print(PeerT->GetName()); Serial.print(" - "); Serial.println(PeerT->GetTSLastSeen());
             
             //if (isBat(Peer)) TSMsgBat = TSMsgRcv;
@@ -82,66 +82,63 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
             else {
                 for (int i=0; i<MAX_PERIPHERALS; i++) 
                 {
-                    if (doc.containsKey(PeerT->GetPeriphName(i))) {
-                        float TempSensor = (float)doc[PeerT->GetPeriphName(i)];
+                    if (doc.containsKey(Peer->GetPeriphName(i))) {
+                        float TempSensor = (float)doc[Peer->GetPeriphName(i)];
                         
-                        Serial.print(PeerT->GetPeriphName(i)); Serial.print(" found = "); Serial.println(TempSensor);
+                        Serial.print(Peer->GetPeriphName(i)); Serial.print(" found = "); Serial.println(TempSensor);
                         
-                        if (TempSensor != PeerT->GetPeriphValue(i)) {
-                            PeerT->SetPeriphValue(i, TempSensor);
-                            PeerT->SetPeriphChanged(i, true);
+                        if (TempSensor != Peer->GetPeriphValue(i)) {
+                            Peer->SetPeriphOldValue(i, Peer->GetPeriphValue(i));
+                            Peer->SetPeriphValue(i, TempSensor);
+                            Peer->SetPeriphChanged(i, true);
                         }
                     }
 
                     if (doc.containsKey("Status")) 
                     {
                         int Status = doc["Status"];
-                        PeerT->SetDebugMode ((bool) bitRead(Status, 0));
-                        PeerT->SetSleepMode ((bool) bitRead(Status, 1));
-                        PeerT->SetDemoMode  ((bool) bitRead(Status, 2));
-                        PeerT->SetPairMode  ((bool) bitRead(Status, 3));
+                        Peer->SetDebugMode ((bool) bitRead(Status, 0));
+                        Peer->SetSleepMode ((bool) bitRead(Status, 1));
+                        Peer->SetDemoMode  ((bool) bitRead(Status, 2));
+                        Peer->SetPairMode  ((bool) bitRead(Status, 3));
                     } 
                 } 
             }
         } 
-        else           // Peer unbekannt 
+        else           // Peer unbekannt, ggf Pairing
         {        
             if ((doc["Pairing"] == "add me") and (Self.GetPairMode())) // neuen Peer registrieren
             { 
-                PeerT = FindEmptyPeer();
+                int Status = doc["Status"];
+
+                Peer = new PeerClass();
+                Peer->Setup(doc["Node"], (int)doc["Type"], mac, (bool) bitRead(Status, 1), (bool) bitRead(Status, 0), (bool) bitRead(Status, 2), (bool) bitRead(Status, 3));
+                Peer->SetTSLastSeen(millis());
                 
-                if (PeerT) {
-                    PeerT->SetName(doc["Node"]);
-                    PeerT->SetType((int)doc["Type"]);
-
-                    PeerT->SetBroadcastAddress(mac);
-                    Serial.println();
-
-                    PeerT->SetTSLastSeen(millis());
+                for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
+                    snprintf(Buf, sizeof(Buf), "T%d", Si);                          // Check for T0 (Type of Periph 0)
+                    Serial.print("Check Pairing for: "); Serial.println(Buf);
                     
-                    for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
-                        snprintf(Buf, sizeof(Buf), "T%d", Si);        
-                        Serial.print("Check Pairing for: "); Serial.println(Buf);
+                    if (doc.containsKey(Buf)) 
+                    {
+                        Serial.print("Pairing found: "); Serial.println(Buf);       // Set Periph[0].Type
+                        Peer->SetPeriphType(Si,(int) doc[Buf]));
                         
-                        if (doc.containsKey(Buf)) 
-                        {
-                            Serial.print("Pairing found: "); Serial.println(Buf);
-                            PeerT->Periph[Si].SetType((int) doc[Buf]);
-                            
-                            snprintf(Buf, sizeof(Buf), "N%d", Si);      // N0
-                            strcpy(PeerT->Periph[Si].SetName(doc[Buf]);
-                            Serial.printf("Peer->Periph[%s].Name is now: %s\n", Si, PeerT->Periph[Si].GetName());
-                        
-                            PeerT->Periph[Si].SetPeerId(PeerT->GetId());
-                        }
-                    }   
+                        snprintf(Buf, sizeof(Buf), "N%d", Si);                      // get N0 (Name of Periph 0)
+                        Peer->SetPeriphName(Si, doc[Buf]);                          // Set Periph[0].Name
+
+                        Serial.printf("%s->Periph[%d].Name is now: %s\n", Peer->GetName(), Si, Peer->Periph[Si].GetName());
+            
+                        Peer->Periph[Si].SetPeerId(Peer->GetId());
+                        Peer->Periph[Si].SetPos(Si);                                // 0-3 of Periph
+                    } 
 
                     //Report
                     
                     //ReportAll();
                     //SavePeers();
                     //RegisterPeers();
-                    SendPairingConfirm(TPeer);
+                    SendPairingConfirm(Peer);
                     
                     Self.SetPairMode(false); TSPair = 0;
                 }

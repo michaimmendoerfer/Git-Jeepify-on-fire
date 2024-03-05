@@ -143,7 +143,6 @@ class PeerClass
 };
 
 PeerClass *FindPeerByMAC(const uint8_t *BroadcastAddress);
-PeerClass *FindEmptyPeer();
 
 extern PeerClass *ActivePeer;
 extern PeerClass *ActivePDC;
