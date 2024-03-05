@@ -118,32 +118,41 @@ PeerClass *FindPeerById(int Id)
     }
     return NULL;
 }
+PeerClass *FindPeerByName(char *Name)
+{
+    PeerClass *Peer;
+    for(int i = 0; i < PeerList.size(); i++) 
+    {   
+        Peer = PeerList.get(i);
+        if (strcmp(Peer->GetName(), Name) == 0) return Peer;
+    }
+    return NULL;
+}
 PeerClass *FindNextPeer(PeerClass *P, int Type, bool circular)
 {
     PeerClass *Peer;
     int ActualPeerIndex;
 
+    //Get PeerIndex in List
     for(int i = 0; i < PeerList.size(); i++) 
     {   
-        if (PeerList.get(i) == P) ActualPeerPos = i;
+        if (PeerList.get(i) == P) ActualPeerIndex = i;
     }
 
-    for(int i = 0; i < PeerList.size(); i++) 
-    {
-        if (ActualPeerPos < PeerList.size()-1)
+    for (int i=0; i<PeerList.size(); i++)
+    {   ActualPeerIndex++;
+        if (ActualPeerIndex < PeerList.size())
         {
-            ActualPeerPos++;
+            Peer = PeerList.get(ActualPeerIndex);
+            
+            if (Type == MODULE_ALL) return Peer;
+            if (Type == Peer->GetType()) return Peer;
         }
-        else 
+        else
         {
-            if (circular) ActualPeerPos = 0;
+            if (circular) ActualPeerIndex = -1;
             else return NULL;
         }
-
-        PeerClass *NextPeer = PeerList.get(ActualPeerPos);
-
-        if (Type == MODULE_ALL)          return NextPeer;
-        if (NextPeer->GetType() == Type) return NextPeer;
     }
     return NULL;
 }
@@ -152,38 +161,26 @@ PeerClass *FindPrevPeer(PeerClass *P, int Type, bool circular)
     PeerClass *Peer;
     int ActualPeerIndex;
 
+    //Get PeerIndex in List
     for(int i = 0; i < PeerList.size(); i++) 
     {   
         if (PeerList.get(i) == P) ActualPeerIndex = i;
     }
 
-    for(int i = 0; i < PeerList.size(); i++) 
-    {
-        
-        if (ActualPeerIndex > 0)
+    for (int i=0; i<PeerList.size(); i++)
+    {   ActualPeerIndex--;
+        if (ActualPeerIndex > -1)
         {
-            ActualPeerIndex--;
+            Peer = PeerList.get(ActualPeerIndex);
+            
+            if (Type == MODULE_ALL) return Peer;
+            if (Type == Peer->GetType()) return Peer;
         }
-        else 
+        else
         {
-            if (circular) ActualPeerIndex = PeerList.size()-1;
+            if (circular) ActualPeerIndex = PeerList.size();
             else return NULL;
         }
-        
-        PeerClass *NextPeer = PeerList.get(ActualPeerIndex);
-
-        if (Type == MODULE_ALL)          return NextPeer;
-        if (NextPeer->GetType() == Type) return NextPeer;
-    }
-    return NULL;
-}
-PeerClass *FindPeerByName(char *Name)
-{
-    PeerClass *Peer;
-    for(int i = 0; i < PeerList.size(); i++) 
-    {   
-        Peer = PeerList.get(i);
-        if (strcmp(Peer->GetName(), Name) == 0) return Peer;
     }
     return NULL;
 }
@@ -203,8 +200,8 @@ PeriphClass *FindNextPeriph(PeriphClass *PeriphT, int Type, bool circular)
         }
         else
         {
-            if (circular) PeriphPos = 0;
-            return NULL;
+            if (circular) PeriphPos = -1;
+            else return NULL;
         }
     }
 }
@@ -216,7 +213,7 @@ PeriphClass *FindPrevPeriph(PeriphClass *PeriphT, int Type, bool circular)
 
     for (int i=0; i<MAX_PERIPHERALS; i++)
     {   PeriphPos--;
-        if (PeriphPos > 0)
+        if (PeriphPos > -1)
         {
             Periph = Peer->GetPeriphPtr(PeriphPos);
             if  (Type == Periph->GetType()) return Periph;
@@ -224,8 +221,8 @@ PeriphClass *FindPrevPeriph(PeriphClass *PeriphT, int Type, bool circular)
         }
         else
         {
-            if (circular) PeriphPos = MAX_PERIPHERALS-1;
-            return NULL;
+            if (circular) PeriphPos = MAX_PERIPHERALS;
+            else return NULL;
         }
     }
 }
