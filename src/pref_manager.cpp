@@ -12,6 +12,19 @@ Preferences preferences;
 
 int GetPeerCount() { return PeerCount; }
 
+void SavePeers() 
+{
+    char Buf[50] = {};
+
+    Serial.println("SavePeers...");
+    preferences.begin("JeepifyPeers", false);
+  
+    for (int i=0; i<PeerList.size(); i++)
+    {
+        
+    }
+  
+}
 void SavePeers() {
   Serial.println("SavePeers...");
   preferences.begin("JeepifyPeers", false);

@@ -39,5 +39,5 @@ extern volatile uint32_t TSMsgRcv;
 extern volatile uint32_t TSMsgSnd;
 extern volatile uint32_t TSPair;
 
-extern PeerClass Peer[MAX_PEERS];
+extern LinkedList<PeerClass*> PeerList;
 #endif
