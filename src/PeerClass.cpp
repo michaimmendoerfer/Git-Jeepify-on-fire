@@ -98,42 +98,58 @@ PeriphClass *PeerClass::GetPeriphPtr(char *Name)
 
 PeerClass *FindPeerByMAC(uint8_t *BroadcastAddress)
 {
+    PeerClass *Peer;
     for(int i = 0; i < PeerList.size(); i++){
 
-		PeerClass *Peer = PeerList.get(i);
+		Peer = PeerList.get(i);
 
-		if ((memcmp(Peer->GetBroadcastAddress(), BroadcastAddress, 6) == 0) return Peer;
+		if (memcmp(Peer->GetBroadcastAddress(), BroadcastAddress, 6) == 0) return Peer;
 	}
-    for (int D=0; D<MAX_PEERS; D++)
-    {   
-        if (memcmp(Peer[D].GetBroadcastAddress(), BroadcastAddress, 6) == 0) return &Peer[D];
-    }
     return NULL;
 }
 PeerClass *FindPeerById(int Id)
 {
-    for (int D=0; D<MAX_PEERS; D++)
-    {   
-        if (Peer[D].GetId() == Id) return &Peer[D];
+    PeerClass *Peer;
+    for(int i = 0; i < PeerList.size(); i++){
+
+		Peer = PeerList.get(i);
+
+		if (Peer->GetId() == Id) return Peer;
     }
     return NULL;
 }
 
 PeerClass *FindNextPeer(PeerClass *P, int Type)
 {
-    for (int D=0; D<MAX_PEERS; D++)
-    {   
-        if (Peer[D].GetId() == P->GetId()) 
-        {
-            int DSearch = D;
-            for (int DNext=0; DNext<MAX_PEERS; DNext++)
-            {    
-                DSearch++;
-                if (DSearch == MAX_PEERS) DSearch = 0;
-                if (Peer[DSearch].GetType() == Type) return &Peer[DSearch];
-                if ((Peer[DSearch].GetType() > 0) and (Type = MODULE_ALL)) return &Peer[DSearch];
+    PeerClass *Peer;
+    for(int i = 0; i < PeerList.size(); i++){
+
+		Peer = PeerList.get(i);
+        if (Peer == P)
+        {   
+            int ActualPeerPos = i;
+            if (ActualPeerPos < PeerList.size()-1)
+                ActualPeerPos++;
+            else 
+                ActualPeerPos = 0;
+            
+            PeerClass *NextPeer = PeerList.get(ActualPeerPos);
+
+            Switch (Type) {
+                SWITCH_1_WAY:   if (NextPeer->GetType() == SWITCH_1_WAY)   return NextPeer; break;
+                SWITCH_2_WAY:   if (NextPeer->GetType() == SWITCH_2_WAY)   return NextPeer; break;
+                SWITCH_4_WAY:   if (NextPeer->GetType() == SWITCH_4_WAY)   return NextPeer; break;
+                SWITCH_8_WAY:   if (NextPeer->GetType() == SWITCH_8_WAY)   return NextPeer; break;
+                PDC             if (NextPeer->GetType() == PDC)            return NextPeer; break;
+                PDC_SENSOR_MIX  if (NextPeer->GetType() == PDC_SENSOR_MIX) return NextPeer; break;
+                BATTERY_SENSOR  if (NextPeer->GetType() == BATTERY_SENSOR) return NextPeer; break;
+                MONITOR_ROUND   if (NextPeer->GetType() == MONITOR_ROUND)  return NextPeer; break;
+                MONITOR_BIG     if (NextPeer->GetType() == MONITOR_BIG)    return NextPeer; break;
+                MODULE_ALL:     return NextPeer; break;
             }
+
         }
+
     }
     return NULL;
 }
