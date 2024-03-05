@@ -53,6 +53,8 @@ class PeriphClass {
         void  SetChanged(bool Changed) { _Changed = Changed; }
         int   GetPeerId() { return _PeerId; }
         void  SetPeerId(int PeerId) { _PeerId = PeerId; }
+        bool  IsSensor() { return ((_Type == SENS_TYPE_VOLT) or (_Type == SENS_TYPE_AMP)); }
+        bool  IsSwitch() { return ( _Type == SENS_TYPE_SWITCH) ; }
 
         PeriphClass *GetPtrToSelf() { return this; }
 };

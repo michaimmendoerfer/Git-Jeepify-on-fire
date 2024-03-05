@@ -118,8 +118,7 @@ PeerClass *FindPeerById(int Id)
     }
     return NULL;
 }
-
-PeerClass *FindNextPeer(PeerClass *P, int Type)
+PeerClass *FindNextPeer(PeerClass *P, int Type, bool circular)
 {
     PeerClass *Peer;
     int ActualPeerIndex;
@@ -132,10 +131,15 @@ PeerClass *FindNextPeer(PeerClass *P, int Type)
     for(int i = 0; i < PeerList.size(); i++) 
     {
         if (ActualPeerPos < PeerList.size()-1)
+        {
             ActualPeerPos++;
+        }
         else 
-            ActualPeerPos = 0;
-        
+        {
+            if (circular) ActualPeerPos = 0;
+            else return NULL;
+        }
+
         PeerClass *NextPeer = PeerList.get(ActualPeerPos);
 
         if (Type == MODULE_ALL)          return NextPeer;
@@ -143,7 +147,7 @@ PeerClass *FindNextPeer(PeerClass *P, int Type)
     }
     return NULL;
 }
-PeerClass *FindPrevPeer(PeerClass *P, int Type)
+PeerClass *FindPrevPeer(PeerClass *P, int Type, bool circular)
 {
     PeerClass *Peer;
     int ActualPeerIndex;
@@ -156,9 +160,14 @@ PeerClass *FindPrevPeer(PeerClass *P, int Type)
     for(int i = 0; i < PeerList.size(); i++) 
     {
         if (ActualPeerPos > 0)
+        {
             ActualPeerPos--;
+        }
         else 
-            ActualPeerPos = PeerList.size()-1;
+        {
+            if (circular) ActualPeerPos = PeerList.size()-1;
+            else return NULL;
+        }
         
         PeerClass *NextPeer = PeerList.get(ActualPeerPos);
 
@@ -177,31 +186,32 @@ PeerClass *FindPeerByName(char *Name)
     }
     return NULL;
 }
-PeriphClass *FindNextPeriph(PeriphClass *PeriphT, int Type, bool PeerOnly)
+PeriphClass *FindNextPeriph(PeriphClass *PeriphT, int Type, bool circular, bool AllPeer)
 {
+    PeriphClass *Periph;
     PeerClass *Peer = FindPeerById(PeriphT->GetPeerId());
-    
-    for (int i=PeriphT->GetPos()+1; i<MAX_PERIPHERALS; i++)
-    {   if (Peer.GetPeriphType(i) == Type) return Peer->GetPeriphPtr(i);
+    int PeriphPos = PeriphT->GetPos();
 
-    }
-    Peer = FindNextPeer(Peer);
-    if (PeerT)
+    for int (p=0 ; p<PeerList.size(); p++)
     {
-        for (int P=0; P<MAX_PERIPHERALS; P++)
-        {   
-            ////////////if (PeerT->GetPeriphId(P) == PeriphT->GetId()) 
+        for (int i=0; i<MAX_PERIPHERALS; i++)
+        {   PeriphPos++;
+            if (PeriphPos < MAX_PERIPHERALS)
             {
-                int PSearch = P;
-                for (int PNext=0; PNext<MAX_PERIPHERALS; PNext++)
-                {    
-                    PSearch++;
-                    if (PSearch == MAX_PERIPHERALS) PSearch = 0;
-                    
-                    if (PeriphT.GetType() == Type) return &Periph[PSearch];
-                    if ((Peer[DSearch].GetType() > 0) and (Type = MODULE_ALL)) return &Peer[D];
+                Periph = Peer->GetPeriphPtr(PeriphPos);
+                if  (Type == Periph->GetType()) return Periph;
+                if ((Type == SENS_TYPE_SENS) and (Periph->IsSensor())) return Periph;
+            }
+            else
+            {
+                if (circular) PeriphPos = 0;
+                else if (AllPeer)
+                {
+                    PeriphPos = -1;
+                    Peer = FindNextPeer(Peer, MODULE_ALL, true);
+                    break;
                 }
-
+                return NULL;
             }
         }
     }
