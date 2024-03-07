@@ -99,21 +99,21 @@ void Ui_Peer_Volt(lv_event_t * e)
 #pragma region Screen_Settings
 void UI_Set_Prepare(lv_event_t * e)
 {
-	if (ReadyToPair) {
+	if (Self.GetPairMode()) {
 		lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);
 	}
 	else {
 		lv_obj_clear_state(ui_BtnSet2, LV_STATE_CHECKED);
 	}
 
-	if (DebugMode) {
+	if (Self.GetDebugMode()) {
 		lv_obj_add_state(ui_BtnSet7, LV_STATE_CHECKED);
 	}
 	else {
 		lv_obj_clear_state(ui_BtnSet7, LV_STATE_CHECKED);
 	}
 
-	if (!ChangesSaved) {
+	if (Self.GetChanged) {
 		lv_obj_add_state(ui_BtnSet8, LV_STATE_CHECKED);
 	}
 	else {

@@ -204,6 +204,7 @@ PeriphClass *FindNextPeriph(PeriphClass *PeriphT, int Type, bool circular)
     }
 }
 PeriphClass *FindPrevPeriph(PeriphClass *PeriphT, int Type, bool circular)
+// returns previous Periph with give Type from Peer, otherwise NULL
 {
     PeriphClass *Periph;
     PeerClass *Peer = FindPeerById(PeriphT->GetPeerId());
