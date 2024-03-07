@@ -228,17 +228,28 @@ void Ui_JSON_Prepare(lv_event_t * e)
 void Ui_Single_Next(lv_event_t * e)
 {	
 	if (ActiveSens) {
-		ActiveSens = FindNextPeriph(ActiveSens, SENS_TYPE_SENS, true);
+		ActiveSens = FindNextPeriph(ActiveSens, SENS_TYPE_SENS, false);
+		// no Sens found in ActivePeer
+		if (!ActiveSens) 
+		{ 
+			// find next peer
+			ActivePeer = FindNextPeer(ActivePeer, MODULE_ALL, true); 
+			if (ActivePeer) ActiveSens = FindFirstPeriph(ActivePeer, SENS_TYPE_SENS);
+		}
 	}
 	else {
-		ActiveSens = FindFirstPeriph(ActivePeer, SENS_TYPE_SENS, false);
+		ActiveSens = FindFirstPeriph(ActivePeer, SENS_TYPE_SENS, true);
 	}
-	GenerateSingleScale();
+	
+	if (ActiveSens)
+	{
+		GenerateSingleScale();
 
-	if (ActivePeer) lv_label_set_text(ui_LblSinglePeer, ActivePeer->Name);
-	if (ActiveSens) lv_label_set_text(ui_LblSinglePeriph, ActiveSens->Name);
-	//lv_meter_set_indicator_value(SingleMeter, SingleIndic, -10);
-	lv_label_set_text(ui_LblSingleValue, "---");
+		lv_label_set_text(ui_LblSinglePeer, ActivePeer->Name);
+		lv_label_set_text(ui_LblSinglePeriph, ActiveSens->Name);
+		
+		lv_label_set_text(ui_LblSingleValue, "---");
+	}
 }
 
 void Ui_Single_Last(lv_event_t * e)

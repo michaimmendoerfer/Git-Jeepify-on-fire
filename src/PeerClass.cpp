@@ -129,6 +129,7 @@ PeerClass *FindPeerByName(char *Name)
     return NULL;
 }
 PeerClass *FindNextPeer(PeerClass *P, int Type, bool circular)
+// returns next Peer, tries PeerList.size() times, otherwise returns NULL
 {
     PeerClass *Peer;
     int ActualPeerIndex;
@@ -156,6 +157,7 @@ PeerClass *FindNextPeer(PeerClass *P, int Type, bool circular)
     return NULL;
 }
 PeerClass *FindPrevPeer(PeerClass *P, int Type, bool circular)
+// returns previous Peer, tries PeerList.size() times, otherwise returns NULL
 {
     PeerClass *Peer;
     int ActualPeerIndex;
@@ -179,6 +181,24 @@ PeerClass *FindPrevPeer(PeerClass *P, int Type, bool circular)
         
         if (Type == MODULE_ALL) return Peer;
         if (Type == Peer->GetType()) return Peer;
+    }
+    return NULL;
+}
+PeriphClass *FindFirstPeriph(PeerClass *P, int Type)
+// returns first Periph of Type, otherwise returns NULL);
+{
+    PeerClass *Peer = FindPeerById(PeriphT->GetPeerId());
+    
+    for (int i=0; i<MAX_PERIPHERALS; i++)
+    {   
+        int PType = Peer->GetPeriphType(i);
+
+        switch (Type) {
+            case SENS_TYPE_SENS:    if ((PType == SENS_TYPE_VOLT) or (PType == SENS_TYPE_AMP)) return Peer->GetPeriphPtr(i); break;
+            case SENS_TYPE_VOLT:    if  (PType == SENS_TYPE_VOLT)                              return Peer->GetPeriphPtr(i); break;
+            case SENS_TYPE_AMP:     if  (PType == SENS_TYPE_AMP)                               return Peer->GetPeriphPtr(i); break;
+            case SENS_TYPE_SWITCH:  if  (PType == SENS_TYPE_SWITCH)                            return Peer->GetPeriphPtr(i); break;
+        }
     }
     return NULL;
 }
