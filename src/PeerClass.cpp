@@ -167,23 +167,23 @@ PeerClass *FindPrevPeer(PeerClass *P, int Type, bool circular)
     }
 
     for (int i=0; i<PeerList.size(); i++)
-    {   ActualPeerIndex--;
-        if (ActualPeerIndex > -1)
-        {
-            Peer = PeerList.get(ActualPeerIndex);
-            
-            if (Type == MODULE_ALL) return Peer;
-            if (Type == Peer->GetType()) return Peer;
+    {       
+        ActualPeerIndex--;
+        if (ActualPeerIndex == -1) 
+        {   
+            if (!circular) return NULL;
+            ActualPeerIndex = PeerList.size()-1;
         }
-        else
-        {
-            if (circular) ActualPeerIndex = PeerList.size();
-            else return NULL;
-        }
+
+        Peer = PeerList.get(ActualPeerIndex);
+        
+        if (Type == MODULE_ALL) return Peer;
+        if (Type == Peer->GetType()) return Peer;
     }
     return NULL;
 }
 PeriphClass *FindNextPeriph(PeriphClass *PeriphT, int Type, bool circular)
+// finds next Periph with give Type from Peer, otherwise NULL
 {
     PeriphClass *Periph;
     PeerClass *Peer = FindPeerById(PeriphT->GetPeerId());
@@ -191,17 +191,16 @@ PeriphClass *FindNextPeriph(PeriphClass *PeriphT, int Type, bool circular)
 
     for (int i=0; i<MAX_PERIPHERALS; i++)
     {   PeriphPos++;
-        if (PeriphPos < MAX_PERIPHERALS)
+
+        if (PeriphPos == MAX_PERIPHERALS)
         {
-            Periph = Peer->GetPeriphPtr(PeriphPos);
-            if  (Type == Periph->GetType()) return Periph;
-            if ((Type == SENS_TYPE_SENS) and (Periph->IsSensor())) return Periph;
+            if (!circular) return NULL;
+            PeriphPos = 0;
         }
-        else
-        {
-            if (circular) PeriphPos = -1;
-            else return NULL;
-        }
+    
+        Periph = Peer->GetPeriphPtr(PeriphPos);
+        if  (Type == Periph->GetType()) return Periph;
+        if ((Type == SENS_TYPE_SENS) and (Periph->IsSensor())) return Periph;
     }
 }
 PeriphClass *FindPrevPeriph(PeriphClass *PeriphT, int Type, bool circular)
@@ -212,17 +211,16 @@ PeriphClass *FindPrevPeriph(PeriphClass *PeriphT, int Type, bool circular)
 
     for (int i=0; i<MAX_PERIPHERALS; i++)
     {   PeriphPos--;
-        if (PeriphPos > -1)
+
+        if (PeriphPos == -1)
         {
-            Periph = Peer->GetPeriphPtr(PeriphPos);
-            if  (Type == Periph->GetType()) return Periph;
-            if ((Type == SENS_TYPE_SENS) and (Periph->IsSensor())) return Periph;
+            if (!circular) return NULL;
+            PeriphPos = MAX_PERIPHERALS-1;
         }
-        else
-        {
-            if (circular) PeriphPos = MAX_PERIPHERALS;
-            else return NULL;
-        }
+    
+        Periph = Peer->GetPeriphPtr(PeriphPos);
+        if  (Type == Periph->GetType()) return Periph;
+        if ((Type == SENS_TYPE_SENS) and (Periph->IsSensor())) return Periph;
     }
 }
 //
