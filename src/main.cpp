@@ -114,7 +114,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
                 Peer = new PeerClass();
                 Peer->Setup(doc["Node"], (int)doc["Type"], mac, (bool) bitRead(Status, 1), (bool) bitRead(Status, 0), (bool) bitRead(Status, 2), (bool) bitRead(Status, 3));
                 Peer->SetTSLastSeen(millis());
-                
+                // Message-Bsp: "Node":"ESP32-1"; "T0":"1"; "N0":"Switch1"
                 for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
                     snprintf(Buf, sizeof(Buf), "T%d", Si);                          // Check for T0 (Type of Periph 0)
                     Serial.print("Check Pairing for: "); Serial.println(Buf);

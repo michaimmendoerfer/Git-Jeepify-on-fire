@@ -140,19 +140,18 @@ PeerClass *FindNextPeer(PeerClass *P, int Type, bool circular)
     }
 
     for (int i=0; i<PeerList.size(); i++)
-    {   ActualPeerIndex++;
-        if (ActualPeerIndex < PeerList.size())
-        {
-            Peer = PeerList.get(ActualPeerIndex);
-            
-            if (Type == MODULE_ALL) return Peer;
-            if (Type == Peer->GetType()) return Peer;
+    {       
+        ActualPeerIndex++;
+        if (ActualPeerIndex = PeerList.size()) 
+        {   
+            if (!circular) return NULL;
+            ActualPeerIndex = 0;
         }
-        else
-        {
-            if (circular) ActualPeerIndex = -1;
-            else return NULL;
-        }
+
+        Peer = PeerList.get(ActualPeerIndex);
+        
+        if (Type == MODULE_ALL) return Peer;
+        if (Type == Peer->GetType()) return Peer;
     }
     return NULL;
 }
