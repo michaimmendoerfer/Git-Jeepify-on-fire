@@ -24,7 +24,7 @@ class PeriphClass {
     
     public:
         PeriphClass();
-        void  Setup(int Pos, char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId);
+        void  Setup(char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId);
         
         bool  SetName(char* Name) { strcpy(_Name, Name); return true; }
         char *GetName(){ return (_Name); }
@@ -33,6 +33,7 @@ class PeriphClass {
         int   GetType() { return _Type; }
         void  SetType(int Type) { _Type = Type; }
         int   GetPos() { return _Pos; }
+        void  SetPos(int Pos) {_Pos = Pos; }
         bool  isADS() { return _isADS; }
         bool  GetADS() { return _isADS; }
         void  SetADS(bool isADS) { _isADS = isADS; }
@@ -72,13 +73,13 @@ class PeerClass
         bool       _DebugMode;
         bool       _DemoMode;
         bool       _PairMode;
+        bool       _Changed;
         PeriphClass Periph[MAX_PERIPHERALS]; 
         uint32_t   _TSLastSeen;
         
-    
     public:
         PeerClass();
-        void  Setup(char* Name, int Type, uint8_t *BroadcastAddress, bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode);
+        void  Setup(char* Name, int Type, const uint8_t *BroadcastAddress, bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode);
         
         bool  SetName(char *Name) { strcpy(_Name, Name); return true; }
         char *GetName() { return (_Name); }
@@ -87,7 +88,7 @@ class PeerClass
         int   GetType() { return _Type; }
         void  SetType(int Type) { _Type = Type; }
         uint8_t *GetBroadcastAddress() { return _BroadcastAddress; }
-        void     SetBroadcastAddress(int8_t *BroadcastAddress) { memcpy(_BroadcastAddress, BroadcastAddress, 6); }
+        void     SetBroadcastAddress(const uint8_t *BroadcastAddress) { memcpy(_BroadcastAddress, BroadcastAddress, 6); }
         uint32_t GetTSLastSeen() { return _TSLastSeen; }
         void     SetTSLastSeen(uint32_t TSLastSeen) { _TSLastSeen = TSLastSeen; }
         bool  GetSleepMode() { return _SleepMode; }
@@ -98,9 +99,11 @@ class PeerClass
         void  SetDemoMode(bool DemoMode) { _DemoMode = DemoMode; }
         bool  GetPairMode() { return _PairMode; }
         void  SetPairMode(bool PairMode) { _PairMode = PairMode; }
+        bool  GetChanged() { return _Changed; }
+        void  SetChanged(bool Changed) { _Changed = Changed; }
         bool  TogglePairMode() { _PairMode = !_PairMode; return _PairMode; }
         
-        void  SetupPeriph(int Pos, char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId);
+        void  PeriphSetup(int Pos, char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId);
         
         char *GetPeriphName(int P) { return Periph[P].GetName(); }
         bool  SetPeriphName(int P, char *Name) { Periph[P].SetName(Name); return true; }
@@ -108,7 +111,11 @@ class PeerClass
         int   GetPeriphId(char *Name);
         int   GetPeriphId(int PosPeriph) { return Periph[PosPeriph].GetId(); }
         
-        float GetPeriphValue(int P) { return Periph[P].GetValue(); }
+        void  SetPeriphPeerId(int P, int PeerId) { Periph[P].SetPeerId(PeerId); }
+        int   GetPeriphPeerId(int P) { return Periph[P].GetPeerId(); }
+
+        int   GetPeriphPos(int P) { return Periph[P].GetPos(); }
+
         float GetPeriphValue(char *Name);
         void  SetPeriphValue(int P, float Value) { Periph[P].SetValue(Value); }
         void  SetPeriphValue(char *Name, float Value);
@@ -140,11 +147,18 @@ class PeerClass
 
         PeriphClass *GetPeriphPtr(int P) { return &Periph[P]; }
         PeriphClass *GetPeriphPtr(char *Name);
-        
-
 };
 
 PeerClass *FindPeerByMAC(const uint8_t *BroadcastAddress);
+PeerClass *FindPeerById(int Id);
+PeerClass *FindPeerByName(char *Name);
+
+PeerClass *FindNextPeer(PeerClass *P, int Type, bool circular);
+PeerClass *FindPrevPeer(PeerClass *P, int Type, bool circular);
+PeriphClass *FindFirstPeriph(PeerClass *P, int Type);
+PeriphClass *FindNextPeriph(PeriphClass *PeriphT, int Type, bool circular);
+PeriphClass *FindPrevPeriph(PeriphClass *PeriphT, int Type, bool circular);
+
 
 extern PeerClass *ActivePeer;
 extern PeerClass *ActivePDC;
