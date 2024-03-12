@@ -80,7 +80,9 @@ class PeerClass
     public:
         PeerClass();
         void  Setup(char* Name, int Type, const uint8_t *BroadcastAddress, bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode);
-        
+        char* Export();
+        void  Import(char *Buf);
+
         bool  SetName(char *Name) { strcpy(_Name, Name); return true; }
         char *GetName() { return (_Name); }
         int   GetId() { return _Id; }
@@ -117,6 +119,7 @@ class PeerClass
         int   GetPeriphPos(int P) { return Periph[P].GetPos(); }
 
         float GetPeriphValue(char *Name);
+        float GetPeriphValue(int P) { return Periph[P].GetValue(); }
         void  SetPeriphValue(int P, float Value) { Periph[P].SetValue(Value); }
         void  SetPeriphValue(char *Name, float Value);
         
@@ -153,8 +156,10 @@ PeerClass *FindPeerByMAC(const uint8_t *BroadcastAddress);
 PeerClass *FindPeerById(int Id);
 PeerClass *FindPeerByName(char *Name);
 
+PeerClass *FindFirstPeer(int Type);
 PeerClass *FindNextPeer(PeerClass *P, int Type, bool circular);
 PeerClass *FindPrevPeer(PeerClass *P, int Type, bool circular);
+PeriphClass *FindPeriphById(int Id);
 PeriphClass *FindFirstPeriph(PeerClass *P, int Type);
 PeriphClass *FindNextPeriph(PeriphClass *PeriphT, int Type, bool circular);
 PeriphClass *FindPrevPeriph(PeriphClass *PeriphT, int Type, bool circular);
@@ -167,5 +172,7 @@ extern PeerClass *ActiveSelection;
 extern PeriphClass *ActiveSens;
 extern PeriphClass *ActiveSwitch;
 extern PeriphClass *ActivePeriph;
+
+extern char ExportImportBuffer[50+40*MAX_PERIPHERALS];
 
 #endif

@@ -167,31 +167,31 @@ void Ui_Set_SavePeers(lv_event_t * e)
 void Ui_Peers_Prepare(lv_event_t * e)
 {
 	String Options = "";
-	PeerClass *Peer;
+	PeerClass *P;
 
     for(int i = 0; i < PeerList.size(); i++){
 
-		Peer = PeerList.get(i);
+		P = PeerList.get(i);
 
 		if (Options != "") Options += "\n";
 			
-			if (millis()- Peer_>GetTSLastSeen() > OFFLINE_INTERVAL) Options += "off: <";
-			else Options += "on:  <"; 
-				
-			Options += Peer->GetName();
+		if (millis()- P->GetTSLastSeen() > OFFLINE_INTERVAL) Options += "off: <";
+		else Options += "on:  <"; 
+			
+		Options += P->GetName();
 
-			switch (Peer->GetType()) {
-				case SWITCH_1_WAY:   Options += "> PDC-1"; break;
-				case SWITCH_2_WAY:   Options += "> PDC-2"; break;
-				case SWITCH_4_WAY:   Options += "> PDC-4"; break;
-				case SWITCH_8_WAY:   Options += "> PDC-8"; break;
-				case PDC_SENSOR_MIX: Options += "> MIX";   break;
-				case BATTERY_SENSOR: Options += "> Sens";  break;
-				default:		     Options += "> ???";   break;
-			}
-			}
-  }
-  lv_roller_set_options(ui_RollerPeers1, Options.c_str(), LV_ROLLER_MODE_NORMAL);
+		switch (P->GetType()) {
+			case SWITCH_1_WAY:   Options += "> PDC-1"; break;
+			case SWITCH_2_WAY:   Options += "> PDC-2"; break;
+			case SWITCH_4_WAY:   Options += "> PDC-4"; break;
+			case SWITCH_8_WAY:   Options += "> PDC-8"; break;
+			case PDC_SENSOR_MIX: Options += "> MIX";   break;
+			case BATTERY_SENSOR: Options += "> Sens";  break;
+			default:		     Options += "> ???";   break;
+		}
+	}
+	
+	lv_roller_set_options(ui_RollerPeers1, Options.c_str(), LV_ROLLER_MODE_NORMAL);
 }
 
 void Ui_Peers_Selected(lv_event_t * e)
@@ -238,7 +238,7 @@ void Ui_Single_Next(lv_event_t * e)
 		}
 	}
 	else {
-		ActiveSens = FindFirstPeriph(ActivePeer, SENS_TYPE_SENS, true);
+		ActiveSens = FindFirstPeriph(ActivePeer, SENS_TYPE_SENS);
 	}
 	
 	if (ActiveSens)

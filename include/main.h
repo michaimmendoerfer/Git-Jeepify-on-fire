@@ -43,4 +43,6 @@ extern LinkedList<PeerClass*>   PeerList;
 extern LinkedList<PeriphClass*> PeriphList;
 
 extern PeerClass Self;
+extern Preferences preferences;
+
 #endif
