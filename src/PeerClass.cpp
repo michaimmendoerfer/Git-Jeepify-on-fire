@@ -16,7 +16,7 @@ PeriphClass::PeriphClass()
     _Id = _ClassId;
     _ClassId++;
 }
-void  PeriphClass::Setup(char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId)
+void  PeriphClass::Setup(const char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId)
 {
     strcpy(_Name, Name);
     _Type = Type;
@@ -33,7 +33,7 @@ PeerClass::PeerClass()
     _Id = _ClassId;
     _ClassId++;
 }
-void  PeerClass::Setup(char* Name, int Type, const uint8_t *BroadcastAddress, bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode)
+void  PeerClass::Setup(const char* Name, int Type, const uint8_t *BroadcastAddress, bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode)
 {
     strcpy(_Name, Name);
     _Type = Type;
@@ -88,7 +88,7 @@ void PeerClass::Import(char *Buf)
     }
 }
         
-void  PeerClass::PeriphSetup(int Pos, char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId)
+void  PeerClass::PeriphSetup(int Pos, const char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId)
 {
     Periph[Pos].Setup(Name, Type, isADS, IOPort, Nullwert, VperAmp, Vin, PeerId);
 }
@@ -142,7 +142,7 @@ PeriphClass *PeerClass::GetPeriphPtr(char *Name)
 }
 #pragma endregion PeerClass::Declaration
 
-PeerClass *FindPeerByMAC(uint8_t *BroadcastAddress)
+PeerClass *FindPeerByMAC(const uint8_t *BroadcastAddress)
 {
     PeerClass *Peer;
     for(int i = 0; i < PeerList.size(); i++){

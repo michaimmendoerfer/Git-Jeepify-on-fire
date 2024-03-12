@@ -5,6 +5,8 @@
 #include <WiFi.h>
 #include <lvgl.h>
 #include "PeerClass.h"
+#include "LinkedList.h"
+#include <Preferences.h>
 
 void   PrintMAC(const uint8_t * mac_addr);
 
@@ -30,11 +32,6 @@ void   PrepareJSON();
 void   PrintMAC(const uint8_t * mac_addr);
 void   WriteStringToCharArray(String S, char *C);
 
-extern bool DebugMode;
-extern bool SleepMode;
-extern bool ReadyToPair;
-extern bool ChangesSaved;
-
 extern volatile uint32_t TSMsgRcv;
 extern volatile uint32_t TSMsgSnd;
 extern volatile uint32_t TSPair;
@@ -44,5 +41,8 @@ extern LinkedList<PeriphClass*> PeriphList;
 
 extern PeerClass Self;
 extern Preferences preferences;
+
+extern int ActiveMultiScreen;
+
 
 #endif

@@ -32,7 +32,7 @@ static lv_disp_draw_buf_t draw_buf;
 static lv_color_t buf1[ TFT_HOR_RES * TFT_VER_RES / 10 ];
 
 LinkedList<PeerClass*> PeerList = LinkedList<PeerClass*>();
-extern LinkedList<PeriphClass*> PeriphList = LinkedList<PeriphClass*>();
+LinkedList<PeriphClass*> PeriphList = LinkedList<PeriphClass*>();
 
 PeerClass Self;
 
@@ -50,6 +50,8 @@ volatile uint32_t TSMsgPair = 0;
 volatile uint32_t TSPair    = 0;
 
 lv_timer_t *WDButtonVars;
+
+int ActiveMultiScreen;
 
 #pragma endregion Globals
 #pragma region Main
@@ -85,7 +87,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
             else {
                 for (int i=0; i<MAX_PERIPHERALS; i++) 
                 {
-                    if (doc.containsKey(P->GetPeriphName(i))) {
+                    if (doc.containsKey((const char*)P->GetPeriphName(i))) {
                         float TempSensor = (float)doc[P->GetPeriphName(i)];
                         
                         Serial.print(P->GetPeriphName(i)); Serial.print(" found = "); Serial.println(TempSensor);
@@ -115,7 +117,9 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
                 int Status = doc["Status"];
 
                 P = new PeerClass();
-                P->Setup(doc["Node"], (int)doc["Type"], mac, (bool) bitRead(Status, 1), (bool) bitRead(Status, 0), (bool) bitRead(Status, 2), (bool) bitRead(Status, 3));
+                String PeerName = doc["Node"];
+
+                P->Setup(PeerName.c_str(), (int)doc["Type"], mac, (bool) bitRead(Status, 1), (bool) bitRead(Status, 0), (bool) bitRead(Status, 2), (bool) bitRead(Status, 3));
                 P->SetTSLastSeen(millis());
                 // Message-Bsp: "Node":"ESP32-1"; "T0":"1"; "N0":"Switch1"
                 for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
@@ -128,8 +132,8 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
                         int  Type = doc[Buf];
 
                         snprintf(Buf, sizeof(Buf), "N%d", Si);                      // get N0 (Name of Periph 0)
-                        
-                        P->PeriphSetup(Si, doc[Buf], Type, false, false, 0, 0, 0, P->GetId());
+                        String PName = doc[Buf];
+                        P->PeriphSetup(Si, PName.c_str(), Type, false, false, 0, 0, 0, P->GetId());
                         PeriphList.add(P->GetPeriphPtr(Si));
                         
                         Serial.printf("%s->Periph[%d].Name is now: %s\n", P->GetName(), Si, P->GetPeriphName(Si));
@@ -214,13 +218,9 @@ void loop()
   delay(5);
 }
 #pragma endregion Main
-void MultiScreenAddPeriph(struct_Periph *Periph, uint8_t Pos)
+void MultiScreenAddPeriph(PeriphClass *Periph, uint8_t Pos)
 {
-    Screen[ActiveMultiScreen].Periph[Pos]   = Periph;
-    Screen[ActiveMultiScreen].PeriphId[Pos] = Periph->Id;
-    Screen[ActiveMultiScreen].Peer[Pos]     = FindPeerById(Periph->PeerId);
-    Screen[ActiveMultiScreen].PeerId[Pos]   = Periph->PeerId;
-    Screen[ActiveMultiScreen].Used          = true;
+    Screen[ActiveMultiScreen].AddPeriph(Pos, Periph);
 }
 
 #pragma region Send-Things
@@ -229,6 +229,7 @@ void SendPing(lv_timer_t * timer) {
     String jsondata;
     jsondata = "";  
     doc.clear();
+    PeerClass *P;
     
     doc["Node"] = NODE_NAME;   
     doc["Order"] = "stay alive";
@@ -240,9 +241,10 @@ void SendPing(lv_timer_t * timer) {
 
     serializeJson(doc, jsondata);  
     
-    for (int P=0; P<MAX_PEERS; P++)
+    for (int i=0; i<PeerList.size(); i++)
     {
-        if (Peer[P].GetType() > 0) esp_now_send(Peer[P].GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  
+        P = PeerList.get(i);
+        if (P->GetType() > 0) esp_now_send(P->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  
     }
 }
 void SendPairingConfirm(PeerClass *P) {
@@ -250,18 +252,18 @@ void SendPairingConfirm(PeerClass *P) {
   String jsondata;
   jsondata = "";  doc.clear();
   
-  uint8_t *Broadcast = P.GetBroadcastAddress();
+  uint8_t *Broadcast = P->GetBroadcastAddress();
   
   doc["Node"]     = Self.GetName();   
   doc["Peer"]     = P->GetName();
   doc["Pairing"]  = "you are paired";
   doc["Type"]     = Self.GetType();
-  doc["B0"]       = (uint8_t)Broadcast;
-  doc["B1"]       = (uint8_t)Broadcast+1;
-  doc["B2"]       = (uint8_t)Broadcast+2;
-  doc["B3"]       = (uint8_t)Broadcast+3;
-  doc["B4"]       = (uint8_t)Broadcast+4;
-  doc["B5"]       = (uint8_t)Broadcast+5;
+  doc["B0"]       = (uint8_t)Broadcast[0];
+  doc["B1"]       = (uint8_t)Broadcast[1];
+  doc["B2"]       = (uint8_t)Broadcast[2];
+  doc["B3"]       = (uint8_t)Broadcast[3];
+  doc["B4"]       = (uint8_t)Broadcast[4];
+  doc["B5"]       = (uint8_t)Broadcast[5];
 
   serializeJson(doc, jsondata);  
   
@@ -373,7 +375,7 @@ void CalibVolt() {
   serializeJson(doc, jsondata);  
 
   esp_now_send(ActivePeer->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
-  if (DebugMode) Serial.println(jsondata);
+  if (Self.GetDebugMode()) Serial.println(jsondata);
 }
 
 void PrintMAC(const uint8_t * mac_addr){

@@ -24,7 +24,7 @@ class PeriphClass {
     
     public:
         PeriphClass();
-        void  Setup(char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId);
+        void  Setup(const char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId);
         
         bool  SetName(char* Name) { strcpy(_Name, Name); return true; }
         char *GetName(){ return (_Name); }
@@ -79,7 +79,7 @@ class PeerClass
         
     public:
         PeerClass();
-        void  Setup(char* Name, int Type, const uint8_t *BroadcastAddress, bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode);
+        void  Setup(const char* Name, int Type, const uint8_t *BroadcastAddress, bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode);
         char* Export();
         void  Import(char *Buf);
 
@@ -105,7 +105,7 @@ class PeerClass
         void  SetChanged(bool Changed) { _Changed = Changed; }
         bool  TogglePairMode() { _PairMode = !_PairMode; return _PairMode; }
         
-        void  PeriphSetup(int Pos, char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId);
+        void  PeriphSetup(int Pos, const char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId);
         
         char *GetPeriphName(int P) { return Periph[P].GetName(); }
         bool  SetPeriphName(int P, char *Name) { Periph[P].SetName(Name); return true; }
