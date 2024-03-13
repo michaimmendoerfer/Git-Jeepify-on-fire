@@ -372,7 +372,7 @@ void SingleUpdateTimer(lv_timer_t * timer)
 
 void Ui_Single_Leave(lv_event_t * e)
 {
-	//lv_timer_pause(SingleTimer);
+	lv_timer_pause(SingleTimer);
 	Serial.println("SingleTimer paused");
 }
 

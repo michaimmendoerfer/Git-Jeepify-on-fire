@@ -53,7 +53,6 @@ PeerClass::PeerClass()
     _DemoMode = false;
     _PairMode = false;
     _Changed = false;
-     Periph[MAX_PERIPHERALS]; 
     _TSLastSeen = 0;
 }
 void  PeerClass::Setup(const char* Name, int Type, const uint8_t *BroadcastAddress, bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode)

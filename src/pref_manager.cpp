@@ -14,6 +14,21 @@ MultiMonitorClass Screen[MULTI_SCREENS];
 
 char ScreenExportImportBuffer[300];
 
+MultiMonitorClass::MultiMonitorClass() 
+{ 
+    strcpy(_Name, "n.n."); 
+    _Id = 0;
+    _Changed = false;
+    
+    for (int i=0; i<PERIPH_PER_SCREEN; i++)
+    {
+        _Peer[i] = NULL;
+        _PeerId[i] = 0;
+        _Periph[i] = NULL;
+        _PeriphId[i] = 0;
+    }
+    _Used = false;
+}
 char* MultiMonitorClass::Export() 
 // fills ScreenExportImportBuffer with "Name;PeriphId0;PeriphId1;PeriphId2;PeriphId3"
 {
