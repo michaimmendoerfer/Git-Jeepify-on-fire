@@ -33,7 +33,6 @@ lv_timer_t *SwitchTimer;
 
 void GenerateSingleScale(void);
 void Keyboard_cb(lv_event_t * event);
-void Ui_Multi_Set_Tile(uint8_t Pos);
 void SingleUpdateTimer(lv_timer_t * timer);
 void MultiUpdateTimer(lv_timer_t * timer);
 
@@ -490,59 +489,59 @@ void Ui_Multi_SetPanel4(lv_event_t * e)
 
 void Ui_Multi_Prepare(lv_event_t * e)
 {
+	lv_obj_t *TileActive; 
+	lv_obj_t *TileInActive; 
+
 	Serial.println("Multi-Prepare");
 	
 	static uint32_t user_data = 10;
-	
+	Serial.println(Screen[ActiveMultiScreen].GetName());
+
 	lv_label_set_text(ui_LblMultiName, Screen[ActiveMultiScreen].GetName());
 
-	for (int i=0; i<4; i++) {
+	for (int Pos=0; Pos<PERIPH_PER_SCREEN; Pos++) {
 		Serial.println("for beginn");
-		if (Screen[ActiveMultiScreen].GetPeriph(i)->GetType() > 0) Ui_Multi_Set_Tile(i);
-		Serial.println("for nach tile");
-		
-		Serial.println(Screen[ActiveMultiScreen].GetPeriph(i)->GetType());
-	}
-	
-	MultiTimer = lv_timer_create(MultiUpdateTimer, 500,  &user_data);
-}
-void Ui_Multi_Set_Tile(uint8_t Pos)
-{
-	PeriphClass *Periph = Screen[ActiveMultiScreen].GetPeriph(Pos);
+		if (Screen[ActiveMultiScreen].GetPeriphId(Pos) > 0) 
+		{
+			int Type = Screen[ActiveMultiScreen].GetPeriph(Pos)->GetType();
+			if ((Type == SENS_TYPE_AMP) or (Type == SENS_TYPE_AMP))
+			{
+				Serial.println("Volt/AMP - Tile (in)active holen");
+				TileActive   = lv_obj_get_child(ui_ScrMulti, Pos+4);
+				TileInActive = lv_obj_get_child(ui_ScrMulti, Pos);
+			}
+			else if (Type == SENS_TYPE_SWITCH)
+			{	
+				Serial.println("SWITCH - Tile (in)active holen");
+				TileActive   = lv_obj_get_child(ui_ScrMulti, Pos);
+				TileInActive = lv_obj_get_child(ui_ScrMulti, Pos+4);
+			}
+			else
+			{
+				Serial.println("kein Type");
+				TileActive   = NULL;
+				TileInActive = NULL;
+			}		
 
-	Serial.print("Multi-Set_tile : "); Serial.println(Pos);
-	Serial.print("AktiveMultiScreen : "); Serial.println(ActiveMultiScreen);
-	Serial.print("Screen[ActiveMultiScreen].Periph[Pos]->Type: "); Serial.println(Periph->GetType());
-	
-	lv_obj_t *TileActive; 
-	lv_obj_t *TileInActive; 
-	
-	switch (Periph->GetType()) {
-		case SENS_TYPE_AMP:
-			Serial.println("AMP - Tile (in)active holen");
-			TileActive   = lv_obj_get_child(ui_ScrMulti, Pos+4);
-			TileInActive = lv_obj_get_child(ui_ScrMulti, Pos);
-			break;
-		case SENS_TYPE_VOLT:
-			Serial.println("VOLT - Tile (in)active holen");
-			TileActive   = lv_obj_get_child(ui_ScrMulti, Pos+4);
-			TileInActive = lv_obj_get_child(ui_ScrMulti, Pos);
-			break;
-		case SENS_TYPE_SWITCH:
-			Serial.println("SWITCH - Tile (in)active holen");
-			TileActive   = lv_obj_get_child(ui_ScrMulti, Pos);
-			TileInActive = lv_obj_get_child(ui_ScrMulti, Pos+4);
-			break;
-		default:
-			Serial.println("kein Type");
-			break;
-	}
-		
-	lv_obj_clear_flag(TileActive, LV_OBJ_FLAG_HIDDEN);
-	lv_obj_add_flag(TileInActive, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_clear_flag(TileActive, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_add_flag(TileInActive, LV_OBJ_FLAG_HIDDEN);
 
-	lv_label_set_text(lv_obj_get_child(TileActive, 1), Periph->GetName());
-	lv_label_set_text(lv_obj_get_child(TileActive, 0), Screen[ActiveMultiScreen].GetPeer(Pos)->GetName());
+			lv_label_set_text(lv_obj_get_child(TileActive, 1), Screen[ActiveMultiScreen].GetPeriph(Pos)->GetName());
+			lv_label_set_text(lv_obj_get_child(TileActive, 0), Screen[ActiveMultiScreen].GetPeer(Pos)->GetName());
+		}
+
+	}
+	if (MultiTimer) 
+	{
+		lv_timer_resume(MultiTimer);
+		
+		Serial.println("MultiTimer resumed");
+	}
+	else 
+	{
+		MultiTimer = lv_timer_create(MultiUpdateTimer, 500,  &user_data);
+		Serial.println("MultiTimer created");
+	}
 }
 void MultiUpdateTimer(lv_timer_t * timer)
 {
@@ -557,59 +556,60 @@ void MultiUpdateTimer(lv_timer_t * timer)
 	
 	for (int i=0; i<4; i++) {
 		lv_obj_t *TileActive; 
-		
-		value = Screen[ActiveMultiScreen].GetPeriph(i)->GetValue();
-		
-		if      (value<10)  nk = 2;
-		else if (value<100) nk = 1;
-		else                nk = 0;
-
-		if (value == -99) strcpy(buf, "--"); 
-		else dtostrf(value, 0, nk, buf);
-
-		switch (Screen[ActiveMultiScreen].GetPeriph(i)->GetType()) 
+		if (Screen[ActiveMultiScreen].GetPeriphId(i) > 0)
 		{
-			case SENS_TYPE_AMP:
-				TileActive = lv_obj_get_child(ui_ScrMulti, i+4);
-				
-				strcat(buf, " A");
-				
-				if 		(value < 20) bg = lv_color_hex(0x135A25);
-				else if (value < 25) bg = lv_color_hex(0x7C7E26);
-				else 				 bg = lv_color_hex(0x88182C);
+			value = Screen[ActiveMultiScreen].GetPeriph(i)->GetValue();
+		
+			if      (value<10)  nk = 2;
+			else if (value<100) nk = 1;
+			else                nk = 0;
 
-				lv_obj_set_style_bg_color(TileActive, bg, LV_PART_MAIN | LV_STATE_DEFAULT);
-				lv_label_set_text(lv_obj_get_child(TileActive, 2), buf);
-				
-				break;
-			case SENS_TYPE_VOLT:
-				TileActive = lv_obj_get_child(ui_ScrMulti, i+4);
-				
-				strcat(buf, " V");
-				
-				if 		(value < 13)   bg = lv_color_hex(0x135A25);
-				else if (value < 14.4) bg = lv_color_hex(0x7C7E26);
-				else 				   bg = lv_color_hex(0x88182C);
+			if (value == -99) strcpy(buf, "--"); 
+			else dtostrf(value, 0, nk, buf);
 
-				lv_obj_set_style_bg_color(TileActive, bg, LV_PART_MAIN | LV_STATE_DEFAULT);
-				lv_label_set_text(lv_obj_get_child(TileActive, 2), buf);
+			switch (Screen[ActiveMultiScreen].GetPeriph(i)->GetType()) 
+			{
+				case SENS_TYPE_AMP:
+					TileActive = lv_obj_get_child(ui_ScrMulti, i+4);
+					
+					strcat(buf, " A");
+					
+					if 		(value < 20) bg = lv_color_hex(0x135A25);
+					else if (value < 25) bg = lv_color_hex(0x7C7E26);
+					else 				 bg = lv_color_hex(0x88182C);
 
-				break;
-			case SENS_TYPE_SWITCH:
-				TileActive = lv_obj_get_child(ui_ScrMulti, i);
-			
-				if (value == 1) 
-				{
-					lv_obj_add_state(TileActive, LV_STATE_CHECKED);
-				}
-				else
-				{
-					lv_obj_clear_state(TileActive, LV_STATE_CHECKED);
-				}
+					lv_obj_set_style_bg_color(TileActive, bg, LV_PART_MAIN | LV_STATE_DEFAULT);
+					lv_label_set_text(lv_obj_get_child(TileActive, 2), buf);
+					
+					break;
+				case SENS_TYPE_VOLT:
+					TileActive = lv_obj_get_child(ui_ScrMulti, i+4);
+					
+					strcat(buf, " V");
+					
+					if 		(value < 13)   bg = lv_color_hex(0x135A25);
+					else if (value < 14.4) bg = lv_color_hex(0x7C7E26);
+					else 				   bg = lv_color_hex(0x88182C);
 
-				break;
+					lv_obj_set_style_bg_color(TileActive, bg, LV_PART_MAIN | LV_STATE_DEFAULT);
+					lv_label_set_text(lv_obj_get_child(TileActive, 2), buf);
+
+					break;
+				case SENS_TYPE_SWITCH:
+					TileActive = lv_obj_get_child(ui_ScrMulti, i);
+				
+					if (value == 1) 
+					{
+						lv_obj_add_state(TileActive, LV_STATE_CHECKED);
+					}
+					else
+					{
+						lv_obj_clear_state(TileActive, LV_STATE_CHECKED);
+					}
+
+					break;
+			}
 		}
-
 		Serial.print("MultiValueUpdate: setze Pos[");
 		Serial.print(i); 
 		Serial.print("]-");
@@ -621,7 +621,7 @@ void MultiUpdateTimer(lv_timer_t * timer)
 
 void Ui_Multi_Leave(lv_event_t * e)
 {
-	lv_timer_del(MultiTimer);
+	lv_timer_pause(MultiTimer);
 }
 
 #pragma endregion Screen_MultiMeter
