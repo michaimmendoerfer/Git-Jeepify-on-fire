@@ -12,7 +12,7 @@ int PeerCount;
 Preferences preferences;
 MultiMonitorClass Screen[MULTI_SCREENS];
 
-char ScreenExportImportBuffer[30*MULTI_SCREENS];
+char ScreenExportImportBuffer[300];
 
 char* MultiMonitorClass::Export() 
 // fills ScreenExportImportBuffer with "Name;PeriphId0;PeriphId1;PeriphId2;PeriphId3"
@@ -50,14 +50,15 @@ void SavePeers()
     char Buf[10];
     char ExportBuffer[50];
     
-    preferences.begin("JeepifyPeers", true);
+    preferences.begin("JeepifyPeers", false);
     
     preferences.putInt("PeerCount", PeerList.size());
+    Serial.printf("PeerList.size() = %d, gelesenes PeerCount = %d\n\r", PeerList.size(), preferences.getInt("PeerCount"));
 
     for(int i = 0; i < PeerList.size(); i++){
       P = PeerList.get(i);
       sprintf(Buf, "Peer-%d", i);
-      preferences.putString(Buf, P->Export());
+      Serial.printf("putSring = %d", preferences.putString(Buf, P->Export()));
       Serial.printf("schreibe: [%s]: %s", Buf, P->Export());
       Serial.println();
     }
@@ -82,7 +83,6 @@ void GetPeers()
 
     PeerList.clear();
 
-
     int PeerCount = preferences.getInt("PeerCount");
     
     for (int Pi=0 ; Pi<PeerCount; Pi++)
@@ -101,13 +101,16 @@ void GetPeers()
   
     Serial.println("jetzt kommt Multi");
 
-    for (int s=0; s<MULTI_SCREENS; s++) {
+    /*for (int s=0; s<MULTI_SCREENS; s++) {
       snprintf(Buf, sizeof(Buf), "Screen-%d", s);
       Buffer = preferences.getString(Buf, "");
+      Serial.printf("%s - %d Bytes gelesen: %s\n\r", Buf, sizeof(Buffer), Buffer);
       strcpy(ScreenExportImportBuffer, Buffer.c_str());
-        
+      ReportAll();
+      Serial.println("jetzt kommt import");
       Screen[s].Import(ScreenExportImportBuffer);
-    }
+    }*/
+    ReportAll();
     preferences.end();
 }
 void ClearPeers() {
@@ -194,11 +197,13 @@ void RegisterPeers()
 void ReportAll()
 {
     PeerClass *P;
-    
+    Serial.printf("REPORT: PeerList.size() = %d\n\r", PeerList.size());
+
     for(int i=0; i < PeerList.size(); i++)
     {
       P = PeerList.get(i);
-      Serial.printf("[%d] %s, Type:%d", P->GetId(), P->GetName(), P->GetType());
+      Serial.printf("[%d] %s, Type:%d, MAC:", P->GetId(), P->GetName(), P->GetType());
+      PrintMAC(P->GetBroadcastAddress());
       Serial.println();
       for (int Si=0; Si<MAX_PERIPHERALS; Si++)
       {

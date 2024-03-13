@@ -117,6 +117,8 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
                 int Status = doc["Status"];
 
                 P = new PeerClass();
+                PeerList.add(P);
+
                 String PeerName = doc["Node"];
 
                 P->Setup(PeerName.c_str(), (int)doc["Type"], mac, (bool) bitRead(Status, 1), (bool) bitRead(Status, 0), (bool) bitRead(Status, 2), (bool) bitRead(Status, 3));
@@ -138,16 +140,14 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
                         
                         Serial.printf("%s->Periph[%d].Name is now: %s\n", P->GetName(), Si, P->GetPeriphName(Si));
                     } 
-
-                    //Report
-                    
-                    //ReportAll();
-                    //SavePeers();
-                    //RegisterPeers();
-                    SendPairingConfirm(P);
-                    
-                    Self.SetPairMode(false); TSPair = 0;
                 }
+                ReportAll();
+                SavePeers();
+                ReportAll();
+                RegisterPeers();
+                SendPairingConfirm(P);
+                
+                Self.SetPairMode(false); TSPair = 0;
             }
         }
     }
@@ -203,9 +203,9 @@ void setup()
         Self.SetSleepMode(preferences.getBool("SleepMode", false));
     preferences.end();
     
-    // GetPeers();
-    // RegisterPeers();
-    // ReportAll();
+    GetPeers();
+    RegisterPeers();
+    ReportAll();
   
     static uint32_t user_data = 10;
     lv_timer_t * TimerPing = lv_timer_create(SendPing, PING_INTERVAL,  &user_data);
@@ -215,7 +215,7 @@ void setup()
 void loop() 
 {
   lv_timer_handler(); /* let the GUI do its work */
-  delay(5);
+  delay(20);
 }
 #pragma endregion Main
 void MultiScreenAddPeriph(PeriphClass *Periph, uint8_t Pos)

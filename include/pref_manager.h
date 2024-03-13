@@ -17,7 +17,7 @@ class MultiMonitorClass {
         bool         _Used;
     
     public:
-        MultiMonitorClass() { strcpy(_Name, ""); };
+        MultiMonitorClass() { strcpy(_Name, "n.n."); };
         char *Export();
         void  Import(char *Buf);
 

@@ -8,13 +8,26 @@ PeriphClass *ActiveSens, *ActiveSwitch, *ActivePeriph;
 int  PeriphClass::_ClassId = 1;
 int  PeerClass::_ClassId = 1;
 
-char ExportImportBuffer[50+40*MAX_PERIPHERALS];
+char ExportImportBuffer[250];
 
 #pragma region PeriphClass::Declaration
 PeriphClass::PeriphClass()
 {
     _Id = _ClassId;
     _ClassId++;
+
+    strcpy(_Name, "n.n.");
+    _Type = 0;  
+    _Pos = 0;       
+    _isADS = false;
+    _IOPort = 0;
+    _Nullwert = 0;
+    _VperAmp = 0;
+    _Vin = 0;
+    _Value = 0;
+    _OldValue = 0;
+    _Changed = false;
+    _PeerId = 0;
 }
 void  PeriphClass::Setup(const char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId)
 {
@@ -32,6 +45,16 @@ PeerClass::PeerClass()
 {
     _Id = _ClassId;
     _ClassId++;
+
+    strcpy(_Name, "n.n.") ;
+    _Type = 0;  
+    _SleepMode = false;
+    _DebugMode = false;
+    _DemoMode = false;
+    _PairMode = false;
+    _Changed = false;
+     Periph[MAX_PERIPHERALS]; 
+    _TSLastSeen = 0;
 }
 void  PeerClass::Setup(const char* Name, int Type, const uint8_t *BroadcastAddress, bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode)
 {
@@ -56,9 +79,9 @@ char* PeerClass::Export()
                         _SleepMode, _DebugMode, _DemoMode);
                         
     for (int Si=0; Si<MAX_PERIPHERALS; Si++)
-    {
-        snprintf(ReturnBufferPeriph, sizeof(ReturnBufferPeriph), ";%s;%d;%d;%d",
-                        Periph[Si].GetName(), Periph[Si].GetType(), Periph[Si].GetPos(), Periph[Si].GetPeerId());
+    { 
+        snprintf(ReturnBufferPeriph, sizeof(ReturnBufferPeriph), ";%s;%d",
+                 Periph[Si].GetName(), Periph[Si].GetType());
 
         strcat(ExportImportBuffer, ReturnBufferPeriph);
     }
@@ -68,13 +91,13 @@ char* PeerClass::Export()
 void PeerClass::Import(char *Buf) 
 {
     strcpy(_Name, strtok(Buf, ";"));
-    _Type = atoi(strtok(NULL, ",;+"));
+    _Type = atoi(strtok(NULL, ";"));
     _BroadcastAddress[0] = atoi(strtok(NULL, ";"));
     _BroadcastAddress[1] = atoi(strtok(NULL, ";"));
     _BroadcastAddress[2] = atoi(strtok(NULL, ";"));
     _BroadcastAddress[3] = atoi(strtok(NULL, ";"));
     _BroadcastAddress[4] = atoi(strtok(NULL, ";"));
-    _BroadcastAddress[5] = atoi(strtok(NULL, ";+"));
+    _BroadcastAddress[5] = atoi(strtok(NULL, ";"));
     _SleepMode = atoi(strtok(NULL, ";"));
     _DebugMode = atoi(strtok(NULL, ";"));
     _DemoMode  = atoi(strtok(NULL, ";"));
@@ -83,8 +106,8 @@ void PeerClass::Import(char *Buf)
     {
         Periph[Si].SetName(strtok(NULL, ";"));
         Periph[Si].SetType(atoi(strtok(NULL, ";")));
-        Periph[Si].SetPos(atoi(strtok(NULL, ";")));
-        Periph[Si].SetPeerId(atoi(strtok(NULL, ";")));
+        Periph[Si].SetPos(Si);
+        Periph[Si].SetPeerId(_Id);
     }
 }
         

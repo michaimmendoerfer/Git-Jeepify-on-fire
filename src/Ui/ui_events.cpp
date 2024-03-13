@@ -33,10 +33,16 @@ lv_timer_t *SwitchTimer;
 
 void GenerateSingleScale(void);
 void Keyboard_cb(lv_event_t * event);
+void Ui_Multi_Set_Tile(uint8_t Pos);
+void SingleUpdateTimer(lv_timer_t * timer);
+void MultiUpdateTimer(lv_timer_t * timer);
+
 
 #pragma region Screen_Peer
 void Ui_Peer_Prepare(lv_event_t * e)
 {
+	if (!ActivePeer) ActivePeer = FindFirstPeer(MODULE_ALL);
+
 	if (ActivePeer) {
 		lv_label_set_text_static(ui_LblPeerName, ActivePeer->GetName());
 	
@@ -57,39 +63,39 @@ void Ui_Peer_Prepare(lv_event_t * e)
 
 void Ui_Peer_Restart(lv_event_t * e)
 {
-	SendCommand(ActivePeer, "Restart");
+	if (ActivePeer) SendCommand(ActivePeer, "Restart");
 }
 
 void Ui_Peer_Reset(lv_event_t * e)
 {
-	SendCommand(ActivePeer, "Reset");
+	if (ActivePeer) SendCommand(ActivePeer, "Reset");
 }
 
 void Ui_Peer_ToggleSleep(lv_event_t * e)
 {
-	SendCommand(ActivePeer, "SleepMode Toggle");
+	if (ActivePeer) SendCommand(ActivePeer, "SleepMode Toggle");
 }
 
 void Ui_Peer_ToggleDemo(lv_event_t * e)
 {
-	SendCommand(ActivePeer, "DemoMode Toggle");
+	if (ActivePeer) SendCommand(ActivePeer, "DemoMode Toggle");
 }
 
 void Ui_Peer_Next(lv_event_t * e)
 {
 	Serial.println("Peer-Next");
 	ActivePeer = FindNextPeer(ActivePeer, MODULE_ALL, true); 
-	_ui_screen_change(&ui_ScrPeer, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeer_screen_init);
+	if (ActivePeer) _ui_screen_change(&ui_ScrPeer, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeer_screen_init);
 }
 void Ui_Peer_Last(lv_event_t * e)
 {
 	ActivePeer = FindPrevPeer(ActivePeer, MODULE_ALL, true); 
-	_ui_screen_change(&ui_ScrPeer, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeer_screen_init);
+	if (ActivePeer) _ui_screen_change(&ui_ScrPeer, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeer_screen_init);
 }
 
 void Ui_Peer_Eichen(lv_event_t * e)
 {
-	SendCommand(ActivePeer, "Eichen");
+	if (ActivePeer) SendCommand(ActivePeer, "Eichen");
 }
 
 void Ui_Peer_Volt(lv_event_t * e)
@@ -228,72 +234,90 @@ void Ui_JSON_Prepare(lv_event_t * e)
 #pragma region Screen_SingleMeter
 void Ui_Single_Next(lv_event_t * e)
 {	
-	if (ActiveSens) {
-		ActiveSens = FindNextPeriph(ActiveSens, SENS_TYPE_SENS, false);
-		// no Sens found in ActivePeer
-		if (!ActiveSens) 
-		{ 
-			// find next peer
-			ActivePeer = FindNextPeer(ActivePeer, MODULE_ALL, true); 
-			if (ActivePeer) ActiveSens = FindFirstPeriph(ActivePeer, SENS_TYPE_SENS);
-		}
-	}
-	else {
-		ActiveSens = FindFirstPeriph(ActivePeer, SENS_TYPE_SENS);
-	}
+	if (!ActivePeerSingle) ActivePeerSingle = FindFirstPeer(MODULE_ALL);
 	
-	if (ActiveSens)
+	if (ActivePeerSingle) 
 	{
-		GenerateSingleScale();
-
-		lv_label_set_text(ui_LblSinglePeer, ActivePeer->GetName());
-		lv_label_set_text(ui_LblSinglePeriph, ActiveSens->GetName());
+		if (ActivePeriphSingle) {
+			ActivePeriphSingle = FindNextPeriph(ActivePeriphSingle, SENS_TYPE_SENS, false);
+			// no Sens found in ActivePeer
+			if (!ActivePeriphSingle) 
+			{ 
+				// find next peer
+				ActivePeerSingle = FindNextPeer(ActivePeerSingle, MODULE_ALL, true); 
+				if (ActivePeerSingle) ActivePeriphSingle = FindFirstPeriph(ActivePeerSingle, SENS_TYPE_SENS);
+			}
+		}
+		else {
+			ActivePeriphSingle = FindFirstPeriph(ActivePeerSingle, SENS_TYPE_SENS);
+		}
 		
-		lv_label_set_text(ui_LblSingleValue, "---");
+		if (ActivePeriphSingle)
+		{
+			GenerateSingleScale();
+
+			lv_label_set_text(ui_LblSinglePeer, ActivePeerSingle->GetName());
+			lv_label_set_text(ui_LblSinglePeriph, ActivePeriphSingle->GetName());
+			
+			lv_label_set_text(ui_LblSingleValue, "---");
+		}
 	}
 }
 
 void Ui_Single_Last(lv_event_t * e)
 {
-	if (ActiveSens) {
-		ActiveSens = FindPrevPeriph(ActiveSens, SENS_TYPE_SENS, false);
-	}
-	else {
-		ActiveSens = FindFirstPeriph(ActivePeer, SENS_TYPE_SENS);
-	}
+	if (!ActivePeerSingle) ActivePeerSingle = FindFirstPeer(MODULE_ALL);
 	
-	GenerateSingleScale();
+	if (ActivePeerSingle) 
+	{
+		if (ActivePeriphSingle) {
+			ActivePeriphSingle = FindPrevPeriph(ActivePeriphSingle, SENS_TYPE_SENS, false);
+			// no Sens found in ActivePeer
+			if (!ActivePeriphSingle) 
+			{ 
+				// find next peer
+				ActivePeerSingle = FindPrevPeer(ActivePeerSingle, MODULE_ALL, true); 
+				if (ActivePeerSingle) ActivePeriphSingle = FindFirstPeriph(ActivePeerSingle, SENS_TYPE_SENS);
+			}
+		}
+		else {
+			ActivePeriphSingle = FindFirstPeriph(ActivePeerSingle, SENS_TYPE_SENS);
+		}
+		
+		if (ActivePeriphSingle)
+		{
+			GenerateSingleScale();
 
-	if (ActivePeer) lv_label_set_text(ui_LblSinglePeer, ActivePeer->GetName());
-	if (ActiveSens) lv_label_set_text(ui_LblSinglePeriph, ActiveSens->GetName());
-	//lv_meter_set_indicator_value(SingleMeter, SingleIndic, -10);
-	lv_label_set_text(ui_LblSingleValue, "---");
+			lv_label_set_text(ui_LblSinglePeer, ActivePeerSingle->GetName());
+			lv_label_set_text(ui_LblSinglePeriph, ActivePeriphSingle->GetName());
+			
+			lv_label_set_text(ui_LblSingleValue, "---");
+		}
+	}
 }
 
 void Ui_Single_Prepare(lv_event_t * e)
 {
 	Serial.println("Single-Prepare");
 	
-	if (ActivePeerSingle) 
-	{	lv_label_set_text(ui_LblSinglePeer, ActivePeer->GetName());
-	}
-	else
-	{
-		ActivePeerSingle = FindFirstPeer(MODULE_ALL);
-	}
+	if (!ActivePeerSingle) ActivePeerSingle = FindFirstPeer(MODULE_ALL);
 	
 	if (ActivePeerSingle) 
 	{ 	
-		if (ActivePeriphSingle) 
+		if (!ActivePeriphSingle) ActivePeriphSingle = FindFirstPeriph(ActivePeerSingle, SENS_TYPE_SENS);
+		
+		if (ActivePeriphSingle)
 		{
-			lv_label_set_text(ui_LblSinglePeriph, ActivePeerSingle->GetName());
+			lv_label_set_text(ui_LblSinglePeriph, ActivePeriphSingle->GetName());
+			lv_label_set_text(ui_LblSinglePeer, ActivePeerSingle->GetName());
 		}
 		else
 		{
-			ActivePeriphSingle = FindFirstPeriph(ActivePeerSingle, SENS_TYPE_SENS);
+			lv_label_set_text(ui_LblSinglePeriph, "n.n.");
+			lv_label_set_text(ui_LblSinglePeer, "n.n.");
 		}
 	}
-	/*
+
 	if (ActivePeriphSingle)
 	{
 		Serial.println("ActivePeriphSingle true");
@@ -302,20 +326,33 @@ void Ui_Single_Prepare(lv_event_t * e)
 		GenerateSingleScale();
 		Serial.println("Scale Generated");
 		
-		
-		//SingleTimer = lv_timer_create(SingleUpdateTimer, 500,  &user_data);
+		if (SingleTimer) 
+		{
+			lv_timer_resume(SingleTimer);
+			
+			Serial.println("SingleTimer resumed");
+		}
+		else 
+		{
+			SingleTimer = lv_timer_create(SingleUpdateTimer, 500,  &user_data);
+			Serial.println("SingleTimer created");
+		}
+
+		Serial.println((unsigned)SingleTimer);
 	}
-	*/
 }
 
 void SingleUpdateTimer(lv_timer_t * timer)
 {
-		char buf[10];
-		int nk = 0;
-		float value;
+	char buf[10];
+	int nk = 0;
+	float value;
+
 	Serial.println("SinglUpdateTimer");
-	if (ActivePeriphSingle){
-		/*value = ActivePeriphSingle->Value;
+	
+	if (ActivePeriphSingle)
+	{
+		value = ActivePeriphSingle->GetValue();
 		//if (DebugMode) Serial.printf("Sensor: %s: %f\n", ActiveSens->Name, value);
 
 		if      (value<10)  nk = 2;
@@ -325,18 +362,18 @@ void SingleUpdateTimer(lv_timer_t * timer)
 		if (value == -99) strcpy(buf, "--"); 
 		else dtostrf(value, 0, nk, buf);
 
-		if (ActivePeriphSingle->Type == SENS_TYPE_AMP)  strcat(buf, " A");
-		if (ActivePeriphSingle->Type == SENS_TYPE_VOLT) strcat(buf, " V");
+		if (ActivePeriphSingle->GetType() == SENS_TYPE_AMP)  strcat(buf, " A");
+		if (ActivePeriphSingle->GetType() == SENS_TYPE_VOLT) strcat(buf, " V");
 		
 		lv_meter_set_indicator_value(SingleMeter, SingleIndicNeedle, value*10);
 		lv_label_set_text(ui_LblSingleValue, buf);
-		*/
 	}
 }
 
 void Ui_Single_Leave(lv_event_t * e)
 {
-	//lv_timer_del(SingleTimer);
+	//lv_timer_pause(SingleTimer);
+	Serial.println("SingleTimer paused");
 }
 
 static void SingleMeter_cb(lv_event_t * e) {
@@ -357,8 +394,8 @@ void GenerateSingleScale(void)
 		lv_meter_set_scale_ticks(SingleMeter, scale, 41, 2, 10, lv_palette_main(LV_PALETTE_GREY));
     	lv_meter_set_scale_major_ticks(SingleMeter, scale, 5, 4, 15, lv_color_black(), 15);
     	lv_meter_set_scale_range(SingleMeter, scale, 0, 400, 240, 150);
-	
-		/*Add a green arc to the start*/
+	/*
+		//Add a green arc to the start
 		SingleIndic = lv_meter_add_scale_lines(SingleMeter, scale, lv_palette_main(LV_PALETTE_GREEN), lv_palette_main(LV_PALETTE_GREEN), false, 0);
     	lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 0);
     	lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 250);
@@ -367,14 +404,14 @@ void GenerateSingleScale(void)
     	lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 300);
     	lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 400);
 
-		/*Make the tick lines red at the end of the scale*/
+		//Make the tick lines red at the end of the scale
 		SingleIndic = lv_meter_add_scale_lines(SingleMeter, scale, lv_palette_main(LV_PALETTE_RED), lv_palette_main(LV_PALETTE_RED), false, 0);
 		lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 300);
 		lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 400);
 
 		//SingleIndicNeedle = lv_meter_add_needle_line(SingleMeter, scale, 4, lv_palette_main(LV_PALETTE_GREY), -10);
-
-		/*Add draw callback to override default values*/
+	*/
+		//Add draw callback to override default values
 		lv_obj_add_event_cb(SingleMeter, SingleMeter_cb, LV_EVENT_DRAW_PART_BEGIN, NULL);
 	}
 
@@ -383,7 +420,7 @@ void GenerateSingleScale(void)
 		//lv_meter_set_scale_ticks(SingleMeter, scale, 31, 2, 10, lv_palette_main(LV_PALETTE_GREY));
     	//lv_meter_set_scale_major_ticks(SingleMeter, scale, 5, 4, 15, lv_color_black(), 15);
     	lv_meter_set_scale_range(SingleMeter, scale, 90, 150, 240, 150);
-	
+	/*
 		SingleIndic = lv_meter_add_scale_lines(SingleMeter, scale, lv_palette_main(LV_PALETTE_RED), lv_palette_main(LV_PALETTE_RED), false, 0);
     	lv_meter_set_indicator_start_value(SingleMeter, SingleIndic, 90);
     	lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 112);
@@ -403,7 +440,7 @@ void GenerateSingleScale(void)
 		lv_meter_set_indicator_end_value(SingleMeter, SingleIndic, 150);
 
 		//SingleIndicNeedle = lv_meter_add_needle_line(SingleMeter, scale, 4, lv_palette_main(LV_PALETTE_GREY), -10);
-
+	*/
 		//Add draw callback to override default values
 		lv_obj_add_event_cb(SingleMeter, SingleMeter_cb, LV_EVENT_DRAW_PART_BEGIN, NULL);
 	}
@@ -412,12 +449,11 @@ void GenerateSingleScale(void)
 #pragma region Screen_MultiMeter
 void Ui_Multi_Next(lv_event_t * e)
 {
-	/*if (ActiveMultiScreen < MULTI_SCREENS-1)
+	if (ActiveMultiScreen < MULTI_SCREENS-1)
 		ActiveMultiScreen++;
 	else ActiveMultiScreen = 0;
 	_ui_screen_change(&ui_ScrMulti, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMulti_screen_init);
-	*/
-ReportAll();
+	
 }
 
 void Ui_Multi_Last(lv_event_t * e)
@@ -456,21 +492,19 @@ void Ui_Multi_Prepare(lv_event_t * e)
 {
 	Serial.println("Multi-Prepare");
 	
-	/*static uint32_t user_data = 10;
+	static uint32_t user_data = 10;
 	
-	lv_label_set_text(ui_LblMultiName, Screen[ActiveMultiScreen].Name);
+	lv_label_set_text(ui_LblMultiName, Screen[ActiveMultiScreen].GetName());
 
 	for (int i=0; i<4; i++) {
 		Serial.println("for beginn");
-		if (Screen[ActiveMultiScreen].Periph[i]->Type > 0) Ui_Multi_Set_Tile(i);
+		if (Screen[ActiveMultiScreen].GetPeriph(i)->GetType() > 0) Ui_Multi_Set_Tile(i);
 		Serial.println("for nach tile");
 		
-		Serial.println(Screen[ActiveMultiScreen].Periph[i]->Name);
+		Serial.println(Screen[ActiveMultiScreen].GetPeriph(i)->GetType());
 	}
-	*/
-	//ReportScreen(0);
-
-	//MultiTimer = lv_timer_create(MultiUpdateTimer, 500,  &user_data);
+	
+	MultiTimer = lv_timer_create(MultiUpdateTimer, 500,  &user_data);
 }
 void Ui_Multi_Set_Tile(uint8_t Pos)
 {
