@@ -62,9 +62,12 @@ void SavePeers()
 // writes [Peer-0] - [Name;Type;BroadcastAddress[0-5];SleepMode;DebugMode;DemoMode;Periph0Name;Periph0Type;Periph0Pos;Periph0PeerId...]
 {
     PeerClass *P;
+    
     char Buf[10];
     char ExportBuffer[50];
-    
+    String ExportStringMulti;
+    String ExportStringPeer;
+
     preferences.begin("JeepifyPeers", false);
     
     preferences.putInt("PeerCount", PeerList.size());
@@ -73,8 +76,11 @@ void SavePeers()
     for(int i = 0; i < PeerList.size(); i++){
       P = PeerList.get(i);
       sprintf(Buf, "Peer-%d", i);
-      Serial.printf("putSring = %d", preferences.putString(Buf, P->Export()));
-      Serial.printf("schreibe: [%s]: %s", Buf, P->Export());
+
+      ExportStringPeer = P->Export();
+
+      Serial.printf("putSring = %d", preferences.putString(Buf, ExportStringPeer));
+      Serial.printf("schreibe: [%s]: %s", Buf, ExportStringPeer);
       Serial.println();
     }
   
@@ -82,8 +88,11 @@ void SavePeers()
 
     for (int s=0; s<MULTI_SCREENS; s++) {
       snprintf(Buf, sizeof(Buf), "Screen-%d", s);
-      preferences.putString(Buf, Screen[s].Export());
-      Serial.printf("schreibe: [%s]: %s", Buf, Screen[s].Export());
+      
+      ExportStringMulti = Screen[s].Export();
+
+      preferences.putString(Buf, ExportStringMulti);
+      Serial.printf("schreibe: [%s]: %s", Buf, ExportStringMulti);
       Serial.println();
     }
     preferences.end();
@@ -91,8 +100,10 @@ void SavePeers()
 void GetPeers() 
 {
     PeerClass *P;
+    
     char Buf[10];
-    String Buffer;
+    String ImportStringMulti;
+    String ImportStringPeer;
 
     preferences.begin("JeepifyPeers", true);
 
@@ -103,8 +114,8 @@ void GetPeers()
     for (int Pi=0 ; Pi<PeerCount; Pi++)
     {
         sprintf(Buf, "Peer-%d", Pi);
-        Buffer = preferences.getString(Buf, "");
-        strcpy(ScreenExportImportBuffer, Buffer.c_str());
+        ImportStringPeer = preferences.getString(Buf, "");
+        strcpy(ScreenExportImportBuffer, ImportStringPeer.c_str());
         Serial.printf("gelesen: [%s]: %s\n", Buf, ScreenExportImportBuffer);
 
         P = new PeerClass();
@@ -118,23 +129,28 @@ void GetPeers()
 
     /*for (int s=0; s<MULTI_SCREENS; s++) {
       snprintf(Buf, sizeof(Buf), "Screen-%d", s);
-      Buffer = preferences.getString(Buf, "");
-      Serial.printf("%s - %d Bytes gelesen: %s\n\r", Buf, sizeof(Buffer), Buffer);
-      strcpy(ScreenExportImportBuffer, Buffer.c_str());
+      
+      ImportStringMulti = preferences.getString(Buf, "");
+      Serial.printf("%s - %d Bytes gelesen: %s\n\r", Buf, sizeof(ImportStringMulti), ImportStringMulti);
+      strcpy(ScreenExportImportBuffer, ImportStringMulti.c_str());
+      
       ReportAll();
+      
       Serial.println("jetzt kommt import");
       Screen[s].Import(ScreenExportImportBuffer);
     }*/
     ReportAll();
     preferences.end();
 }
-void ClearPeers() {
+void ClearPeers() 
+{
   preferences.begin("JeepifyPeers", false);
     preferences.clear();
     Serial.println("JeepifyPeers cleared...");
   preferences.end();
 }
-void ClearInit() {
+void ClearInit() 
+{
   preferences.begin("JeepifyInit", false);
     preferences.clear();
     Serial.println("JeepifyInit cleared...");

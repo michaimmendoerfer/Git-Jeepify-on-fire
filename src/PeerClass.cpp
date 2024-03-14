@@ -163,7 +163,7 @@ PeriphClass *PeerClass::GetPeriphPtr(char *Name)
     return NULL;
 }
 #pragma endregion PeerClass::Declaration
-
+#pragma region MAC-Things
 PeerClass *FindPeerByMAC(const uint8_t *BroadcastAddress)
 {
     PeerClass *Peer;
@@ -334,3 +334,4 @@ PeriphClass *FindPrevPeriph(PeriphClass *PeriphT, int Type, bool circular)
     }
     return NULL;
 }
+#pragma endregion MAC-Things

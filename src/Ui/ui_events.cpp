@@ -20,6 +20,7 @@ lv_meter_indicator_t * SingleIndic;
 lv_meter_indicator_t * SingleIndicNeedle;
 lv_meter_scale_t * scale;
 uint8_t MultiPosToChange;
+
 PeerClass   *ActivePeerSingle;
 PeriphClass *ActivePeriphSingle;
 
@@ -33,9 +34,10 @@ lv_timer_t *SwitchTimer;
 
 void GenerateSingleScale(void);
 void Keyboard_cb(lv_event_t * event);
+
 void SingleUpdateTimer(lv_timer_t * timer);
 void MultiUpdateTimer(lv_timer_t * timer);
-
+void SwitchUpdateTimer(lv_timer_t * timer);
 
 #pragma region Screen_Peer
 void Ui_Peer_Prepare(lv_event_t * e)

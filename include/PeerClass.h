@@ -173,6 +173,6 @@ extern PeriphClass *ActiveSens;
 extern PeriphClass *ActiveSwitch;
 extern PeriphClass *ActivePeriph;
 
-extern char ExportImportBuffer[50+40*MAX_PERIPHERALS];
+extern char ExportImportBuffer[300];
 
 #endif
