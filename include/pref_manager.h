@@ -6,6 +6,8 @@
 
 class MultiMonitorClass {
     
+    static int _ClassId;
+
     private:
         char         _Name[20];
         int          _Id;
@@ -24,7 +26,7 @@ class MultiMonitorClass {
         bool  SetName(char* Name) { strcpy(_Name, Name); return true; }
         char *GetName(){ return (_Name); }
         int   GetId() { return _Id; }
-        void  SetId(int Id) { _Id = Id; }
+        //void  SetId(int Id) { _Id = Id; }
         bool  hasChanged() { return _Changed; }
         bool  GetChanged() { return _Changed; }
         void  SetChanged(bool Changed) { _Changed = Changed; }

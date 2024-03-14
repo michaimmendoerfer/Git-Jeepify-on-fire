@@ -14,10 +14,14 @@ MultiMonitorClass Screen[MULTI_SCREENS];
 
 char ScreenExportImportBuffer[300];
 
+int  MultiMonitorClass::_ClassId = 1;
+
 MultiMonitorClass::MultiMonitorClass() 
 { 
-    strcpy(_Name, "n.n."); 
-    _Id = 0;
+    _Id = ClassId;
+    ClassId++;
+    
+    sprintf(_Name, "Screen-%d", _Id);
     _Changed = false;
     
     for (int i=0; i<PERIPH_PER_SCREEN; i++)
@@ -52,9 +56,18 @@ void MultiMonitorClass::Import(char *Buf)
     for (int Si=0; Si<PERIPH_PER_SCREEN; Si++)
     {  
         _PeriphId[Si] = atoi(strtok(NULL, ";"));
-        _Periph[Si]   = FindPeriphById(_PeriphId[Si]);
-        _PeerId[Si]   = _Periph[Si]->GetPeerId();
-        _Peer[Si]     = FindPeerById(_PeerId[Si]);
+        if (_PeriphId(Si) > 0)
+        {
+            _Periph[Si]   = FindPeriphById(_PeriphId[Si]);
+            _PeerId[Si]   = _Periph[Si]->GetPeerId();
+            _Peer[Si]     = FindPeerById(_PeerId[Si]);
+        }
+        else
+        {
+            _Periph[Si]   = NULL;
+            _PeerId[Si]   = 0;
+            _Peer[Si]     = NULL;
+        }
     }
 
 }

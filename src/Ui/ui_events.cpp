@@ -491,8 +491,8 @@ void Ui_Multi_SetPanel4(lv_event_t * e)
 
 void Ui_Multi_Prepare(lv_event_t * e)
 {
-	lv_obj_t *TileActive; 
-	lv_obj_t *TileInActive; 
+	lv_obj_t *TileVoltAmp; 
+	lv_obj_t *TileSwitch; 
 
 	Serial.println("Multi-Prepare");
 	
@@ -504,32 +504,37 @@ void Ui_Multi_Prepare(lv_event_t * e)
 	for (int Pos=0; Pos<PERIPH_PER_SCREEN; Pos++) {
 		Serial.println("for beginn");
 		if (Screen[ActiveMultiScreen].GetPeriphId(Pos) > 0) 
+		// if Position ist use...
 		{
-			int Type = Screen[ActiveMultiScreen].GetPeriph(Pos)->GetType();
-			if ((Type == SENS_TYPE_AMP) or (Type == SENS_TYPE_AMP))
+			TileVoltAmp = lv_obj_get_child(ui_ScrMulti, Pos+4);
+			TileSwitch  = lv_obj_get_child(ui_ScrMulti, Pos);
+
+			int PeriphType = Screen[ActiveMultiScreen].GetPeriph(Pos)->GetType();
+			
+			if ((PeriphType == SENS_TYPE_AMP) or (PeriphType == SENS_TYPE_AMP))
 			{
-				Serial.println("Volt/AMP - Tile (in)active holen");
-				TileActive   = lv_obj_get_child(ui_ScrMulti, Pos+4);
-				TileInActive = lv_obj_get_child(ui_ScrMulti, Pos);
+				Serial.println("Volt/AMP - Tile show, Switch hide");
+				lv_obj_clear_flag(TileVoltAmp, LV_OBJ_FLAG_HIDDEN); // Show TileVoltAmp
+				lv_obj_add_flag(TileSwitch, LV_OBJ_FLAG_HIDDEN);    // Hide TileSwitch
+				
+				lv_label_set_text(lv_obj_get_child(TileVoltAmp, 1), Screen[ActiveMultiScreen].GetPeriph(Pos)->GetName());
+				lv_label_set_text(lv_obj_get_child(TileVoltAmp, 0), Screen[ActiveMultiScreen].GetPeer(Pos)->GetName());
 			}
-			else if (Type == SENS_TYPE_SWITCH)
+			else if (PeriphType == SENS_TYPE_SWITCH)
 			{	
-				Serial.println("SWITCH - Tile (in)active holen");
-				TileActive   = lv_obj_get_child(ui_ScrMulti, Pos);
-				TileInActive = lv_obj_get_child(ui_ScrMulti, Pos+4);
+				Serial.println("Volt/AMP - Tile hide, Switch show");
+				lv_obj_clear_flag(TileSwitch, LV_OBJ_FLAG_HIDDEN); // Show TileSwitch
+				lv_obj_add_flag(TileVoltAmp, LV_OBJ_FLAG_HIDDEN);  // Hide TileVoltAmp
+				
+				lv_label_set_text(lv_obj_get_child(TileSwitch, 1), Screen[ActiveMultiScreen].GetPeriph(Pos)->GetName());
+				lv_label_set_text(lv_obj_get_child(TileSwitch, 0), Screen[ActiveMultiScreen].GetPeer(Pos)->GetName());
 			}
 			else
 			{
 				Serial.println("kein Type");
-				TileActive   = NULL;
-				TileInActive = NULL;
+				lv_obj_add_flag(TileSwitch, LV_OBJ_FLAG_HIDDEN);  // Hide TileSwitch
+				lv_obj_add_flag(TileVoltAmp, LV_OBJ_FLAG_HIDDEN); // Hide TileVoltAmp
 			}		
-
-			lv_obj_clear_flag(TileActive, LV_OBJ_FLAG_HIDDEN);
-			lv_obj_add_flag(TileInActive, LV_OBJ_FLAG_HIDDEN);
-
-			lv_label_set_text(lv_obj_get_child(TileActive, 1), Screen[ActiveMultiScreen].GetPeriph(Pos)->GetName());
-			lv_label_set_text(lv_obj_get_child(TileActive, 0), Screen[ActiveMultiScreen].GetPeer(Pos)->GetName());
 		}
 
 	}
@@ -612,12 +617,14 @@ void MultiUpdateTimer(lv_timer_t * timer)
 					break;
 			}
 		}
+		/*
 		Serial.print("MultiValueUpdate: setze Pos[");
 		Serial.print(i); 
 		Serial.print("]-");
 		Serial.print(Screen[ActiveMultiScreen].GetPeriph(i)->GetName());
 		Serial.print("auf: ");
 		Serial.println(buf);
+		*/
 	}
 }
 
