@@ -110,7 +110,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
                 } 
             }
         } 
-        else           // Peer unbekannt, ggf Pairing
+        else        // Peer unbekannt, ggf Pairing
         {        
             if ((doc["Pairing"] == "add me") and (Self.GetPairMode())) // neuen Peer registrieren
             { 
