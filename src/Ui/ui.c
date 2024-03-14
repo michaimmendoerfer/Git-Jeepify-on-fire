@@ -11,6 +11,7 @@
 
 // SCREEN: ui_ScrMenu
 void ui_ScrMenu_screen_init(void);
+void ui_event_ScrMenu(lv_event_t * e);
 lv_obj_t * ui_ScrMenu;
 void ui_event_BtnMenu1(lv_event_t * e);
 lv_obj_t * ui_BtnMenu1;
@@ -140,6 +141,14 @@ lv_obj_t * ui_LblPeriphChoicePeriph;
 void ui_ScrMulti_screen_init(void);
 void ui_event_ScrMulti(lv_event_t * e);
 lv_obj_t * ui_ScrMulti;
+void ui_event_MultiPanel1(lv_event_t * e);
+lv_obj_t * ui_MultiPanel1;
+void ui_event_MultiPanel2(lv_event_t * e);
+lv_obj_t * ui_MultiPanel2;
+void ui_event_MultiPanel3(lv_event_t * e);
+lv_obj_t * ui_MultiPanel3;
+void ui_event_MultiPanel4(lv_event_t * e);
+lv_obj_t * ui_MultiPanel4;
 lv_obj_t * ui_ButtonSwitchSmall1;
 lv_obj_t * ui_ButtonSwitchSmall2;
 lv_obj_t * ui_ButtonSwitchSmall3;
@@ -167,6 +176,14 @@ const lv_img_dsc_t * ui_imgset_menubtn[4] = {&ui_img_menubtn1_png, &ui_img_menub
 ///////////////////// ANIMATIONS ////////////////////
 
 ///////////////////// FUNCTIONS ////////////////////
+void ui_event_ScrMenu(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_SCREEN_LOADED) {
+        UI_Menu_Prepare(e);
+    }
+}
 void ui_event_BtnMenu1(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
@@ -318,7 +335,7 @@ void ui_event_ScrSingle(lv_event_t * e)
     if(event_code == LV_EVENT_SCREEN_LOAD_START) {
         Ui_Single_Prepare(e);
     }
-    if(event_code == LV_EVENT_SCREEN_UNLOADED) {
+    if(event_code == LV_EVENT_SCREEN_UNLOAD_START) {
         Ui_Single_Leave(e);
     }
 }
@@ -426,6 +443,10 @@ void ui_event_ScrPeriph(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
+        lv_indev_wait_release(lv_indev_get_act());
+        _ui_screen_change(&ui_ScrMulti, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMulti_screen_init);
+    }
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
         lv_indev_wait_release(lv_indev_get_act());
         Ui_PeriphChoice_Next(e);
@@ -452,12 +473,63 @@ void ui_event_ScrMulti(lv_event_t * e)
     if(event_code == LV_EVENT_SCREEN_LOADED) {
         Ui_Multi_Prepare(e);
     }
-    if(event_code == LV_EVENT_SCREEN_UNLOADED) {
+    if(event_code == LV_EVENT_SCREEN_UNLOAD_START) {
         Ui_Multi_Leave(e);
     }
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
         lv_indev_wait_release(lv_indev_get_act());
         Ui_Multi_Next(e);
+    }
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT) {
+        lv_indev_wait_release(lv_indev_get_act());
+        Ui_Multi_Last(e);
+    }
+    if(event_code == LV_EVENT_LONG_PRESSED) {
+        _ui_screen_change(&ui_ScrPeriph, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeriph_screen_init);
+    }
+}
+void ui_event_MultiPanel1(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_LONG_PRESSED) {
+        Ui_Multi_SetPanel1(e);
+    }
+    if(event_code == LV_EVENT_CLICKED) {
+        Ui_Multi_ActivatePanel1(e);
+    }
+}
+void ui_event_MultiPanel2(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_LONG_PRESSED) {
+        Ui_Multi_SetPanel2(e);
+    }
+    if(event_code == LV_EVENT_CLICKED) {
+        Ui_Multi_ActivatePanel2(e);
+    }
+}
+void ui_event_MultiPanel3(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_LONG_PRESSED) {
+        Ui_Multi_SetPanel3(e);
+    }
+    if(event_code == LV_EVENT_CLICKED) {
+        Ui_Multi_ActivatePanel3(e);
+    }
+}
+void ui_event_MultiPanel4(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_LONG_PRESSED) {
+        Ui_Multi_SetPanel4(e);
+    }
+    if(event_code == LV_EVENT_CLICKED) {
+        Ui_Multi_ActivatePanel4(e);
     }
 }
 void ui_event____initial_actions0(lv_event_t * e)

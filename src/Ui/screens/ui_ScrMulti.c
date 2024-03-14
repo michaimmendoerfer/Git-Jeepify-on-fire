@@ -11,6 +11,54 @@ void ui_ScrMulti_screen_init(void)
     lv_obj_clear_flag(ui_ScrMulti, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_img_src(ui_ScrMulti, &ui_img_jeepifybackground_png, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    ui_MultiPanel1 = lv_obj_create(ui_ScrMulti);
+    lv_obj_set_width(ui_MultiPanel1, 90);
+    lv_obj_set_height(ui_MultiPanel1, 90);
+    lv_obj_set_x(ui_MultiPanel1, -50);
+    lv_obj_set_y(ui_MultiPanel1, -50);
+    lv_obj_set_align(ui_MultiPanel1, LV_ALIGN_CENTER);
+    lv_obj_clear_flag(ui_MultiPanel1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(ui_MultiPanel1, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_MultiPanel1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_color(ui_MultiPanel1, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_opa(ui_MultiPanel1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_MultiPanel2 = lv_obj_create(ui_ScrMulti);
+    lv_obj_set_width(ui_MultiPanel2, 90);
+    lv_obj_set_height(ui_MultiPanel2, 90);
+    lv_obj_set_x(ui_MultiPanel2, 50);
+    lv_obj_set_y(ui_MultiPanel2, -50);
+    lv_obj_set_align(ui_MultiPanel2, LV_ALIGN_CENTER);
+    lv_obj_clear_flag(ui_MultiPanel2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(ui_MultiPanel2, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_MultiPanel2, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_color(ui_MultiPanel2, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_opa(ui_MultiPanel2, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_MultiPanel3 = lv_obj_create(ui_ScrMulti);
+    lv_obj_set_width(ui_MultiPanel3, 90);
+    lv_obj_set_height(ui_MultiPanel3, 90);
+    lv_obj_set_x(ui_MultiPanel3, -50);
+    lv_obj_set_y(ui_MultiPanel3, 50);
+    lv_obj_set_align(ui_MultiPanel3, LV_ALIGN_CENTER);
+    lv_obj_clear_flag(ui_MultiPanel3, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(ui_MultiPanel3, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_MultiPanel3, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_color(ui_MultiPanel3, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_opa(ui_MultiPanel3, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_MultiPanel4 = lv_obj_create(ui_ScrMulti);
+    lv_obj_set_width(ui_MultiPanel4, 90);
+    lv_obj_set_height(ui_MultiPanel4, 90);
+    lv_obj_set_x(ui_MultiPanel4, 50);
+    lv_obj_set_y(ui_MultiPanel4, 50);
+    lv_obj_set_align(ui_MultiPanel4, LV_ALIGN_CENTER);
+    lv_obj_clear_flag(ui_MultiPanel4, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(ui_MultiPanel4, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_MultiPanel4, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_color(ui_MultiPanel4, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_opa(ui_MultiPanel4, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+
     ui_ButtonSwitchSmall1 = ui_ButtonSwitchSmall_create(ui_ScrMulti);
     lv_obj_set_x(ui_ButtonSwitchSmall1, -45);
     lv_obj_set_y(ui_ButtonSwitchSmall1, -45);
@@ -85,13 +133,17 @@ void ui_ScrMulti_screen_init(void)
     ui_LblMultiName1 = lv_label_create(ui_ScrMulti);
     lv_obj_set_width(ui_LblMultiName1, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_LblMultiName1, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_LblMultiName1, 4);
-    lv_obj_set_y(ui_LblMultiName1, 99);
+    lv_obj_set_x(ui_LblMultiName1, 0);
+    lv_obj_set_y(ui_LblMultiName1, -100);
     lv_obj_set_align(ui_LblMultiName1, LV_ALIGN_CENTER);
     lv_label_set_text(ui_LblMultiName1, "Screen");
     lv_obj_set_style_text_color(ui_LblMultiName1, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LblMultiName1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    lv_obj_add_event_cb(ui_MultiPanel1, ui_event_MultiPanel1, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_MultiPanel2, ui_event_MultiPanel2, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_MultiPanel3, ui_event_MultiPanel3, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_MultiPanel4, ui_event_MultiPanel4, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_ScrMulti, ui_event_ScrMulti, LV_EVENT_ALL, NULL);
 
 }

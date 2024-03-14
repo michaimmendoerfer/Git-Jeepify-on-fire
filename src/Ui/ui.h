@@ -28,6 +28,7 @@ extern "C" {
 #include "ui_events.h"
 // SCREEN: ui_ScrMenu
 void ui_ScrMenu_screen_init(void);
+void ui_event_ScrMenu(lv_event_t * e);
 extern lv_obj_t * ui_ScrMenu;
 void ui_event_BtnMenu1(lv_event_t * e);
 extern lv_obj_t * ui_BtnMenu1;
@@ -139,6 +140,14 @@ extern lv_obj_t * ui_LblPeriphChoicePeriph;
 void ui_ScrMulti_screen_init(void);
 void ui_event_ScrMulti(lv_event_t * e);
 extern lv_obj_t * ui_ScrMulti;
+void ui_event_MultiPanel1(lv_event_t * e);
+extern lv_obj_t * ui_MultiPanel1;
+void ui_event_MultiPanel2(lv_event_t * e);
+extern lv_obj_t * ui_MultiPanel2;
+void ui_event_MultiPanel3(lv_event_t * e);
+extern lv_obj_t * ui_MultiPanel3;
+void ui_event_MultiPanel4(lv_event_t * e);
+extern lv_obj_t * ui_MultiPanel4;
 extern lv_obj_t * ui_ButtonSwitchSmall1;
 extern lv_obj_t * ui_ButtonSwitchSmall2;
 extern lv_obj_t * ui_ButtonSwitchSmall3;

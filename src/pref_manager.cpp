@@ -18,8 +18,8 @@ int  MultiMonitorClass::_ClassId = 1;
 
 MultiMonitorClass::MultiMonitorClass() 
 { 
-    _Id = ClassId;
-    ClassId++;
+    _Id = _ClassId;
+    _ClassId++;
     
     sprintf(_Name, "Screen-%d", _Id);
     _Changed = false;
@@ -56,7 +56,7 @@ void MultiMonitorClass::Import(char *Buf)
     for (int Si=0; Si<PERIPH_PER_SCREEN; Si++)
     {  
         _PeriphId[Si] = atoi(strtok(NULL, ";"));
-        if (_PeriphId(Si) > 0)
+        if (_PeriphId[Si] > 0)
         {
             _Periph[Si]   = FindPeriphById(_PeriphId[Si]);
             _PeerId[Si]   = _Periph[Si]->GetPeerId();
@@ -140,7 +140,7 @@ void GetPeers()
   
     Serial.println("jetzt kommt Multi");
 
-    /*for (int s=0; s<MULTI_SCREENS; s++) {
+    for (int s=0; s<MULTI_SCREENS; s++) {
       snprintf(Buf, sizeof(Buf), "Screen-%d", s);
       
       ImportStringMulti = preferences.getString(Buf, "");
@@ -151,7 +151,7 @@ void GetPeers()
       
       Serial.println("jetzt kommt import");
       Screen[s].Import(ScreenExportImportBuffer);
-    }*/
+    }
     ReportAll();
     preferences.end();
 }

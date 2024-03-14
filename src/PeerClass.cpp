@@ -8,7 +8,7 @@ PeriphClass *ActiveSens, *ActiveSwitch, *ActivePeriph;
 int  PeriphClass::_ClassId = 1;
 int  PeerClass::_ClassId = 1;
 
-char ExportImportBuffer[250];
+char ExportImportBuffer[300];
 
 #pragma region PeriphClass::Declaration
 PeriphClass::PeriphClass()
@@ -279,7 +279,8 @@ PeriphClass *FindFirstPeriph(PeerClass *P, int Type)
     {   
         int PType = P->GetPeriphType(i);
 
-        switch (Type) {
+        switch (Type) { 
+            case SENS_TYPE_ALL:                                                                return P->GetPeriphPtr(i); break;
             case SENS_TYPE_SENS:    if ((PType == SENS_TYPE_VOLT) or (PType == SENS_TYPE_AMP)) return P->GetPeriphPtr(i); break;
             case SENS_TYPE_VOLT:    if  (PType == SENS_TYPE_VOLT)                              return P->GetPeriphPtr(i); break;
             case SENS_TYPE_AMP:     if  (PType == SENS_TYPE_AMP)                               return P->GetPeriphPtr(i); break;

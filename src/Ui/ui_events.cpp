@@ -454,7 +454,6 @@ void Ui_Multi_Next(lv_event_t * e)
 		ActiveMultiScreen++;
 	else ActiveMultiScreen = 0;
 	_ui_screen_change(&ui_ScrMulti, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMulti_screen_init);
-	
 }
 
 void Ui_Multi_Last(lv_event_t * e)
@@ -462,7 +461,6 @@ void Ui_Multi_Last(lv_event_t * e)
 	if (ActiveMultiScreen > 0)
 		ActiveMultiScreen--;
 	else ActiveMultiScreen = MULTI_SCREENS-1;
-
 	_ui_screen_change(&ui_ScrMulti, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMulti_screen_init);
 }
 void Ui_Multi_SetPanel1(lv_event_t * e)
@@ -499,16 +497,17 @@ void Ui_Multi_Prepare(lv_event_t * e)
 	static uint32_t user_data = 10;
 	Serial.println(Screen[ActiveMultiScreen].GetName());
 
-	lv_label_set_text(ui_LblMultiName, Screen[ActiveMultiScreen].GetName());
+	lv_label_set_text(ui_LblMultiName1, Screen[ActiveMultiScreen].GetName());
 
 	for (int Pos=0; Pos<PERIPH_PER_SCREEN; Pos++) {
 		Serial.println("for beginn");
+
+		TileVoltAmp = lv_obj_get_child(ui_ScrMulti, Pos+8);
+		TileSwitch  = lv_obj_get_child(ui_ScrMulti, Pos+4);
+			
 		if (Screen[ActiveMultiScreen].GetPeriphId(Pos) > 0) 
 		// if Position ist use...
 		{
-			TileVoltAmp = lv_obj_get_child(ui_ScrMulti, Pos+4);
-			TileSwitch  = lv_obj_get_child(ui_ScrMulti, Pos);
-
 			int PeriphType = Screen[ActiveMultiScreen].GetPeriph(Pos)->GetType();
 			
 			if ((PeriphType == SENS_TYPE_AMP) or (PeriphType == SENS_TYPE_AMP))
@@ -535,6 +534,11 @@ void Ui_Multi_Prepare(lv_event_t * e)
 				lv_obj_add_flag(TileSwitch, LV_OBJ_FLAG_HIDDEN);  // Hide TileSwitch
 				lv_obj_add_flag(TileVoltAmp, LV_OBJ_FLAG_HIDDEN); // Hide TileVoltAmp
 			}		
+		}
+		else
+		{
+			lv_obj_add_flag(TileSwitch, LV_OBJ_FLAG_HIDDEN);  // Hide TileSwitch
+			lv_obj_add_flag(TileVoltAmp, LV_OBJ_FLAG_HIDDEN); // Hide TileVoltAmp
 		}
 
 	}
@@ -577,7 +581,7 @@ void MultiUpdateTimer(lv_timer_t * timer)
 			switch (Screen[ActiveMultiScreen].GetPeriph(i)->GetType()) 
 			{
 				case SENS_TYPE_AMP:
-					TileActive = lv_obj_get_child(ui_ScrMulti, i+4);
+					TileActive = lv_obj_get_child(ui_ScrMulti, i+8);
 					
 					strcat(buf, " A");
 					
@@ -590,7 +594,7 @@ void MultiUpdateTimer(lv_timer_t * timer)
 					
 					break;
 				case SENS_TYPE_VOLT:
-					TileActive = lv_obj_get_child(ui_ScrMulti, i+4);
+					TileActive = lv_obj_get_child(ui_ScrMulti, i+8);
 					
 					strcat(buf, " V");
 					
@@ -603,7 +607,7 @@ void MultiUpdateTimer(lv_timer_t * timer)
 
 					break;
 				case SENS_TYPE_SWITCH:
-					TileActive = lv_obj_get_child(ui_ScrMulti, i);
+					TileActive = lv_obj_get_child(ui_ScrMulti, i+4);
 				
 					if (value == 1) 
 					{
@@ -631,6 +635,7 @@ void MultiUpdateTimer(lv_timer_t * timer)
 void Ui_Multi_Leave(lv_event_t * e)
 {
 	lv_timer_pause(MultiTimer);
+	Serial.println("MultiTimer pause...");
 }
 
 #pragma endregion Screen_MultiMeter
@@ -850,3 +855,28 @@ void Ui_Volt_Prepare(lv_event_t * e)
 }
 #pragma endregion System_Eichen
 
+
+void UI_Menu_Prepare(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Multi_ActivatePanel1(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Multi_ActivatePanel2(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Multi_ActivatePanel3(lv_event_t * e)
+{
+	// Your code here
+}
+
+void Ui_Multi_ActivatePanel4(lv_event_t * e)
+{
+	// Your code here
+}
