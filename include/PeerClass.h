@@ -32,6 +32,7 @@ class PeriphClass {
         void  SetId(int Id) { _Id = Id; }
         int   GetType() { return _Type; }
         void  SetType(int Type) { _Type = Type; }
+        bool  IsType(int Type);
         int   GetPos() { return _Pos; }
         void  SetPos(int Pos) {_Pos = Pos; }
         bool  isADS() { return _isADS; }
@@ -161,8 +162,9 @@ PeerClass *FindNextPeer(PeerClass *P, int Type, bool circular);
 PeerClass *FindPrevPeer(PeerClass *P, int Type, bool circular);
 PeriphClass *FindPeriphById(int Id);
 PeriphClass *FindFirstPeriph(PeerClass *P, int Type);
-PeriphClass *FindNextPeriph(PeriphClass *PeriphT, int Type, bool circular);
-PeriphClass *FindPrevPeriph(PeriphClass *PeriphT, int Type, bool circular);
+PeriphClass *FindLastPeriph (PeerClass *P, int Type);
+PeriphClass *FindPrevPeriph(PeerClass *P, PeriphClass *Periph, int Type, bool circular);
+PeriphClass *FindNextPeriph(PeerClass *P, PeriphClass *Periph, int Type, bool circular);
 
 
 extern PeerClass *ActivePeer;

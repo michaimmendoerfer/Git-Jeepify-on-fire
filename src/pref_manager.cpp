@@ -140,17 +140,21 @@ void GetPeers()
   
     Serial.println("jetzt kommt Multi");
 
-    for (int s=0; s<MULTI_SCREENS; s++) {
-      snprintf(Buf, sizeof(Buf), "Screen-%d", s);
-      
-      ImportStringMulti = preferences.getString(Buf, "");
-      Serial.printf("%s - %d Bytes gelesen: %s\n\r", Buf, sizeof(ImportStringMulti), ImportStringMulti);
-      strcpy(ScreenExportImportBuffer, ImportStringMulti.c_str());
-      
-      ReportAll();
-      
-      Serial.println("jetzt kommt import");
-      Screen[s].Import(ScreenExportImportBuffer);
+    for (int s=0; s<MULTI_SCREENS; s++) 
+    {
+        snprintf(Buf, sizeof(Buf), "Screen-%d", s);
+        
+        ImportStringMulti = preferences.getString(Buf, "nix");
+        if (ImportStringMulti != "nix") 
+        {   
+            Serial.printf("%s - %d Bytes gelesen: %s\n\r", Buf, sizeof(ImportStringMulti), ImportStringMulti);
+            strcpy(ScreenExportImportBuffer, ImportStringMulti.c_str());
+            
+            ReportAll();
+            
+            Serial.println("jetzt kommt import");
+            Screen[s].Import(ScreenExportImportBuffer);
+        }
     }
     ReportAll();
     preferences.end();

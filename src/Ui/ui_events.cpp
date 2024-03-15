@@ -21,8 +21,9 @@ lv_meter_indicator_t * SingleIndicNeedle;
 lv_meter_scale_t * scale;
 uint8_t MultiPosToChange;
 
-PeerClass   *ActivePeerSingle;
+//PeerClass   *ActivePeerSingle;
 PeriphClass *ActivePeriphSingle;
+PeriphClass *ActivePeriphSwitch;
 
 lv_obj_t *Ui_LedSnd;
 lv_obj_t *Ui_LedRcv;
@@ -235,65 +236,43 @@ void Ui_JSON_Prepare(lv_event_t * e)
 #pragma region Screen_SingleMeter
 void Ui_Single_Next(lv_event_t * e)
 {	
-	if (!ActivePeerSingle) ActivePeerSingle = FindFirstPeer(MODULE_ALL);
-	
-	if (ActivePeerSingle) 
+	if (ActivePeriphSingle) 
 	{
-		if (ActivePeriphSingle) {
-			ActivePeriphSingle = FindNextPeriph(ActivePeriphSingle, SENS_TYPE_SENS, false);
-			// no Sens found in ActivePeer
-			if (!ActivePeriphSingle) 
-			{ 
-				// find next peer
-				ActivePeerSingle = FindNextPeer(ActivePeerSingle, MODULE_ALL, true); 
-				if (ActivePeerSingle) ActivePeriphSingle = FindFirstPeriph(ActivePeerSingle, SENS_TYPE_SENS);
-			}
-		}
-		else {
-			ActivePeriphSingle = FindFirstPeriph(ActivePeerSingle, SENS_TYPE_SENS);
-		}
-		
-		if (ActivePeriphSingle)
-		{
-			GenerateSingleScale();
+		ActivePeriphSingle = FindNextPeriph(NULL, ActivePeriphSingle, SENS_TYPE_SENS, true);
+	}
+	else {
+		ActivePeriphSingle = FindFirstPeriph(NULL, SENS_TYPE_SENS);
+	}
+	
+	if (ActivePeriphSingle)
+	{
+		//GenerateSingleScale();
 
-			lv_label_set_text(ui_LblSinglePeer, ActivePeerSingle->GetName());
-			lv_label_set_text(ui_LblSinglePeriph, ActivePeriphSingle->GetName());
-			
-			lv_label_set_text(ui_LblSingleValue, "---");
-		}
+		lv_label_set_text(ui_LblSinglePeer, FindPeerById(ActivePeriphSingle->GetPeerId())->GetName());
+		lv_label_set_text(ui_LblSinglePeriph, ActivePeriphSingle->GetName());
+		
+		lv_label_set_text(ui_LblSingleValue, "---");
 	}
 }
 
 void Ui_Single_Last(lv_event_t * e)
 {
-	if (!ActivePeerSingle) ActivePeerSingle = FindFirstPeer(MODULE_ALL);
-	
-	if (ActivePeerSingle) 
+	if (ActivePeriphSingle) 
 	{
-		if (ActivePeriphSingle) {
-			ActivePeriphSingle = FindPrevPeriph(ActivePeriphSingle, SENS_TYPE_SENS, false);
-			// no Sens found in ActivePeer
-			if (!ActivePeriphSingle) 
-			{ 
-				// find next peer
-				ActivePeerSingle = FindPrevPeer(ActivePeerSingle, MODULE_ALL, true); 
-				if (ActivePeerSingle) ActivePeriphSingle = FindFirstPeriph(ActivePeerSingle, SENS_TYPE_SENS);
-			}
-		}
-		else {
-			ActivePeriphSingle = FindFirstPeriph(ActivePeerSingle, SENS_TYPE_SENS);
-		}
-		
-		if (ActivePeriphSingle)
-		{
-			GenerateSingleScale();
+		ActivePeriphSingle = FindPrevPeriph(NULL, ActivePeriphSingle, SENS_TYPE_SENS, true);
+	}
+	else {
+		ActivePeriphSingle = FindLastPeriph(NULL, SENS_TYPE_SENS);
+	}
+	
+	if (ActivePeriphSingle)
+	{
+		//GenerateSingleScale();
 
-			lv_label_set_text(ui_LblSinglePeer, ActivePeerSingle->GetName());
-			lv_label_set_text(ui_LblSinglePeriph, ActivePeriphSingle->GetName());
-			
-			lv_label_set_text(ui_LblSingleValue, "---");
-		}
+		lv_label_set_text(ui_LblSinglePeer, FindPeerById(ActivePeriphSingle->GetPeerId())->GetName());
+		lv_label_set_text(ui_LblSinglePeriph, ActivePeriphSingle->GetName());
+		
+		lv_label_set_text(ui_LblSingleValue, "---");
 	}
 }
 
@@ -301,30 +280,25 @@ void Ui_Single_Prepare(lv_event_t * e)
 {
 	Serial.println("Single-Prepare");
 	
-	if (!ActivePeerSingle) ActivePeerSingle = FindFirstPeer(MODULE_ALL);
-	
-	if (ActivePeerSingle) 
-	{ 	
-		if (!ActivePeriphSingle) ActivePeriphSingle = FindFirstPeriph(ActivePeerSingle, SENS_TYPE_SENS);
+	if (!ActivePeriphSingle) ActivePeriphSingle = FindFirstPeriph(NULL, SENS_TYPE_SENS);
 		
-		if (ActivePeriphSingle)
-		{
-			lv_label_set_text(ui_LblSinglePeriph, ActivePeriphSingle->GetName());
-			lv_label_set_text(ui_LblSinglePeer, ActivePeerSingle->GetName());
-		}
-		else
-		{
-			lv_label_set_text(ui_LblSinglePeriph, "n.n.");
-			lv_label_set_text(ui_LblSinglePeer, "n.n.");
-		}
+	if (ActivePeriphSingle)
+	{
+		lv_label_set_text(ui_LblSinglePeriph, ActivePeriphSingle->GetName());
+		lv_label_set_text(ui_LblSinglePeer, FindPeerById(ActivePeriphSingle->GetPeerId())->GetName());
 	}
-
+	else
+	{
+		lv_label_set_text(ui_LblSinglePeriph, "n.n.");
+		lv_label_set_text(ui_LblSinglePeer, "n.n.");
+	}
+	
 	if (ActivePeriphSingle)
 	{
 		Serial.println("ActivePeriphSingle true");
 		uint32_t user_data = 10;
 
-		GenerateSingleScale();
+		//GenerateSingleScale();
 		Serial.println("Scale Generated");
 		
 		if (SingleTimer) 
@@ -485,6 +459,45 @@ void Ui_Multi_SetPanel4(lv_event_t * e)
 {
 	MultiPosToChange = 3;
 	_ui_screen_change(&ui_ScrPeriph, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeriph_screen_init);
+}
+void Ui_Multi_ActivatePanel(int Pos)
+{
+	PeriphClass *Periph;
+
+	Periph = Screen[ActiveMultiScreen].GetPeriph(Pos);
+
+	if (Periph->GetId() > 0)
+	{ 
+		if (Periph->IsType(SENS_TYPE_SENS))	
+		{
+			ActivePeriphSingle = Periph;
+			_ui_screen_change(&ui_ScrSingle, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrSingle_screen_init);
+		}
+		if (Periph->IsType(SENS_TYPE_SWITCH))
+		{
+			ActivePeriphSwitch = Periph;
+			//Switch _ui_screen_change(&ui_ScrSwitch, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrSwitch_screen_init);
+		}
+	}
+}
+void Ui_Multi_ActivatePanel1(lv_event_t * e)
+{
+	Ui_Multi_ActivatePanel(0);
+}
+
+void Ui_Multi_ActivatePanel2(lv_event_t * e)
+{
+	Ui_Multi_ActivatePanel(1);
+}
+
+void Ui_Multi_ActivatePanel3(lv_event_t * e)
+{
+	Ui_Multi_ActivatePanel(2);
+}
+
+void Ui_Multi_ActivatePanel4(lv_event_t * e)
+{
+	Ui_Multi_ActivatePanel(3);
 }
 
 void Ui_Multi_Prepare(lv_event_t * e)
@@ -705,7 +718,7 @@ void Ui_Switch_Leave(lv_event_t * e)
 void Ui_PeriphChoice_Next(lv_event_t * e)
 {
 	if (ActivePeriph) {
-		ActivePeriph = FindNextPeriph(ActivePeriph, SENS_TYPE_ALL, false);
+		ActivePeriph = FindNextPeriph(NULL, ActivePeriph, SENS_TYPE_ALL, true);
 		Ui_Periph_Choice_Prepare(e);
 	}
 }
@@ -713,7 +726,7 @@ void Ui_PeriphChoice_Next(lv_event_t * e)
 void Ui_PeriphChoice_Last(lv_event_t * e)
 {
 	if (ActivePeriph) {
-		ActivePeriph = FindPrevPeriph(ActivePeriph, SENS_TYPE_ALL, false);
+		ActivePeriph = FindPrevPeriph(NULL, ActivePeriph, SENS_TYPE_ALL, true);
 		Ui_Periph_Choice_Prepare(e);
 	}
 }
@@ -726,19 +739,18 @@ void Ui_PeriphChoice_Click(lv_event_t * e)
 
 void Ui_Periph_Choice_Prepare(lv_event_t * e)
 {
-	if (!ActivePeer) ActivePeer = FindFirstPeer(MODULE_ALL);
-	if (ActivePeer) {
-		lv_label_set_text(ui_LblPeriphChoicePeer, ActivePeer->GetName());
-	
-		if (!ActivePeriph) {
-			ActivePeriph = FindFirstPeriph(ActivePeer, SENS_TYPE_ALL);
-		}
+	PeerClass *P;
+	if (!ActivePeriph) {
+		ActivePeriph = FindFirstPeriph(NULL, SENS_TYPE_ALL);
 	}
 	
 	if (ActivePeriph) {
+		P = FindPeerById(ActivePeriph->GetPeerId());
+
 		lv_label_set_text(ui_LblPeriphChoicePeriph, ActivePeriph->GetName());
-		
-		if (millis()- ActivePeer->GetTSLastSeen() > OFFLINE_INTERVAL) 
+		lv_label_set_text(ui_LblPeriphChoicePeer, P->GetName());
+	
+		if (millis()- P->GetTSLastSeen() > OFFLINE_INTERVAL) 
 			lv_label_set_text(ui_LblPeriphChoiceOnline, "Offline");
       	else 
 			lv_label_set_text(ui_LblPeriphChoiceOnline, "Online");
@@ -857,26 +869,6 @@ void Ui_Volt_Prepare(lv_event_t * e)
 
 
 void UI_Menu_Prepare(lv_event_t * e)
-{
-	// Your code here
-}
-
-void Ui_Multi_ActivatePanel1(lv_event_t * e)
-{
-	// Your code here
-}
-
-void Ui_Multi_ActivatePanel2(lv_event_t * e)
-{
-	// Your code here
-}
-
-void Ui_Multi_ActivatePanel3(lv_event_t * e)
-{
-	// Your code here
-}
-
-void Ui_Multi_ActivatePanel4(lv_event_t * e)
 {
 	// Your code here
 }

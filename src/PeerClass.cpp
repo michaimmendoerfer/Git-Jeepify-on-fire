@@ -39,6 +39,17 @@ void  PeriphClass::Setup(const char* Name, int Type, bool isADS, int IOPort, flo
     _VperAmp = VperAmp;
     _PeerId = PeerId;
 }
+bool PeriphClass::IsType(int Type)
+{
+    switch (Type) { 
+                case SENS_TYPE_ALL:                                                                return true; break;
+                case SENS_TYPE_SENS:    if ((_Type == SENS_TYPE_VOLT) or (_Type == SENS_TYPE_AMP)) return true; break;
+                case SENS_TYPE_VOLT:    if  (_Type == SENS_TYPE_VOLT)                              return true; break;
+                case SENS_TYPE_AMP:     if  (_Type == SENS_TYPE_AMP)                               return true; break;
+                case SENS_TYPE_SWITCH:  if  (_Type == SENS_TYPE_SWITCH)                            return true; break;
+            }
+    return false;
+}
 #pragma endregion PeriphClass::Declaration
 #pragma region PeerClass::Declaration
 PeerClass::PeerClass()
@@ -270,68 +281,95 @@ PeriphClass *FindPeriphById(int Id)
     }
     return NULL;
 }
-
 PeriphClass *FindFirstPeriph(PeerClass *P, int Type)
-// returns first Periph of Type, otherwise returns NULL;
+// return first Periph of Type. If Peer=NULL Peer is ignored
 {
-    
-    for (int i=0; i<MAX_PERIPHERALS; i++)
-    {   
-        int PType = P->GetPeriphType(i);
+    PeriphClass *Periph;
 
-        switch (Type) { 
-            case SENS_TYPE_ALL:                                                                return P->GetPeriphPtr(i); break;
-            case SENS_TYPE_SENS:    if ((PType == SENS_TYPE_VOLT) or (PType == SENS_TYPE_AMP)) return P->GetPeriphPtr(i); break;
-            case SENS_TYPE_VOLT:    if  (PType == SENS_TYPE_VOLT)                              return P->GetPeriphPtr(i); break;
-            case SENS_TYPE_AMP:     if  (PType == SENS_TYPE_AMP)                               return P->GetPeriphPtr(i); break;
-            case SENS_TYPE_SWITCH:  if  (PType == SENS_TYPE_SWITCH)                            return P->GetPeriphPtr(i); break;
-        }
+    if (PeriphList.size() == 0) return NULL;
+    
+    for(int i = 0; i < PeriphList.size(); i++) 
+    {   
+        Periph = PeriphList.get(i);
+
+        if (P == NULL) return Periph;
+        if ((Periph->GetPeerId() == P->GetId()) and (Periph->IsType(Type))) return Periph;    
     }
     return NULL;
 }
-PeriphClass *FindNextPeriph(PeriphClass *PeriphT, int Type, bool circular)
-// finds next Periph with given Type from Peer, otherwise NULL
+PeriphClass *FindLastPeriph(PeerClass *P, int Type)
+// return last Periph of Type. If Peer=NULL Peer is ignored, otherwise NULL
 {
-    
-    
     PeriphClass *Periph;
-    PeerClass *P = FindPeerById(PeriphT->GetPeerId());
-    int PeriphPos = PeriphT->GetPos();
 
-    for (int i=0; i<MAX_PERIPHERALS; i++)
-    {   PeriphPos++;
+    if (PeriphList.size() == 0) return NULL;
+    
+    for(int i = PeriphList.size()-1; i>=0; i--) 
+    {   
+        Periph = PeriphList.get(i);
 
-        if (PeriphPos == MAX_PERIPHERALS)
+        if (P == NULL) return Periph;
+        if ((Periph->GetPeerId() == P->GetId()) and (Periph->IsType(Type))) return Periph;    
+    }
+    return NULL;
+}
+PeriphClass *FindNextPeriph(PeerClass *P, PeriphClass *Periph, int Type, bool circular)
+// return next Periph of Type. If Peer=NULL Peer is ignored, otherwise NULL, circular...
+{
+    PeriphClass *TPeriph;
+    int PeriphPos = 0;
+    if (PeriphList.size() == 0) return NULL;
+    
+    for(int i = 0; i < PeriphList.size(); i++) 
+    {   
+        if (PeriphList.get(i) == Periph) PeriphPos = i;
+    }
+    
+    for(int i = 0; i < PeriphList.size(); i++) 
+    {
+        PeriphPos++;
+        if (PeriphPos == PeriphList.size())
         {
             if (!circular) return NULL;
             PeriphPos = 0;
         }
-    
-        Periph = P->GetPeriphPtr(PeriphPos);
-        if  (Type == Periph->GetType()) return Periph;
-        if ((Type == SENS_TYPE_SENS) and (Periph->IsSensor())) return Periph;
+        TPeriph = PeriphList.get(PeriphPos);
+
+        if ((P == NULL) or (P->GetId() == TPeriph->GetPeerId()))
+        // Peer fits
+        {
+            if (TPeriph->IsType(Type)) return TPeriph;
+        }
     }
     return NULL;
 }
-PeriphClass *FindPrevPeriph(PeriphClass *PeriphT, int Type, bool circular)
-// returns previous Periph with give Type from Peer, otherwise NULL
+PeriphClass *FindPrevPeriph(PeerClass *P, PeriphClass *Periph, int Type, bool circular)
+// return previous Periph of Type. If Peer=NULL Peer is ignored, otherwise NULL, circular...
 {
-    PeriphClass *Periph;
-    PeerClass *P = FindPeerById(PeriphT->GetPeerId());
-    int PeriphPos = PeriphT->GetPos();
-
-    for (int i=0; i<MAX_PERIPHERALS; i++)
-    {   PeriphPos--;
-
+    PeriphClass *TPeriph;
+    int PeriphPos = 0;
+    if (PeriphList.size() == 0) return NULL;
+    
+    for(int i = 0; i < PeriphList.size(); i++) 
+    {   
+        if (PeriphList.get(i) == Periph) PeriphPos = i;
+    }
+    
+    for(int i = 0; i < PeriphList.size(); i++) 
+    {
+        PeriphPos--;
         if (PeriphPos == -1)
         {
             if (!circular) return NULL;
-            PeriphPos = MAX_PERIPHERALS-1;
+            PeriphPos = PeriphList.size()-1;
         }
-    
-        Periph = P->GetPeriphPtr(PeriphPos);
-        if  (Type == Periph->GetType()) return Periph;
-        if ((Type == SENS_TYPE_SENS) and (Periph->IsSensor())) return Periph;
+        TPeriph = PeriphList.get(PeriphPos);
+
+        if ((P == NULL) or (P->GetId() == TPeriph->GetPeerId()))
+        // Peer fits
+        {
+            if (TPeriph->IsType(Type)) return TPeriph;
+        }
     }
     return NULL;
 }
