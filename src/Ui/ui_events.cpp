@@ -439,6 +439,7 @@ void Ui_Multi_Last(lv_event_t * e)
 }
 void Ui_Multi_SetPanel1(lv_event_t * e)
 {
+	lv_timer_pause(MultiTimer);
 	MultiPosToChange = 0;
 	_ui_screen_change(&ui_ScrPeriph, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeriph_screen_init);
 }
@@ -743,8 +744,11 @@ void Ui_Periph_Choice_Prepare(lv_event_t * e)
 	if (!ActivePeriph) {
 		ActivePeriph = FindFirstPeriph(NULL, SENS_TYPE_ALL);
 	}
-	
+	Serial.printf("aktueller Periph: %s", ActivePeriph->GetName());
+
 	if (ActivePeriph) {
+		Serial.println("ActivePeriph in PeriphCoice");
+
 		P = FindPeerById(ActivePeriph->GetPeerId());
 
 		lv_label_set_text(ui_LblPeriphChoicePeriph, ActivePeriph->GetName());
@@ -761,7 +765,10 @@ void Ui_Periph_Choice_Prepare(lv_event_t * e)
 			case SENS_TYPE_VOLT:	lv_label_set_text(ui_LblPeriphChoiceType, "Volt-Sensor"); break;
 			default:				lv_label_set_text(ui_LblPeriphChoiceType, "unknown type"); break;
 		}
+		Serial.println("ActivePeriph in PeriphCoice fertig");
 	}
+	Serial.println("PeriphCoice ende");
+
 }
 #pragma endregion Screen_PeriphChoice
 #pragma region System_TimerAndInit
