@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-void ui_comp_BtnSensSmall_create_hook(lv_obj_t * comp);
+void ui_comp_ButtonSensorSmall_create_hook(lv_obj_t * comp);
 void ui_comp_ButtonSwitchSmall_create_hook(lv_obj_t * comp);
 
 #ifdef __cplusplus

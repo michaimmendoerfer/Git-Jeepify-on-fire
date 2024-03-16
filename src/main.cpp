@@ -1,7 +1,7 @@
 #define NODE_NAME "Monitor-2"
 #define NODE_TYPE MONITOR_ROUND
 
-#define VERSION   "V 2.51"
+#define VERSION   "V 3.01"
 
 #pragma region Includes
 #include <Arduino.h>
@@ -90,7 +90,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
                     if (doc.containsKey((const char*)P->GetPeriphName(i))) {
                         float TempSensor = (float)doc[P->GetPeriphName(i)];
                         
-                        Serial.print(P->GetPeriphName(i)); Serial.print(" found = "); Serial.println(TempSensor);
+                        //Serial.print(P->GetPeriphName(i)); Serial.print(" found = "); Serial.println(TempSensor);
                         
                         if (TempSensor != P->GetPeriphValue(i)) {
                             P->SetPeriphOldValue(i, P->GetPeriphValue(i));
@@ -386,8 +386,8 @@ void PrintMAC(const uint8_t * mac_addr){
 }
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) { 
     if (Self.GetDebugMode()) {
-        Serial.print("\r\nLast Packet Send Status:\t");
-        Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+        //Serial.print("\r\nLast Packet Send Status:\t");
+        //Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
     }
 }
 void my_disp_flush( lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p )

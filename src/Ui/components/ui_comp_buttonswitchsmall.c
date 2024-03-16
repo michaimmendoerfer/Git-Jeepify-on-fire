@@ -46,10 +46,34 @@ lv_obj_t * ui_ButtonSwitchSmall_create(lv_obj_t * comp_parent)
     lv_obj_set_style_text_color(cui_LblPeriph, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(cui_LblPeriph, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    lv_obj_t * cui_LblValue;
+    cui_LblValue = lv_label_create(cui_ButtonSwitchSmall);
+    lv_obj_set_width(cui_LblValue, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(cui_LblValue, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(cui_LblValue, -20);
+    lv_obj_set_y(cui_LblValue, 0);
+    lv_obj_set_align(cui_LblValue, LV_ALIGN_CENTER);
+    lv_label_set_text(cui_LblValue, "V");
+    lv_obj_set_style_text_color(cui_LblValue, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(cui_LblValue, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    lv_obj_t * cui_LblPosition;
+    cui_LblPosition = lv_label_create(cui_ButtonSwitchSmall);
+    lv_obj_set_width(cui_LblPosition, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(cui_LblPosition, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(cui_LblPosition, 20);
+    lv_obj_set_y(cui_LblPosition, 0);
+    lv_obj_set_align(cui_LblPosition, LV_ALIGN_CENTER);
+    lv_label_set_text(cui_LblPosition, "P");
+    lv_obj_set_style_text_color(cui_LblPosition, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(cui_LblPosition, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+
     lv_obj_t ** children = lv_mem_alloc(sizeof(lv_obj_t *) * _UI_COMP_BUTTONSWITCHSMALL_NUM);
     children[UI_COMP_BUTTONSWITCHSMALL_BUTTONSWITCHSMALL] = cui_ButtonSwitchSmall;
     children[UI_COMP_BUTTONSWITCHSMALL_LBLPEER] = cui_LblPeer;
     children[UI_COMP_BUTTONSWITCHSMALL_LBLPERIPH] = cui_LblPeriph;
+    children[UI_COMP_BUTTONSWITCHSMALL_LBLVALUE] = cui_LblValue;
+    children[UI_COMP_BUTTONSWITCHSMALL_LBLPOSITION] = cui_LblPosition;
     lv_obj_add_event_cb(cui_ButtonSwitchSmall, get_component_child_event_cb, LV_EVENT_GET_COMP_CHILD, children);
     lv_obj_add_event_cb(cui_ButtonSwitchSmall, del_component_child_event_cb, LV_EVENT_DELETE, children);
     ui_comp_ButtonSwitchSmall_create_hook(cui_ButtonSwitchSmall);

@@ -28,10 +28,10 @@ extern "C" {
 #include "ui_events.h"
 // SCREEN: ui_ScrMenu
 void ui_ScrMenu_screen_init(void);
-void ui_event_ScrMenu(lv_event_t * e);
 extern lv_obj_t * ui_ScrMenu;
 void ui_event_BtnMenu1(lv_event_t * e);
 extern lv_obj_t * ui_BtnMenu1;
+void ui_event_BtnMenu2(lv_event_t * e);
 extern lv_obj_t * ui_BtnMenu2;
 void ui_event_BtnMenu3(lv_event_t * e);
 extern lv_obj_t * ui_BtnMenu3;
@@ -140,24 +140,26 @@ extern lv_obj_t * ui_LblPeriphChoicePeriph;
 void ui_ScrMulti_screen_init(void);
 void ui_event_ScrMulti(lv_event_t * e);
 extern lv_obj_t * ui_ScrMulti;
-void ui_event_MultiPanel1(lv_event_t * e);
-extern lv_obj_t * ui_MultiPanel1;
-void ui_event_MultiPanel2(lv_event_t * e);
-extern lv_obj_t * ui_MultiPanel2;
-void ui_event_MultiPanel3(lv_event_t * e);
-extern lv_obj_t * ui_MultiPanel3;
-void ui_event_MultiPanel4(lv_event_t * e);
-extern lv_obj_t * ui_MultiPanel4;
-extern lv_obj_t * ui_ButtonSwitchSmall1;
-extern lv_obj_t * ui_ButtonSwitchSmall2;
-extern lv_obj_t * ui_ButtonSwitchSmall3;
-extern lv_obj_t * ui_ButtonSwitchSmall4;
-extern lv_obj_t * ui_BtnSensSmall1;
-extern lv_obj_t * ui_BtnSensSmall2;
-extern lv_obj_t * ui_BtnSensSmall3;
-extern lv_obj_t * ui_BtnSensSmall4;
-extern lv_obj_t * ui_LblMultiName;
-extern lv_obj_t * ui_LblMultiName1;
+extern lv_obj_t * ui_LblMultiScreenName;
+void ui_event_ButtonMulti1(lv_event_t * e);
+extern lv_obj_t * ui_ButtonMulti1;
+extern lv_obj_t * ui_Label6;
+void ui_event_ButtonMulti2(lv_event_t * e);
+extern lv_obj_t * ui_ButtonMulti2;
+extern lv_obj_t * ui_Label2;
+void ui_event_ButtonMulti3(lv_event_t * e);
+extern lv_obj_t * ui_ButtonMulti3;
+extern lv_obj_t * ui_Label3;
+void ui_event_ButtonMulti4(lv_event_t * e);
+extern lv_obj_t * ui_ButtonMulti4;
+extern lv_obj_t * ui_Label4;
+// SCREEN: ui_ScrSwitch
+void ui_ScrSwitch_screen_init(void);
+extern lv_obj_t * ui_ScrSwitch;
+void ui_event_BtnSwitch(lv_event_t * e);
+extern lv_obj_t * ui_BtnSwitch;
+extern lv_obj_t * ui_LblSwitchPeer;
+extern lv_obj_t * ui_LblSwitchPeriph;
 void ui_event____initial_actions0(lv_event_t * e);
 extern lv_obj_t * ui____initial_actions0;
 
@@ -168,6 +170,8 @@ LV_IMG_DECLARE(ui_img_menubtn3_png);    // assets\MenuBtn3.png
 LV_IMG_DECLARE(ui_img_menubtn4_png);    // assets\MenuBtn4.png
 LV_IMG_DECLARE(ui_img_rubicon_png);    // assets\Rubicon.png
 LV_IMG_DECLARE(ui_img_pdc_png);    // assets\pdc.png
+LV_IMG_DECLARE(ui_img_btn_off_png);    // assets\Btn_off.png
+LV_IMG_DECLARE(ui_img_btn_png);    // assets\Btn.png
 LV_IMG_DECLARE(ui_img_1527887470);    // assets\Btn-small-off-100.png
 LV_IMG_DECLARE(ui_img_551600910);    // assets\Btn-small-on-100.png
 

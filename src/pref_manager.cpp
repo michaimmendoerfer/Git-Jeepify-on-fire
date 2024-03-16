@@ -30,6 +30,7 @@ MultiMonitorClass::MultiMonitorClass()
         _PeerId[i] = 0;
         _Periph[i] = NULL;
         _PeriphId[i] = 0;
+        _Component[i] = NULL;
     }
     _Used = false;
 }

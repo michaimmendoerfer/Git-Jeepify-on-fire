@@ -6,6 +6,11 @@
 #define MAX_STATUS      10
 #define SCHWELLE        0.0005
 
+#define MSG_CHANGED_SWITCH     10 // Payload PeriphId
+#define MSG_CHANGED_SENSOR     20 // Payload PeriphId
+#define MSG_CHANGED_PEERNAME   30 // Payload PeerID
+#define MSG_CHANGED_AVAIL      40 // Payload PeerId
+
 // Module-Types
 #define SWITCH_1_WAY        1
 #define SWITCH_2_WAY        2

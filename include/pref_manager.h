@@ -2,6 +2,7 @@
 #define PREF_MANAGER_H
 
 #include <Preferences.h>
+#include "lvgl.h"
 
 
 class MultiMonitorClass {
@@ -12,11 +13,12 @@ class MultiMonitorClass {
         char         _Name[20];
         int          _Id;
         bool         _Changed;
-        PeerClass   *_Peer    [PERIPH_PER_SCREEN];
-        int          _PeerId  [PERIPH_PER_SCREEN];
-        PeriphClass *_Periph  [PERIPH_PER_SCREEN];
-        int          _PeriphId[PERIPH_PER_SCREEN];
+        PeerClass   *_Peer     [PERIPH_PER_SCREEN];
+        int          _PeerId   [PERIPH_PER_SCREEN];
+        PeriphClass *_Periph   [PERIPH_PER_SCREEN];
+        int          _PeriphId [PERIPH_PER_SCREEN];
         bool         _Used;
+        lv_obj_t    *_Component[PERIPH_PER_SCREEN];
     
     public:
         MultiMonitorClass();

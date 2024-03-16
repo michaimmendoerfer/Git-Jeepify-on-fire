@@ -11,7 +11,6 @@ extern "C" {
 #endif
 
 void Ui_Init_Custom(lv_event_t * e);
-void UI_Menu_Prepare(lv_event_t * e);
 void UI_Set_Prepare(lv_event_t * e);
 void Ui_Set_TogglePair(lv_event_t * e);
 void Ui_Set_Restart(lv_event_t * e);
@@ -37,19 +36,18 @@ void Ui_Volt_Prepare(lv_event_t * e);
 void Ui_PeriphChoice_Next(lv_event_t * e);
 void Ui_PeriphChoice_Last(lv_event_t * e);
 void Ui_PeriphChoice_Click(lv_event_t * e);
-void Ui_Periph_Choice_Prepare(lv_event_t * e);
-void Ui_Multi_Prepare(lv_event_t * e);
-void Ui_Multi_Leave(lv_event_t * e);
+void Ui_Periph_Choice_Loaded(lv_event_t * e);
+void Ui_Multi_Loaded(lv_event_t * e);
+void Ui_Multi_Unload(lv_event_t * e);
 void Ui_Multi_Next(lv_event_t * e);
-void Ui_Multi_Last(lv_event_t * e);
-void Ui_Multi_SetPanel1(lv_event_t * e);
-void Ui_Multi_ActivatePanel1(lv_event_t * e);
-void Ui_Multi_SetPanel2(lv_event_t * e);
-void Ui_Multi_ActivatePanel2(lv_event_t * e);
-void Ui_Multi_SetPanel3(lv_event_t * e);
-void Ui_Multi_ActivatePanel3(lv_event_t * e);
-void Ui_Multi_SetPanel4(lv_event_t * e);
-void Ui_Multi_ActivatePanel4(lv_event_t * e);
+void Ui_Multi_Prev(lv_event_t * e);
+void Ui_Multi_Set_Panel1(lv_event_t * e);
+void Ui_Multi_Set_Panel2(lv_event_t * e);
+void Ui_Multi_Set_Panel3(lv_event_t * e);
+void Ui_Multi_Set_Panel4(lv_event_t * e);
+void Ui_Switch_Click(lv_event_t * e);
+void Ui_Switch_Prev(lv_event_t * e);
+void Ui_Switch_Next(lv_event_t * e);
 
 #ifdef __cplusplus
 } /*extern "C"*/
