@@ -287,12 +287,17 @@ PeriphClass *FindFirstPeriph(PeerClass *P, int Type)
     PeriphClass *Periph;
 
     if (PeriphList.size() == 0) return NULL;
-    
+    Serial.printf("PeriphList.size() = %d",PeriphList.size());
+
     for(int i = 0; i < PeriphList.size(); i++) 
     {   
         Periph = PeriphList.get(i);
-
-        if (P == NULL) return Periph;
+        Serial.printf("Checke %s, PeriphId:%d\n\r", Periph->GetName(), Periph->GetId());
+        if ((P == NULL) and (Periph->IsType(Type))) 
+        {
+            Serial.printf("FindFirstPeriph: gefunden %s, PeriphId:%d\n\r", Periph->GetName(), Periph->GetId());
+            return Periph;
+        }
         if ((Periph->GetPeerId() == P->GetId()) and (Periph->IsType(Type))) return Periph;    
     }
     return NULL;
@@ -317,12 +322,15 @@ PeriphClass *FindNextPeriph(PeerClass *P, PeriphClass *Periph, int Type, bool ci
 // return next Periph of Type. If Peer=NULL Peer is ignored, otherwise NULL, circular...
 {
     PeriphClass *TPeriph;
-    int PeriphPos = 0;
+    int PeriphPos = -1;
     if (PeriphList.size() == 0) return NULL;
     
-    for(int i = 0; i < PeriphList.size(); i++) 
-    {   
-        if (PeriphList.get(i) == Periph) PeriphPos = i;
+    if (Periph != NULL)
+    {
+        for(int i = 0; i < PeriphList.size(); i++) 
+        {   
+            if (PeriphList.get(i) == Periph) PeriphPos = i;
+        }
     }
     
     for(int i = 0; i < PeriphList.size(); i++) 

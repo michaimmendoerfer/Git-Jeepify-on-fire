@@ -45,9 +45,10 @@ void Ui_Multi_Set_Panel1(lv_event_t * e);
 void Ui_Multi_Set_Panel2(lv_event_t * e);
 void Ui_Multi_Set_Panel3(lv_event_t * e);
 void Ui_Multi_Set_Panel4(lv_event_t * e);
-void Ui_Switch_Click(lv_event_t * e);
-void Ui_Switch_Prev(lv_event_t * e);
 void Ui_Switch_Next(lv_event_t * e);
+void Ui_Switch_Prev(lv_event_t * e);
+void Ui_Switch_Loaded(lv_event_t * e);
+void Ui_Switch_Click(lv_event_t * e);
 
 #ifdef __cplusplus
 } /*extern "C"*/

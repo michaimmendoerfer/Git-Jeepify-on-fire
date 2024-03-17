@@ -21,6 +21,7 @@ lv_obj_t * ui_BtnMenu3;
 void ui_event_BtnMenu4(lv_event_t * e);
 lv_obj_t * ui_BtnMenu4;
 lv_obj_t * ui_ImgRubicon;
+lv_obj_t * ui_LblMenuVersion;
 
 
 // SCREEN: ui_ScrSettings
@@ -158,9 +159,8 @@ lv_obj_t * ui_Label4;
 
 // SCREEN: ui_ScrSwitch
 void ui_ScrSwitch_screen_init(void);
+void ui_event_ScrSwitch(lv_event_t * e);
 lv_obj_t * ui_ScrSwitch;
-void ui_event_BtnSwitch(lv_event_t * e);
-lv_obj_t * ui_BtnSwitch;
 lv_obj_t * ui_LblSwitchPeer;
 lv_obj_t * ui_LblSwitchPeriph;
 void ui_event____initial_actions0(lv_event_t * e);
@@ -521,24 +521,27 @@ void ui_event_ButtonMulti4(lv_event_t * e)
         Ui_Multi_Set_Panel4(e);
     }
 }
-void ui_event_BtnSwitch(lv_event_t * e)
+void ui_event_ScrSwitch(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
-    if(event_code == LV_EVENT_CLICKED) {
-        Ui_Switch_Click(e);
-    }
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMenu_screen_init);
+        _ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_ScrMenu_screen_init);
+    }
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT) {
+        lv_indev_wait_release(lv_indev_get_act());
+        Ui_Switch_Next(e);
     }
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT) {
         lv_indev_wait_release(lv_indev_get_act());
         Ui_Switch_Prev(e);
     }
-    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
-        lv_indev_wait_release(lv_indev_get_act());
-        Ui_Switch_Next(e);
+    if(event_code == LV_EVENT_SCREEN_LOADED) {
+        Ui_Switch_Loaded(e);
+    }
+    if(event_code == LV_EVENT_LONG_PRESSED) {
+        Ui_Switch_Click(e);
     }
 }
 void ui_event____initial_actions0(lv_event_t * e)

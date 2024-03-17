@@ -35,6 +35,9 @@ lv_timer_t *SingleTimer;
 lv_timer_t *MultiTimer;
 lv_timer_t *SwitchTimer;
 
+LV_IMG_DECLARE(ui_img_btn_off_png);   
+LV_IMG_DECLARE(ui_img_btn_png);    
+
 void GenerateSingleMeter(void);
 void Keyboard_cb(lv_event_t * event);
 
@@ -681,7 +684,11 @@ void Ui_Switch_Next(lv_event_t * e)
 		_ui_screen_change(&ui_ScrSwitch, LV_SCR_LOAD_ANIM_NONE, 50, 0, &ui_ScrSwitch_screen_init);
 	}
 }
-void Ui_Switch_Last(lv_event_t * e)
+void Ui_Switch_Long(lv_event_t * e)
+{
+	ToggleSwitch(ActiveSwitch);
+}
+void Ui_Switch_Prev(lv_event_t * e)
 {
 	if (ActiveSwitch) 
 	{
@@ -693,28 +700,35 @@ void Ui_Switch_Last(lv_event_t * e)
 		_ui_screen_change(&ui_ScrSwitch, LV_SCR_LOAD_ANIM_NONE, 50, 0, &ui_ScrSwitch_screen_init);
 	}
 }
-void Ui_Switch_Prepare(lv_event_t * e)
+void Ui_Switch_Loaded(lv_event_t * e)
 {
-	if (!ActiveSwitch) ActiveSwitch = FindFirstPeriph(NULL, SENS_TYPE_SWITCH);
-		
+	if (!ActiveSwitch) 
+	{
+		Serial.println("No ActiveSwitch");
+		ActiveSwitch = FindNextPeriph(NULL, NULL, SENS_TYPE_SWITCH, false);
+	}	
 	if (ActiveSwitch)
 	{
+		Serial.println(ActiveSwitch->GetName());
+		
+		if (ActiveSwitch->GetValue() == 1)
+		{
+			lv_obj_set_style_bg_img_src(ui_ScrSwitch, &ui_img_btn_png, LV_PART_MAIN | LV_STATE_DEFAULT);
+		}
+		else
+		{
+			lv_obj_set_style_bg_img_src(ui_ScrSwitch, &ui_img_btn_off_png, LV_PART_MAIN | LV_STATE_DEFAULT);
+		}
+
 		lv_label_set_text(ui_LblSwitchPeriph, ActiveSwitch->GetName());
 		lv_label_set_text(ui_LblSwitchPeer, FindPeerById(ActiveSwitch->GetPeerId())->GetName());
 	}
 	else
 	{
+		lv_obj_set_style_bg_img_src(ui_ScrSwitch, &ui_img_btn_off_png, LV_PART_MAIN | LV_STATE_DEFAULT);
+
 		lv_label_set_text(ui_LblSwitchPeriph, "n.n.");
 		lv_label_set_text(ui_LblSwitchPeer, "n.n.");
-	}
-
-	if (ActiveSwitch->GetValue() == 1)
-	{
-		lv_obj_add_state(ui_BtnSwitch, LV_STATE_CHECKED);
-	}
-	else
-	{
-		lv_obj_clear_state(ui_BtnSwitch, LV_STATE_CHECKED);
 	}
 
 	/*
@@ -859,6 +873,8 @@ void Ui_Init_Custom(lv_event_t * e)
 	lv_keyboard_set_map(ui_Keyboard, LV_KEYBOARD_MODE_USER_1, kb_map, kb_ctrl);
     lv_keyboard_set_mode(ui_Keyboard, LV_KEYBOARD_MODE_USER_1);
 	lv_obj_add_event_cb(ui_Keyboard, Keyboard_cb, LV_EVENT_READY, NULL);
+
+	lv_label_set_text(ui_LblMenuVersion, Version);
 }
 
 void Keyboard_cb(lv_event_t * event)
@@ -879,12 +895,3 @@ void Ui_Volt_Prepare(lv_event_t * e)
 	if (ActivePeer) lv_label_set_text(ui_LblVoltPeer, ActivePeer->GetName());
 }
 #pragma endregion System_Eichen
-void Ui_Switch_Click(lv_event_t * e)
-{
-	// Your code here
-}
-
-void Ui_Switch_Prev(lv_event_t * e)
-{
-	// Your code here
-}

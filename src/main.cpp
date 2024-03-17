@@ -1,7 +1,7 @@
 #define NODE_NAME "Monitor-2"
 #define NODE_TYPE MONITOR_ROUND
 
-#define VERSION   "V 3.01"
+const char *Version = "V 3.31";
 
 #pragma region Includes
 #include <Arduino.h>
@@ -288,6 +288,25 @@ bool ToggleSwitch(PeerClass *P, int PerNr)
     serializeJson(doc, jsondata);  
     
     esp_now_send(P->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
+    Serial.println(jsondata);
+    
+    jsondata = "";
+    return true;
+}
+bool ToggleSwitch(PeriphClass *Periph)
+{
+    StaticJsonDocument<500> doc;
+    String jsondata;
+    jsondata = "";  //clearing String after data is being sent
+    doc.clear();
+    
+    doc["from"]  = NODE_NAME;   
+    doc["Order"] = "ToggleSwitch";
+    doc["Value"] = Periph->GetName();
+    
+    serializeJson(doc, jsondata);  
+    
+    esp_now_send(FindPeerById(Periph->GetPeerId())->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
     Serial.println(jsondata);
     
     jsondata = "";

@@ -38,6 +38,7 @@ extern lv_obj_t * ui_BtnMenu3;
 void ui_event_BtnMenu4(lv_event_t * e);
 extern lv_obj_t * ui_BtnMenu4;
 extern lv_obj_t * ui_ImgRubicon;
+extern lv_obj_t * ui_LblMenuVersion;
 // SCREEN: ui_ScrSettings
 void ui_ScrSettings_screen_init(void);
 void ui_event_ScrSettings(lv_event_t * e);
@@ -155,9 +156,8 @@ extern lv_obj_t * ui_ButtonMulti4;
 extern lv_obj_t * ui_Label4;
 // SCREEN: ui_ScrSwitch
 void ui_ScrSwitch_screen_init(void);
+void ui_event_ScrSwitch(lv_event_t * e);
 extern lv_obj_t * ui_ScrSwitch;
-void ui_event_BtnSwitch(lv_event_t * e);
-extern lv_obj_t * ui_BtnSwitch;
 extern lv_obj_t * ui_LblSwitchPeer;
 extern lv_obj_t * ui_LblSwitchPeriph;
 void ui_event____initial_actions0(lv_event_t * e);
@@ -170,7 +170,6 @@ LV_IMG_DECLARE(ui_img_menubtn3_png);    // assets\MenuBtn3.png
 LV_IMG_DECLARE(ui_img_menubtn4_png);    // assets\MenuBtn4.png
 LV_IMG_DECLARE(ui_img_rubicon_png);    // assets\Rubicon.png
 LV_IMG_DECLARE(ui_img_pdc_png);    // assets\pdc.png
-LV_IMG_DECLARE(ui_img_btn_off_png);    // assets\Btn_off.png
 LV_IMG_DECLARE(ui_img_btn_png);    // assets\Btn.png
 LV_IMG_DECLARE(ui_img_1527887470);    // assets\Btn-small-off-100.png
 LV_IMG_DECLARE(ui_img_551600910);    // assets\Btn-small-on-100.png

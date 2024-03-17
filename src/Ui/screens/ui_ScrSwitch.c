@@ -11,18 +11,9 @@ void ui_ScrSwitch_screen_init(void)
     lv_obj_clear_flag(ui_ScrSwitch, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_color(ui_ScrSwitch, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_ScrSwitch, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_img_src(ui_ScrSwitch, &ui_img_btn_png, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_BtnSwitch = lv_imgbtn_create(ui_ScrSwitch);
-    lv_imgbtn_set_src(ui_BtnSwitch, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_btn_off_png, NULL);
-    lv_imgbtn_set_src(ui_BtnSwitch, LV_IMGBTN_STATE_PRESSED, NULL, &ui_img_btn_png, NULL);
-    lv_imgbtn_set_src(ui_BtnSwitch, LV_IMGBTN_STATE_CHECKED_PRESSED, NULL, &ui_img_btn_off_png, NULL);
-    lv_imgbtn_set_src(ui_BtnSwitch, LV_IMGBTN_STATE_CHECKED_RELEASED, NULL, &ui_img_btn_png, NULL);
-    lv_obj_set_height(ui_BtnSwitch, 262);
-    lv_obj_set_width(ui_BtnSwitch, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_align(ui_BtnSwitch, LV_ALIGN_CENTER);
-    lv_obj_add_state(ui_BtnSwitch, LV_STATE_CHECKED);       /// States
-
-    ui_LblSwitchPeer = lv_label_create(ui_BtnSwitch);
+    ui_LblSwitchPeer = lv_label_create(ui_ScrSwitch);
     lv_obj_set_width(ui_LblSwitchPeer, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_LblSwitchPeer, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_LblSwitchPeer, 0);
@@ -33,7 +24,7 @@ void ui_ScrSwitch_screen_init(void)
     lv_obj_set_style_text_opa(ui_LblSwitchPeer, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_LblSwitchPeer, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_LblSwitchPeriph = lv_label_create(ui_BtnSwitch);
+    ui_LblSwitchPeriph = lv_label_create(ui_ScrSwitch);
     lv_obj_set_width(ui_LblSwitchPeriph, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_LblSwitchPeriph, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_LblSwitchPeriph, 0);
@@ -44,6 +35,6 @@ void ui_ScrSwitch_screen_init(void)
     lv_obj_set_style_text_opa(ui_LblSwitchPeriph, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_LblSwitchPeriph, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    lv_obj_add_event_cb(ui_BtnSwitch, ui_event_BtnSwitch, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_ScrSwitch, ui_event_ScrSwitch, LV_EVENT_ALL, NULL);
 
 }

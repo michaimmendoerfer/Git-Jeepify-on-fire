@@ -18,6 +18,7 @@ void   my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data )
 
 void   SendPing(lv_timer_t * timer);
 bool   ToggleSwitch(PeerClass *P, int PerNr);
+bool   ToggleSwitch(PeriphClass *Periph);
 void   SendCommand(PeerClass *Peer, String Cmd);
 void   SendPairingConfirm(PeerClass *Peer);
 void   MultiScreenAddPeriph(struct_Periph *Periph, uint8_t Pos);
@@ -43,6 +44,7 @@ extern PeerClass Self;
 extern Preferences preferences;
 
 extern int ActiveMultiScreen;
+extern const char *Version;
 
 
 #endif

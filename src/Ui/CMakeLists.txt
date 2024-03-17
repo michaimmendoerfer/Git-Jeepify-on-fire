@@ -23,7 +23,6 @@ SET(SOURCES components/ui_comp_buttonsensorsmall.c
     images/ui_img_menubtn4_png.c
     images/ui_img_rubicon_png.c
     images/ui_img_pdc_png.c
-    images/ui_img_btn_off_png.c
     images/ui_img_btn_png.c
     images/ui_img_1527887470.c
     images/ui_img_551600910.c)
