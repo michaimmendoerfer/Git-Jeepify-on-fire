@@ -242,7 +242,6 @@ void RegisterPeers()
       }
   }
 }
-
 void ReportAll()
 {
     PeerClass *P;

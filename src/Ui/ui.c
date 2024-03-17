@@ -541,7 +541,7 @@ void ui_event_ScrSwitch(lv_event_t * e)
         Ui_Switch_Loaded(e);
     }
     if(event_code == LV_EVENT_LONG_PRESSED) {
-        Ui_Switch_Click(e);
+        Ui_Switch_Long(e);
     }
 }
 void ui_event____initial_actions0(lv_event_t * e)

@@ -15,6 +15,7 @@
 #include "ui_events.h"
 #include "main.h"
 
+#pragma region Global_Definitions
 lv_obj_t *SingleMeter;
 lv_meter_indicator_t * SingleIndic;
 lv_meter_indicator_t * SingleIndicNeedle;
@@ -47,6 +48,7 @@ void SwitchUpdateTimer(lv_timer_t * timer);
 
 void Ui_Multi_Button_Clicked(lv_event_t * e);
 void Ui_Multi_Sensor_Clicked(lv_event_t * e);
+#pragma endregion Global_Definitions
 
 #pragma region Screen_Peer
 void Ui_Peer_Prepare(lv_event_t * e)
@@ -667,10 +669,16 @@ void Ui_Multi_Prev(lv_event_t * e)
 #pragma region Screen_Switch
 void SwitchUpdateTimer(lv_timer_t * timer)
 {
-	/*if (ActiveSwitch){
-		if (ActiveSwitch->Value == 1) lv_imgbtn_set_state(ui_BtnImgSwitch, LV_IMGBTN_STATE_CHECKED_RELEASED);
-		if (ActiveSwitch->Value == 0) lv_imgbtn_set_state(ui_BtnImgSwitch, LV_IMGBTN_STATE_RELEASED);
-	}*/
+	if (ActiveSwitch){
+		if (ActiveSwitch->GetValue() == 1)
+		{
+			lv_obj_set_style_bg_img_src(ui_ScrSwitch, &ui_img_btn_png, LV_PART_MAIN | LV_STATE_DEFAULT);
+		}
+		else
+		{
+			lv_obj_set_style_bg_img_src(ui_ScrSwitch, &ui_img_btn_off_png, LV_PART_MAIN | LV_STATE_DEFAULT);
+		}
+	}
 }
 void Ui_Switch_Next(lv_event_t * e)
 {
@@ -705,21 +713,12 @@ void Ui_Switch_Loaded(lv_event_t * e)
 	if (!ActiveSwitch) 
 	{
 		Serial.println("No ActiveSwitch");
-		ActiveSwitch = FindNextPeriph(NULL, NULL, SENS_TYPE_SWITCH, false);
+		ActiveSwitch = FindNextPeriph(NULL, NULL, SENS_TYPE_SWITCH, true);
 	}	
 	if (ActiveSwitch)
 	{
 		Serial.println(ActiveSwitch->GetName());
 		
-		if (ActiveSwitch->GetValue() == 1)
-		{
-			lv_obj_set_style_bg_img_src(ui_ScrSwitch, &ui_img_btn_png, LV_PART_MAIN | LV_STATE_DEFAULT);
-		}
-		else
-		{
-			lv_obj_set_style_bg_img_src(ui_ScrSwitch, &ui_img_btn_off_png, LV_PART_MAIN | LV_STATE_DEFAULT);
-		}
-
 		lv_label_set_text(ui_LblSwitchPeriph, ActiveSwitch->GetName());
 		lv_label_set_text(ui_LblSwitchPeer, FindPeerById(ActiveSwitch->GetPeerId())->GetName());
 	}
@@ -731,7 +730,6 @@ void Ui_Switch_Loaded(lv_event_t * e)
 		lv_label_set_text(ui_LblSwitchPeer, "n.n.");
 	}
 
-	/*
 	static uint32_t user_data = 10;
 	if (!SwitchTimer) { 
 		SwitchTimer = lv_timer_create(SwitchUpdateTimer, 500,  &user_data);
@@ -739,7 +737,6 @@ void Ui_Switch_Loaded(lv_event_t * e)
 	else {
 		lv_timer_resume(SwitchTimer);
 	}
-	*/
 }
 void Ui_Switch_Leave(lv_event_t * e)
 {
@@ -755,16 +752,24 @@ void Ui_Switch_Leave(lv_event_t * e)
 void Ui_PeriphChoice_Next(lv_event_t * e)
 {
 	if (ActivePeriph) {
-		ActivePeriph = FindNextPeriph(NULL, ActivePeriph, SENS_TYPE_ALL, true);
-		Ui_Periph_Choice_Loaded(e);
+		PeriphClass *PeriphT = FindNextPeriph(NULL, ActivePeriph, SENS_TYPE_ALL, true);
+		if (PeriphT) 
+		{
+			ActivePeriph = PeriphT;
+			Ui_Periph_Choice_Loaded(e);
+		}
 	}
 }
 
 void Ui_PeriphChoice_Last(lv_event_t * e)
 {
 	if (ActivePeriph) {
-		ActivePeriph = FindPrevPeriph(NULL, ActivePeriph, SENS_TYPE_ALL, true);
-		Ui_Periph_Choice_Loaded(e);
+		PeriphClass *PeriphT = FindPrevPeriph(NULL, ActivePeriph, SENS_TYPE_ALL, true);
+		if (PeriphT) 
+		{
+			ActivePeriph = PeriphT;
+			Ui_Periph_Choice_Loaded(e);
+		}
 	}
 }
 
@@ -773,7 +778,6 @@ void Ui_PeriphChoice_Click(lv_event_t * e)
 	Screen[ActiveMultiScreen].AddPeriph(MultiPosToChange, ActivePeriph);
 	_ui_screen_change(&ui_ScrMulti, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMulti_screen_init);
 }
-
 
 void Ui_Periph_Choice_Loaded(lv_event_t * e)
 {

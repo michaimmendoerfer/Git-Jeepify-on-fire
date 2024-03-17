@@ -293,12 +293,12 @@ PeriphClass *FindFirstPeriph(PeerClass *P, int Type)
     {   
         Periph = PeriphList.get(i);
         Serial.printf("Checke %s, PeriphId:%d\n\r", Periph->GetName(), Periph->GetId());
-        if ((P == NULL) and (Periph->IsType(Type))) 
+        
+        if ((P == NULL) or (P->GetId() == Periph->GetPeerId()))
+        // Peer fits
         {
-            Serial.printf("FindFirstPeriph: gefunden %s, PeriphId:%d\n\r", Periph->GetName(), Periph->GetId());
-            return Periph;
+            if (Periph->IsType(Type)) return Periph;
         }
-        if ((Periph->GetPeerId() == P->GetId()) and (Periph->IsType(Type))) return Periph;    
     }
     return NULL;
 }
@@ -313,26 +313,51 @@ PeriphClass *FindLastPeriph(PeerClass *P, int Type)
     {   
         Periph = PeriphList.get(i);
 
-        if (P == NULL) return Periph;
-        if ((Periph->GetPeerId() == P->GetId()) and (Periph->IsType(Type))) return Periph;    
+        if ((P == NULL) or (P->GetId() == Periph->GetPeerId()))
+        // Peer fits
+        {
+            if (Periph->IsType(Type)) return Periph;
+        }
     }
     return NULL;
+}
+int FindPeriphListPos(PeriphClass *Periph)
+{
+    if (PeriphList.size() == 0) return -1;
+
+    if (Periph != NULL)
+    {
+        for(int i = 0; i < PeriphList.size(); i++) 
+        {   
+            if (PeriphList.get(i) == Periph) return i;
+        }
+    }
+    return -1;
+}
+int FindPeerListPos(PeerClass *P)
+{
+    if (PeerList.size() == 0) return -1;
+
+    if (P != NULL)
+    {
+        for(int i = 0; i < PeerList.size(); i++) 
+        {   
+            if (PeerList.get(i) == P) return i;
+        }
+    }
+    return -1;
 }
 PeriphClass *FindNextPeriph(PeerClass *P, PeriphClass *Periph, int Type, bool circular)
 // return next Periph of Type. If Peer=NULL Peer is ignored, otherwise NULL, circular...
 {
     PeriphClass *TPeriph;
-    int PeriphPos = -1;
+    
     if (PeriphList.size() == 0) return NULL;
+
+    int PeriphPos = FindPeriphListPos(Periph);
     
-    if (Periph != NULL)
-    {
-        for(int i = 0; i < PeriphList.size(); i++) 
-        {   
-            if (PeriphList.get(i) == Periph) PeriphPos = i;
-        }
-    }
-    
+    if (P == NULL) circular = true;  // if Peer doesnt matter, always search circular
+
     for(int i = 0; i < PeriphList.size(); i++) 
     {
         PeriphPos++;
@@ -355,14 +380,14 @@ PeriphClass *FindPrevPeriph(PeerClass *P, PeriphClass *Periph, int Type, bool ci
 // return previous Periph of Type. If Peer=NULL Peer is ignored, otherwise NULL, circular...
 {
     PeriphClass *TPeriph;
-    int PeriphPos = 0;
+
     if (PeriphList.size() == 0) return NULL;
     
-    for(int i = 0; i < PeriphList.size(); i++) 
-    {   
-        if (PeriphList.get(i) == Periph) PeriphPos = i;
-    }
+    int PeriphPos = FindPeriphListPos(Periph);
+    if (PeriphPos == -1) PeriphPos--; // if not found prev will start at last element
     
+    if (P == NULL) circular = true;   // if Peer doesnt matter, always search circular
+
     for(int i = 0; i < PeriphList.size(); i++) 
     {
         PeriphPos--;
