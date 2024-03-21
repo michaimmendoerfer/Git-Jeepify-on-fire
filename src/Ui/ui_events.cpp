@@ -669,8 +669,8 @@ void Ui_Multi_Prev(lv_event_t * e)
 #pragma region Screen_Switch
 void SwitchUpdateTimer(lv_timer_t * timer)
 {
-	if (ActiveSwitch){
-		if (ActiveSwitch->GetValue() == 1)
+	if (ActivePeriphSwitch){
+		if (ActivePeriphSwitch->GetValue() == 1)
 		{
 			lv_obj_set_style_bg_img_src(ui_ScrSwitch, &ui_img_btn_png, LV_PART_MAIN | LV_STATE_DEFAULT);
 		}
@@ -682,45 +682,45 @@ void SwitchUpdateTimer(lv_timer_t * timer)
 }
 void Ui_Switch_Next(lv_event_t * e)
 {
-	if (ActiveSwitch) 
+	if (ActivePeriphSwitch) 
 	{
-		ActiveSwitch = FindNextPeriph(NULL, ActiveSwitch, SENS_TYPE_SWITCH, true);
+		ActivePeriphSwitch = FindNextPeriph(NULL, ActivePeriphSwitch, SENS_TYPE_SWITCH, true);
 	}
 	
-	if (ActiveSwitch)
+	if (ActivePeriphSwitch)
 	{
 		_ui_screen_change(&ui_ScrSwitch, LV_SCR_LOAD_ANIM_NONE, 50, 0, &ui_ScrSwitch_screen_init);
 	}
 }
 void Ui_Switch_Long(lv_event_t * e)
 {
-	ToggleSwitch(ActiveSwitch);
+	ToggleSwitch(ActivePeriphSwitch);
 }
 void Ui_Switch_Prev(lv_event_t * e)
 {
-	if (ActiveSwitch) 
+	if (ActivePeriphSwitch) 
 	{
-		ActiveSwitch = FindPrevPeriph(NULL, ActiveSwitch, SENS_TYPE_SWITCH, true);
+		ActivePeriphSwitch = FindPrevPeriph(NULL, ActivePeriphSwitch, SENS_TYPE_SWITCH, true);
 	}
 	
-	if (ActiveSwitch)
+	if (ActivePeriphSwitch)
 	{
 		_ui_screen_change(&ui_ScrSwitch, LV_SCR_LOAD_ANIM_NONE, 50, 0, &ui_ScrSwitch_screen_init);
 	}
 }
 void Ui_Switch_Loaded(lv_event_t * e)
 {
-	if (!ActiveSwitch) 
+	if (!ActivePeriphSwitch) 
 	{
-		Serial.println("No ActiveSwitch");
-		ActiveSwitch = FindNextPeriph(NULL, NULL, SENS_TYPE_SWITCH, true);
+		Serial.println("No ActivePeriphSwitch");
+		ActivePeriphSwitch = FindNextPeriph(NULL, NULL, SENS_TYPE_SWITCH, true);
 	}	
-	if (ActiveSwitch)
+	if (ActivePeriphSwitch)
 	{
-		Serial.println(ActiveSwitch->GetName());
+		Serial.println(ActivePeriphSwitch->GetName());
 		
-		lv_label_set_text(ui_LblSwitchPeriph, ActiveSwitch->GetName());
-		lv_label_set_text(ui_LblSwitchPeer, FindPeerById(ActiveSwitch->GetPeerId())->GetName());
+		lv_label_set_text(ui_LblSwitchPeriph, ActivePeriphSwitch->GetName());
+		lv_label_set_text(ui_LblSwitchPeer, FindPeerById(ActivePeriphSwitch->GetPeerId())->GetName());
 	}
 	else
 	{
@@ -878,7 +878,7 @@ void Ui_Init_Custom(lv_event_t * e)
     lv_keyboard_set_mode(ui_Keyboard, LV_KEYBOARD_MODE_USER_1);
 	lv_obj_add_event_cb(ui_Keyboard, Keyboard_cb, LV_EVENT_READY, NULL);
 
-	lv_label_set_text(ui_LblMenuVersion, Version);
+	lv_label_set_text(ui_LblMenuVersion, _Version);
 }
 
 void Keyboard_cb(lv_event_t * event)
@@ -891,6 +891,7 @@ void Keyboard_cb(lv_event_t * event)
 void Ui_Eichen_Start(lv_event_t * e)
 {
 	SendCommand(ActivePeer, "Eichen");
+	TSMsgSnd = millis();
 	_ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMenu_screen_init);
 }
 

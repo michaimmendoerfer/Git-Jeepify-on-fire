@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "Jeepify.h"
+#include "LinkedList.h"
 
 class PeriphClass {
     static int  _ClassId;
@@ -17,7 +18,7 @@ class PeriphClass {
         float       _Nullwert;
         float       _VperAmp;
         int         _Vin;
-        float       _Value;
+        volatile float       _Value;
         float       _OldValue;
         bool        _Changed;
         int         _PeerId;
@@ -26,7 +27,7 @@ class PeriphClass {
         PeriphClass();
         void  Setup(const char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId);
         
-        bool  SetName(char* Name) { strcpy(_Name, Name); return true; }
+        bool  SetName(const char* Name) { strcpy(_Name, Name); return true; }
         char *GetName(){ return (_Name); }
         int   GetId() { return _Id; }
         void  SetId(int Id) { _Id = Id; }
@@ -57,7 +58,8 @@ class PeriphClass {
         void  SetPeerId(int PeerId) { _PeerId = PeerId; }
         bool  IsSensor() { return ((_Type == SENS_TYPE_VOLT) or (_Type == SENS_TYPE_AMP)); }
         bool  IsSwitch() { return ( _Type == SENS_TYPE_SWITCH) ; }
-
+        bool isEmpty() { return (_Type == 0); }
+        
         PeriphClass *GetPtrToSelf() { return this; }
 };
 
@@ -69,6 +71,7 @@ class PeerClass
         char       _Name[20];
         int        _Id;
         int        _Type;  
+        char       _Version[10];
         u_int8_t   _BroadcastAddress[6];
         bool       _SleepMode;
         bool       _DebugMode;
@@ -77,15 +80,27 @@ class PeerClass
         bool       _Changed;
         PeriphClass Periph[MAX_PERIPHERALS]; 
         uint32_t   _TSLastSeen;
+        int        _VoltageMon;
+        int        _RelayType;
+        int        _ADCPort1;
+        int        _ADCPort2;
+        float      _VoltageDevider;
+        uint32_t   _LastContact;
         
     public:
         PeerClass();
-        void  Setup(const char* Name, int Type, const uint8_t *BroadcastAddress, bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode);
+        void  Setup(const char* Name, int Type, const char *Version, const uint8_t *BroadcastAddress, 
+                    bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode);
+        void  Setup(const char* Name, int Type, const char *Version, const uint8_t *BroadcastAddress, 
+                    bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode,
+                    int VoltageMon, int RelayType, int ADCPort1, int ADCPort2, float VoltageDevider);
         char* Export();
         void  Import(char *Buf);
 
-        bool  SetName(char *Name) { strcpy(_Name, Name); return true; }
+        void  SetName(const char *Name) { strcpy(_Name, Name); }
         char *GetName() { return (_Name); }
+        void  SetVersion(const char *Version) { strcpy(_Version, Version); }
+        char *GetVersion() { return (_Version); }
         int   GetId() { return _Id; }
         void  SetId(int Id) { _Id = Id; }
         int   GetType() { return _Type; }
@@ -104,12 +119,25 @@ class PeerClass
         void  SetPairMode(bool PairMode) { _PairMode = PairMode; }
         bool  GetChanged() { return _Changed; }
         void  SetChanged(bool Changed) { _Changed = Changed; }
-        bool  TogglePairMode() { _PairMode = !_PairMode; return _PairMode; }
+        int   GetVoltageMon() { return _VoltageMon; }
+        void  SetVoltageMon(int VoltageMon) { _VoltageMon = VoltageMon; }
+        int   GetRelayType() { return _RelayType; }
+        void  SetRelayType(int RelayType) { _RelayType = RelayType; }
+        int   GetADCPort1() { return _ADCPort1; }
+        void  SetADCPort1(int ADCPort1) { _ADCPort1 = ADCPort1; }
+        int   GetADCPort2() { return _ADCPort2; }
+        void  SetADCPort2(int ADCPort2) { _ADCPort2 = ADCPort2; }
+        int   GetVoltageDevider() { return _VoltageDevider; }
+        void  SetVoltageDevider(int VoltageDevider) { _VoltageDevider = VoltageDevider; }
+        int32_t   GetLastContact() { return _LastContact; }
+        void      SetLastContact(uint32_t LastContact) { _LastContact = LastContact; }
         
+        bool  TogglePairMode() { _PairMode = !_PairMode; return _PairMode; }
+    
         void  PeriphSetup(int Pos, const char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId);
         
         char *GetPeriphName(int P) { return Periph[P].GetName(); }
-        bool  SetPeriphName(int P, char *Name) { Periph[P].SetName(Name); return true; }
+        bool  SetPeriphName(int P, const char *Name) { Periph[P].SetName(Name); return true; }
         
         int   GetPeriphId(char *Name);
         int   GetPeriphId(int PosPeriph) { return Periph[PosPeriph].GetId(); }
@@ -151,6 +179,9 @@ class PeerClass
 
         PeriphClass *GetPeriphPtr(int P) { return &Periph[P]; }
         PeriphClass *GetPeriphPtr(char *Name);
+        
+        bool isEmpty() { return (_Type == 0); }
+        bool isPeriphEmpty(int SNr) { return Periph[SNr].isEmpty(); }
 };
 
 PeerClass *FindPeerByMAC(const uint8_t *BroadcastAddress);
@@ -166,15 +197,13 @@ PeriphClass *FindLastPeriph (PeerClass *P, int Type);
 PeriphClass *FindPrevPeriph(PeerClass *P, PeriphClass *Periph, int Type, bool circular);
 PeriphClass *FindNextPeriph(PeerClass *P, PeriphClass *Periph, int Type, bool circular);
 
+extern LinkedList<PeerClass*>   PeerList;
+extern LinkedList<PeriphClass*> PeriphList;
 
 extern PeerClass *ActivePeer;
-extern PeerClass *ActivePDC;
-extern PeerClass *ActiveBat;
-extern PeerClass *ActiveSelection;
-extern PeriphClass *ActiveSens;
-extern PeriphClass *ActiveSwitch;
 extern PeriphClass *ActivePeriph;
 
 extern char ExportImportBuffer[300];
 
+char *TypeInText(int Type);
 #endif

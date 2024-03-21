@@ -1,7 +1,8 @@
 #define NODE_NAME "Monitor-2"
 #define NODE_TYPE MONITOR_ROUND
 
-const char *Version = "V 3.31";
+const char *_Version = "V 3.31";
+const char *_Name = "Monitor 2";
 
 #pragma region Includes
 #include <Arduino.h>
@@ -31,8 +32,8 @@ CST816D Touch(I2C_SDA, I2C_SCL, TP_RST, TP_INT);
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t buf1[ TFT_HOR_RES * TFT_VER_RES / 10 ];
 
-LinkedList<PeerClass*> PeerList = LinkedList<PeerClass*>();
-LinkedList<PeriphClass*> PeriphList = LinkedList<PeriphClass*>();
+int PeerCount;
+Preferences preferences;
 
 PeerClass Self;
 
@@ -120,8 +121,9 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
                 PeerList.add(P);
 
                 String PeerName = doc["Node"];
+                String PeerVersion = doc["Version"];
 
-                P->Setup(PeerName.c_str(), (int)doc["Type"], mac, (bool) bitRead(Status, 1), (bool) bitRead(Status, 0), (bool) bitRead(Status, 2), (bool) bitRead(Status, 3));
+                P->Setup(PeerName.c_str(), (int)doc["Type"], PeerVersion.c_str(), mac, (bool) bitRead(Status, 1), (bool) bitRead(Status, 0), (bool) bitRead(Status, 2), (bool) bitRead(Status, 3));
                 P->SetTSLastSeen(millis());
                 // Message-Bsp: "Node":"ESP32-1"; "T0":"1"; "N0":"Switch1"
                 for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
@@ -161,7 +163,7 @@ void setup()
 {
     Serial.begin(115000);
 
-    Self.Setup("Monitor_2", MONITOR_ROUND, broadcastAddressAll, false, true, false, false);
+    Self.Setup(_Name, MONITOR_ROUND, _Version, broadcastAddressAll, false, true, false, false);
     
     //TFT & LVGL
     tft.init();
@@ -215,7 +217,7 @@ void setup()
 void loop() 
 {
   lv_timer_handler(); /* let the GUI do its work */
-  delay(20);
+  delay(5);
 }
 #pragma endregion Main
 void MultiScreenAddPeriph(PeriphClass *Periph, uint8_t Pos)
@@ -267,6 +269,7 @@ void SendPairingConfirm(PeerClass *P) {
 
   serializeJson(doc, jsondata);  
   
+  TSMsgSnd = millis();
   esp_now_send(P->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 200); 
   if (Self.GetDebugMode())
   {
@@ -287,6 +290,7 @@ bool ToggleSwitch(PeerClass *P, int PerNr)
     
     serializeJson(doc, jsondata);  
     
+    TSMsgSnd = millis();
     esp_now_send(P->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
     Serial.println(jsondata);
     
@@ -306,6 +310,7 @@ bool ToggleSwitch(PeriphClass *Periph)
     
     serializeJson(doc, jsondata);  
     
+    TSMsgSnd = millis();
     esp_now_send(FindPeerById(Periph->GetPeerId())->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
     Serial.println(jsondata);
     
@@ -323,6 +328,7 @@ void SendCommand(PeerClass *P, String Cmd) {
   
   serializeJson(doc, jsondata);  
   
+  TSMsgSnd = millis();
   esp_now_send(P->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
   Serial.println(jsondata);
   

@@ -5,11 +5,12 @@
 #include <WiFi.h>
 #include "pref_manager.h"
 #include "PeerClass.h"
-#include "main.h"
 
-int PeerCount;
+extern int PeerCount;
 
-Preferences preferences;
+extern Preferences preferences;
+void   PrintMAC(const uint8_t * mac_addr);
+
 MultiMonitorClass Screen[MULTI_SCREENS];
 
 char ScreenExportImportBuffer[300];
@@ -94,7 +95,7 @@ void SavePeers()
       ExportStringPeer = P->Export();
 
       Serial.printf("putSring = %d", preferences.putString(Buf, ExportStringPeer));
-      Serial.printf("schreibe: [%s]: %s", Buf, ExportStringPeer);
+      Serial.printf("schreibe: [%s]: %s", Buf, ExportStringPeer.c_str());
       Serial.println();
     }
   
@@ -106,7 +107,7 @@ void SavePeers()
       ExportStringMulti = Screen[s].Export();
 
       preferences.putString(Buf, ExportStringMulti);
-      Serial.printf("schreibe: [%s]: %s", Buf, ExportStringMulti);
+      Serial.printf("schreibe: [%s]: %s", Buf, ExportStringMulti.c_str());
       Serial.println();
     }
     preferences.end();
@@ -123,7 +124,7 @@ void GetPeers()
 
     PeerList.clear();
 
-    int PeerCount = preferences.getInt("PeerCount");
+    PeerCount = preferences.getInt("PeerCount");
     
     for (int Pi=0 ; Pi<PeerCount; Pi++)
     {

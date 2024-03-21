@@ -62,7 +62,6 @@ void   RegisterPeers();
 void   ClearPeers();
 void   ClearInit();
 void   ReportAll();
-void   ReportScreen(int s);
 
 extern Preferences preferences;
 extern MultiMonitorClass Screen[MULTI_SCREENS];

@@ -37,14 +37,10 @@ extern volatile uint32_t TSMsgRcv;
 extern volatile uint32_t TSMsgSnd;
 extern volatile uint32_t TSPair;
 
-extern LinkedList<PeerClass*>   PeerList;
-extern LinkedList<PeriphClass*> PeriphList;
-
 extern PeerClass Self;
-extern Preferences preferences;
 
 extern int ActiveMultiScreen;
-extern const char *Version;
+extern const char *_Version;
 
 
 #endif

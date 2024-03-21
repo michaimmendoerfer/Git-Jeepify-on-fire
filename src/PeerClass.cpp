@@ -1,9 +1,12 @@
 #include <Arduino.h>
 #include "PeerClass.h"
-#include "main.h"
+#include "LinkedList.h"
 
-PeerClass   *ActivePeer, *ActivePDC, *ActiveBat, *ActiveSelection;
-PeriphClass *ActiveSens, *ActiveSwitch, *ActivePeriph;
+PeerClass   *ActivePeer;
+PeriphClass *ActivePeriph;
+
+LinkedList<PeerClass*> PeerList = LinkedList<PeerClass*>();
+LinkedList<PeriphClass*> PeriphList = LinkedList<PeriphClass*>();
 
 int  PeriphClass::_ClassId = 1;
 int  PeerClass::_ClassId = 1;
@@ -66,15 +69,37 @@ PeerClass::PeerClass()
     _Changed = false;
     _TSLastSeen = 0;
 }
-void  PeerClass::Setup(const char* Name, int Type, const uint8_t *BroadcastAddress, bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode)
+void  PeerClass::Setup(const char* Name, int Type, const char *Version, const uint8_t *BroadcastAddress, bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode)
 {
     strcpy(_Name, Name);
     _Type = Type;
+    strcpy(_Version, Version);
     memcpy(_BroadcastAddress, BroadcastAddress, 6);
     _SleepMode = SleepMode;
     _DebugMode = DebugMode;
     _DemoMode  = DemoMode;
     _PairMode  = PairMode;
+    
+    for (int Si=0; Si<MAX_PERIPHERALS; Si++) Periph[Si].SetPos(Si);
+}     
+void  PeerClass::Setup(const char* Name, int Type, const char *Version, const uint8_t *BroadcastAddress, 
+                    bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode,
+                    int VoltageMon, int RelayType, int ADCPort1, int ADCPort2, float VoltageDevider)
+{
+    strcpy(_Name, Name);
+    _Type = Type;
+    strcpy(_Version, Version);
+    if (BroadcastAddress) memcpy(_BroadcastAddress, BroadcastAddress, 6);
+    _SleepMode = SleepMode;
+    _DebugMode = DebugMode;
+    _DemoMode  = DemoMode;
+    _PairMode  = PairMode;
+
+    _VoltageMon     = VoltageMon;
+    _RelayType      = RelayType;
+    _ADCPort1       = ADCPort1;
+    _ADCPort2       = ADCPort2;
+    _VoltageDevider = VoltageDevider;
     
     for (int Si=0; Si<MAX_PERIPHERALS; Si++) Periph[Si].SetPos(Si);
 }      
@@ -407,3 +432,23 @@ PeriphClass *FindPrevPeriph(PeerClass *P, PeriphClass *Periph, int Type, bool ci
     return NULL;
 }
 #pragma endregion MAC-Things
+
+char *TypeInText(int Type)
+{
+    switch (Type)
+    {
+        case SENS_TYPE_VOLT:    return "Voltage-Sensor";
+        case SENS_TYPE_AMP:     return "Current-Sensor";
+        case SENS_TYPE_SWITCH:  return "Switch";
+        case SWITCH_1_WAY:      return "1-way Switch";
+        case SWITCH_2_WAY:      return "2-Way Switch";
+        case SWITCH_4_WAY:      return "4-way Switch";
+        case SWITCH_8_WAY:      return "8-Way Switch";
+        case PDC:               return "Power distributor";
+        case PDC_SENSOR_MIX:    return "Mixed Device";
+        case BATTERY_SENSOR:    return "Battery-Sensor";
+        case MONITOR_ROUND:     return "Round Monitor";
+        case MONITOR_BIG:       return "3.5' Monitor";
+    }
+    return "not known";
+}
