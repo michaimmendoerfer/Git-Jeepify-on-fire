@@ -84,8 +84,20 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
             //if (isBat(Peer)) TSMsgBat = TSMsgRcv;
             //if (isPDC(Peer)) TSMsgPDC = TSMsgRcv;
 
-            if (doc["Pairing"] == "add me") { SendPairingConfirm(P); }
-            else {
+            if (doc["Pairing"] == "add me") 
+            { 
+                SendPairingConfirm(P); 
+            }
+            // "Order"="UpdateName"; "Pos"="32; "NewName"="Horst";
+            else if (doc["Order"] == "UpdateName")   
+            {
+                int Pos = (int) doc["Pos"];
+                String NewName = doc["NewName"];
+                if (NewName != "") P->SetPeriphName(Pos, NewName.c_str());
+                SavePeers();
+            }
+            else 
+            {
                 for (int i=0; i<MAX_PERIPHERALS; i++) 
                 {
                     if (doc.containsKey((const char*)P->GetPeriphName(i))) {
@@ -287,6 +299,7 @@ bool ToggleSwitch(PeerClass *P, int PerNr)
     doc["from"]  = NODE_NAME;   
     doc["Order"] = "ToggleSwitch";
     doc["Value"] = P->GetPeriphName(PerNr);
+    doc["Pos"]   = P->GetPeriphPos(PerNr);
     
     serializeJson(doc, jsondata);  
     
@@ -307,6 +320,7 @@ bool ToggleSwitch(PeriphClass *Periph)
     doc["from"]  = NODE_NAME;   
     doc["Order"] = "ToggleSwitch";
     doc["Value"] = Periph->GetName();
+    doc["Pos"]   = Periph->GetPos();
     
     serializeJson(doc, jsondata);  
     
