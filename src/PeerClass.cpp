@@ -1,3 +1,4 @@
+//Version 1.01
 #include <Arduino.h>
 #include "PeerClass.h"
 #include "LinkedList.h"
@@ -12,6 +13,8 @@ int  PeriphClass::_ClassId = 1;
 int  PeerClass::_ClassId = 1;
 
 char ExportImportBuffer[300];
+
+extern void PrintMAC(const uint8_t * mac_addr);
 
 #pragma region PeriphClass::Declaration
 PeriphClass::PeriphClass()
@@ -31,8 +34,10 @@ PeriphClass::PeriphClass()
     _OldValue = 0;
     _Changed = false;
     _PeerId = 0;
+    memset(_UId, 0, 7);
 }
-void  PeriphClass::Setup(const char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId)
+void  PeriphClass::Setup(const char* Name, int Type, bool isADS, int IOPort, 
+                         float Nullwert, float VperAmp, int Vin, int PeerId, uint8_t *UId)
 {
     strcpy(_Name, Name);
     _Type = Type;
@@ -41,6 +46,7 @@ void  PeriphClass::Setup(const char* Name, int Type, bool isADS, int IOPort, flo
     _Nullwert = Nullwert;
     _VperAmp = VperAmp;
     _PeerId = PeerId;
+    memcpy(_UId, UId, 7);
 }
 bool PeriphClass::IsType(int Type)
 {
@@ -68,8 +74,10 @@ PeerClass::PeerClass()
     _PairMode = false;
     _Changed = false;
     _TSLastSeen = 0;
+    memset(_BroadcastAddress, 0, 6);
 }
-void  PeerClass::Setup(const char* Name, int Type, const char *Version, const uint8_t *BroadcastAddress, bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode)
+void  PeerClass::Setup(const char* Name, int Type, const char *Version, const uint8_t *BroadcastAddress, 
+                       bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode)
 {
     strcpy(_Name, Name);
     _Type = Type;
@@ -101,7 +109,10 @@ void  PeerClass::Setup(const char* Name, int Type, const char *Version, const ui
     _ADCPort2       = ADCPort2;
     _VoltageDevider = VoltageDevider;
     
-    for (int Si=0; Si<MAX_PERIPHERALS; Si++) Periph[Si].SetPos(Si);
+    for (int Si=0; Si<MAX_PERIPHERALS; Si++) 
+    {
+        Periph[Si].SetPos(Si);
+    }
 }      
 char* PeerClass::Export() 
 {
@@ -127,15 +138,18 @@ void PeerClass::Import(char *Buf)
 {
     strcpy(_Name, strtok(Buf, ";"));
     _Type = atoi(strtok(NULL, ";"));
-    _BroadcastAddress[0] = atoi(strtok(NULL, ";"));
-    _BroadcastAddress[1] = atoi(strtok(NULL, ";"));
-    _BroadcastAddress[2] = atoi(strtok(NULL, ";"));
-    _BroadcastAddress[3] = atoi(strtok(NULL, ";"));
-    _BroadcastAddress[4] = atoi(strtok(NULL, ";"));
-    _BroadcastAddress[5] = atoi(strtok(NULL, ";"));
-    _SleepMode = atoi(strtok(NULL, ";"));
-    _DebugMode = atoi(strtok(NULL, ";"));
-    _DemoMode  = atoi(strtok(NULL, ";"));
+    
+    _BroadcastAddress[0] = (byte) atoi(strtok(NULL, ";"));
+    _BroadcastAddress[1] = (byte) atoi(strtok(NULL, ";"));
+    _BroadcastAddress[2] = (byte) atoi(strtok(NULL, ";"));
+    _BroadcastAddress[3] = (byte) atoi(strtok(NULL, ";"));
+    _BroadcastAddress[4] = (byte) atoi(strtok(NULL, ";"));
+    _BroadcastAddress[5] = (byte) atoi(strtok(NULL, ";"));
+    //PrintMAC(_BroadcastAddress);
+
+    _SleepMode = (bool) atoi(strtok(NULL, ";"));
+    _DebugMode = (bool) atoi(strtok(NULL, ";"));
+    _DemoMode  = (bool) atoi(strtok(NULL, ";"));
 
     for (int Si=0; Si<MAX_PERIPHERALS; Si++)
     {
@@ -144,11 +158,19 @@ void PeerClass::Import(char *Buf)
         Periph[Si].SetPos(Si);
         Periph[Si].SetPeerId(_Id);
     }
+    //Serial.println("ende import");
 }
         
-void  PeerClass::PeriphSetup(int Pos, const char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId)
+void  PeerClass::PeriphSetup(int Pos, const char* Name, int Type, bool isADS, int IOPort, 
+                             float Nullwert, float VperAmp, int Vin, int PeerId)
 {
-    Periph[Pos].Setup(Name, Type, isADS, IOPort, Nullwert, VperAmp, Vin, PeerId);
+    uint8_t UId[7];
+    byte PosByte = Pos;
+
+    memcpy(UId, _BroadcastAddress, 6);
+    UId[6] = PosByte;
+
+    Periph[Pos].Setup(Name, Type, isADS, IOPort, Nullwert, VperAmp, Vin, PeerId, UId);
 }
 int   PeerClass::GetPeriphId(char *Name)
 {

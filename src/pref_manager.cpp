@@ -3,12 +3,10 @@
 #include <Preferences.h>
 #include <esp_now.h>
 #include <WiFi.h>
-#include "pref_manager.h"
-#include "PeerClass.h"
-
-extern int PeerCount;
+#include <pref_manager.h>
 
 extern Preferences preferences;
+
 void   PrintMAC(const uint8_t * mac_addr);
 
 MultiMonitorClass Screen[MULTI_SCREENS];
@@ -112,7 +110,7 @@ void SavePeers()
     }
     preferences.end();
 }
-void GetPeers() 
+int GetPeers() 
 {
     PeerClass *P;
     
@@ -124,7 +122,8 @@ void GetPeers()
 
     PeerList.clear();
 
-    PeerCount = preferences.getInt("PeerCount");
+    int PeerCount = preferences.getInt("PeerCount");
+    Serial.printf("Peercount = %d", PeerCount);
     
     for (int Pi=0 ; Pi<PeerCount; Pi++)
     {
@@ -160,6 +159,8 @@ void GetPeers()
     }
     ReportAll();
     preferences.end();
+
+    return PeerCount;
 }
 void ClearPeers() 
 {

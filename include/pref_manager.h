@@ -1,9 +1,15 @@
+/*
+manage Peers and Periphs,
+defines MultiMonitorClass with one instance: Screen
+Version 1.01
+*/
+
 #ifndef PREF_MANAGER_H
 #define PREF_MANAGER_H
 
 #include <Preferences.h>
 #include "lvgl.h"
-
+#include "PeerClass.h"
 
 class MultiMonitorClass {
     
@@ -55,7 +61,7 @@ class MultiMonitorClass {
 };
 
 void   SavePeers();
-void   GetPeers();
+int    GetPeers(); // return PeerCount
 void   DeletePeer(PeerClass *P);
 void   ReportAll();
 void   RegisterPeers();
@@ -63,6 +69,5 @@ void   ClearPeers();
 void   ClearInit();
 void   ReportAll();
 
-extern Preferences preferences;
 extern MultiMonitorClass Screen[MULTI_SCREENS];
 #endif

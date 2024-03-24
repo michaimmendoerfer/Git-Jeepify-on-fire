@@ -1,5 +1,6 @@
 #ifndef JEEPIFY_H
 #define JEEPIFY_H
+#include <Arduino.h>
 
 #define MAX_PERIPHERALS 5
 #define MAX_PEERS       10
@@ -22,7 +23,10 @@
 #define MONITOR_ROUND       30
 #define MONITOR_BIG         31
 #define MODULE_ALL          99
+#define RELAY_REVERSED      -1
+#define RELAY_NORMAL        1
 
+// Sensor-Types
 #define SENS_TYPE_SWITCH  101
 #define SENS_TYPE_AMP     102
 #define SENS_TYPE_VOLT    103
@@ -102,6 +106,7 @@ struct struct_MultiScreen {
   int            PeriphId[PERIPH_PER_SCREEN];
   bool           Used;
 };
+
 typedef struct struct_MultiScreen struct_MultiScreen;
 
 extern uint8_t broadcastAddressAll[6];

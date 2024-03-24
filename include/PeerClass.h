@@ -1,3 +1,8 @@
+/*
+include PeerList and PeriphList
+Version 2.01
+*/
+
 #ifndef PEERCLASS_H
 #define PEERCLASS_H
 
@@ -22,10 +27,11 @@ class PeriphClass {
         float       _OldValue;
         bool        _Changed;
         int         _PeerId;
+        uint8_t     _UId[7];
     
     public:
         PeriphClass();
-        void  Setup(const char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId);
+        void  Setup(const char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId, uint8_t *UId);
         
         bool  SetName(const char* Name) { strcpy(_Name, Name); return true; }
         char *GetName(){ return (_Name); }
@@ -56,9 +62,11 @@ class PeriphClass {
         void  SetChanged(bool Changed) { _Changed = Changed; }
         int   GetPeerId() { return _PeerId; }
         void  SetPeerId(int PeerId) { _PeerId = PeerId; }
+        uint8_t *GetUId() { return _UId; }
+        void     SetUId(uint8_t *UId) { memcpy(_UId, UId, 7); }
         bool  IsSensor() { return ((_Type == SENS_TYPE_VOLT) or (_Type == SENS_TYPE_AMP)); }
         bool  IsSwitch() { return ( _Type == SENS_TYPE_SWITCH) ; }
-        bool isEmpty() { return (_Type == 0); }
+        bool  isEmpty() { return (_Type == 0); }
         
         PeriphClass *GetPtrToSelf() { return this; }
 };
@@ -177,6 +185,9 @@ class PeerClass
         void  SetPeriphNullwert(int P, float Nullwert) { Periph[P].SetNullwert(Nullwert); }
         void  SetPeriphNullwert(char *Name, float Nullwert);
 
+        uint8_t *GetPeriphUId(int Pos) { return Periph[Pos].GetUId(); }
+        void     SetPeriphUId(int Pos, uint8_t*UId) { Periph[Pos].SetUId(UId); 
+        }
         PeriphClass *GetPeriphPtr(int P) { return &Periph[P]; }
         PeriphClass *GetPeriphPtr(char *Name);
         
@@ -200,10 +211,12 @@ PeriphClass *FindNextPeriph(PeerClass *P, PeriphClass *Periph, int Type, bool ci
 extern LinkedList<PeerClass*>   PeerList;
 extern LinkedList<PeriphClass*> PeriphList;
 
+char *TypeInText(int Type);
 extern PeerClass *ActivePeer;
 extern PeriphClass *ActivePeriph;
 
 extern char ExportImportBuffer[300];
 
 char *TypeInText(int Type);
+
 #endif

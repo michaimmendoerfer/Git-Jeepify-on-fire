@@ -1,12 +1,14 @@
 #define NODE_NAME "Monitor-2"
 #define NODE_TYPE MONITOR_ROUND
+#define KILL_NVS 1
 
 const char *_Version = "V 3.31";
 const char *_Name = "Monitor 2";
+const char _Protokoll_Version[] = "1.01";
 
 #pragma region Includes
 #include <Arduino.h>
-#include "jeepify.h"
+#include "Jeepify.h"
 #include "main.h"
 #include <TFT_eSPI.h>
 #include <esp_now.h>
@@ -175,6 +177,8 @@ void setup()
 {
     Serial.begin(115000);
 
+    uint8_t broadcastAddressAll[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+    
     Self.Setup(_Name, MONITOR_ROUND, _Version, broadcastAddressAll, false, true, false, false);
     
     //TFT & LVGL
