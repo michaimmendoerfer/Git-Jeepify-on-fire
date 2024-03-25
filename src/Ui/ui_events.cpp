@@ -37,7 +37,7 @@ lv_timer_t *MultiTimer;
 lv_timer_t *SwitchTimer;
 
 LV_IMG_DECLARE(ui_img_btn_off_png);   
-LV_IMG_DECLARE(ui_img_btn_png);    
+LV_IMG_DECLARE(ui_img_btn_png);      
 
 void GenerateSingleMeter(void);
 void Keyboard_cb(lv_event_t * event);
@@ -57,7 +57,15 @@ void Ui_Peer_Prepare(lv_event_t * e)
 
 	if (ActivePeer) {
 		lv_label_set_text_static(ui_LblPeerName, ActivePeer->GetName());
-	
+		switch (ActivePeer->GetType())
+		{
+			case SWITCH_1_WAY:	lv_img_set_src(ui_ImgPeerType, &ui_img_module_1_png); break;
+			case SWITCH_2_WAY:	lv_img_set_src(ui_ImgPeerType, &ui_img_module_2_png); break;
+			case SWITCH_4_WAY:	lv_img_set_src(ui_ImgPeerType, &ui_img_module_4_png); break;
+			case MONITOR_ROUND:	lv_img_set_src(ui_ImgPeerType, &ui_img_module_round_png); break;
+			case MONITOR_BIG:	lv_img_set_src(ui_ImgPeerType, &ui_img_module_3_5_png); break;
+		}	
+
 		if (ActivePeer->GetSleepMode()) {
 			lv_obj_add_state(ui_BtnPeer3, LV_STATE_CHECKED);
 		}
@@ -103,16 +111,6 @@ void Ui_Peer_Last(lv_event_t * e)
 {
 	ActivePeer = FindPrevPeer(ActivePeer, MODULE_ALL, true); 
 	if (ActivePeer) _ui_screen_change(&ui_ScrPeer, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeer_screen_init);
-}
-
-void Ui_Peer_Eichen(lv_event_t * e)
-{
-	if (ActivePeer) SendCommand(ActivePeer, "Eichen");
-}
-
-void Ui_Peer_Volt(lv_event_t * e)
-{
-	// Your code here
 }
 #pragma endregion Screen_Peer
 #pragma region Screen_Settings
@@ -803,9 +801,15 @@ void Ui_Periph_Choice_Loaded(lv_event_t * e)
 			lv_label_set_text(ui_LblPeriphChoiceOnline, "Online");
 
 		switch (ActivePeriph->GetType()) {
-			case SENS_TYPE_SWITCH:	lv_label_set_text(ui_LblPeriphChoiceType, "Switch"); break;
-			case SENS_TYPE_AMP:		lv_label_set_text(ui_LblPeriphChoiceType, "Amp-Sensor"); break;
-			case SENS_TYPE_VOLT:	lv_label_set_text(ui_LblPeriphChoiceType, "Volt-Sensor"); break;
+			case SENS_TYPE_SWITCH:	lv_label_set_text(ui_LblPeriphChoiceType, "Switch"); 
+									lv_img_set_src(ui_ImgPeerChoice, &ui_img_menubtn2_png);
+									break;
+			case SENS_TYPE_AMP:		lv_label_set_text(ui_LblPeriphChoiceType, "Amp-Sensor"); 
+									lv_img_set_src(ui_ImgPeerChoice, &ui_img_menubtn1_png);
+									break;
+			case SENS_TYPE_VOLT:	lv_label_set_text(ui_LblPeriphChoiceType, "Volt-Sensor"); 
+									lv_img_set_src(ui_ImgPeerChoice, &ui_img_menubtn1_png);
+									break;
 			default:				lv_label_set_text(ui_LblPeriphChoiceType, "unknown type"); break;
 		}
 		Serial.println("ActivePeriph in PeriphCoice fertig");
@@ -900,3 +904,9 @@ void Ui_Volt_Prepare(lv_event_t * e)
 	if (ActivePeer) lv_label_set_text(ui_LblVoltPeer, ActivePeer->GetName());
 }
 #pragma endregion System_Eichen
+
+void Ui_Volt_Start(lv_event_t * e)
+{
+	CalibVolt();
+	_ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMenu_screen_init);
+}

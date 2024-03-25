@@ -95,7 +95,13 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
             {
                 int Pos = (int) doc["Pos"];
                 String NewName = doc["NewName"];
-                if (NewName != "") P->SetPeriphName(Pos, NewName.c_str());
+
+                if (NewName != "") 
+                {
+                    if (Pos == 99) P->SetName(NewName.c_str());
+                    else           P->SetPeriphName(Pos, NewName.c_str());
+                }
+
                 SavePeers();
             }
             else 
@@ -413,11 +419,11 @@ void CalibVolt() {
 
   doc["Node"]  = Self.GetName();  
   doc["Order"] = "VoltCalib";
-  doc["Value"] = lv_textarea_get_text(ui_TxtVolt);
+  doc["NewVoltage"] = lv_textarea_get_text(ui_TxtVolt);
   
   serializeJson(doc, jsondata);  
 
-  esp_now_send(ActivePeer->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
+  esp_now_send(ActivePeer->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  
   if (Self.GetDebugMode()) Serial.println(jsondata);
 }
 

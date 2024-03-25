@@ -46,6 +46,7 @@ void ui_ScrVolt_screen_init(void)
     lv_obj_set_style_text_font(ui_LblVoltPeer, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_keyboard_set_textarea(ui_Keyboard, ui_TxtVolt);
+    lv_obj_add_event_cb(ui_Keyboard, ui_event_Keyboard, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_LblVoltPeer, ui_event_LblVoltPeer, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_ScrVolt, ui_event_ScrVolt, LV_EVENT_ALL, NULL);
 

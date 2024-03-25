@@ -91,6 +91,7 @@ extern lv_obj_t * ui_LblSinglePeriph;
 void ui_ScrPeer_screen_init(void);
 void ui_event_ScrPeer(lv_event_t * e);
 extern lv_obj_t * ui_ScrPeer;
+extern lv_obj_t * ui_ImgPeerType;
 extern lv_obj_t * ui_LblPeerName;
 extern lv_obj_t * ui_LblPeerTypeLbl;
 void ui_event_BtnPeer1(lv_event_t * e);
@@ -112,6 +113,10 @@ extern lv_obj_t * ui_BtnPeer5Lbl1;
 void ui_event_BtnPeer6(lv_event_t * e);
 extern lv_obj_t * ui_BtnPeer6;
 extern lv_obj_t * ui_BtnPeer6Lbl1;
+extern lv_obj_t * ui_Image2;
+extern lv_obj_t * ui_Image3;
+extern lv_obj_t * ui_Image4;
+extern lv_obj_t * ui_Image5;
 // SCREEN: ui_ScrEichen
 void ui_ScrEichen_screen_init(void);
 extern lv_obj_t * ui_ScrEichen;
@@ -124,6 +129,7 @@ extern lv_obj_t * ui_LblEichenPeer;
 void ui_ScrVolt_screen_init(void);
 void ui_event_ScrVolt(lv_event_t * e);
 extern lv_obj_t * ui_ScrVolt;
+void ui_event_Keyboard(lv_event_t * e);
 extern lv_obj_t * ui_Keyboard;
 extern lv_obj_t * ui_TxtVolt;
 void ui_event_LblVoltPeer(lv_event_t * e);
@@ -169,7 +175,11 @@ LV_IMG_DECLARE(ui_img_menubtn2_png);    // assets\MenuBtn2.png
 LV_IMG_DECLARE(ui_img_menubtn3_png);    // assets\MenuBtn3.png
 LV_IMG_DECLARE(ui_img_menubtn4_png);    // assets\MenuBtn4.png
 LV_IMG_DECLARE(ui_img_rubicon_png);    // assets\Rubicon.png
-LV_IMG_DECLARE(ui_img_pdc_png);    // assets\pdc.png
+LV_IMG_DECLARE(ui_img_module_1_png);    // assets\Module_1.png
+LV_IMG_DECLARE(ui_img_module_4_png);    // assets\module_4.png
+LV_IMG_DECLARE(ui_img_module_2_png);    // assets\Module_2.png
+LV_IMG_DECLARE(ui_img_module_3_5_png);    // assets\Module_3_5.png
+LV_IMG_DECLARE(ui_img_module_round_png);    // assets\Module_round.png
 LV_IMG_DECLARE(ui_img_btn_png);    // assets\Btn.png
 LV_IMG_DECLARE(ui_img_1527887470);    // assets\Btn-small-off-100.png
 LV_IMG_DECLARE(ui_img_551600910);    // assets\Btn-small-on-100.png

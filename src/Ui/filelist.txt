@@ -22,7 +22,11 @@ images/ui_img_menubtn2_png.c
 images/ui_img_menubtn3_png.c
 images/ui_img_menubtn4_png.c
 images/ui_img_rubicon_png.c
-images/ui_img_pdc_png.c
+images/ui_img_module_1_png.c
+images/ui_img_module_4_png.c
+images/ui_img_module_2_png.c
+images/ui_img_module_3_5_png.c
+images/ui_img_module_round_png.c
 images/ui_img_btn_png.c
 images/ui_img_1527887470.c
 images/ui_img_551600910.c
