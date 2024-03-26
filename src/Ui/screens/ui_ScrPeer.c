@@ -12,7 +12,7 @@ void ui_ScrPeer_screen_init(void)
     lv_obj_set_style_bg_img_src(ui_ScrPeer, &ui_img_jeepifybackground_png, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_ImgPeerType = lv_img_create(ui_ScrPeer);
-    lv_img_set_src(ui_ImgPeerType, &ui_img_module_1_png);
+    lv_img_set_src(ui_ImgPeerType, &ui_img_ansgarmodule_4_png);
     lv_obj_set_width(ui_ImgPeerType, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_ImgPeerType, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_ImgPeerType, 3);
@@ -48,7 +48,7 @@ void ui_ScrPeer_screen_init(void)
     lv_obj_set_width(ui_BtnPeer1, 70);
     lv_obj_set_height(ui_BtnPeer1, 30);
     lv_obj_set_x(ui_BtnPeer1, -40);
-    lv_obj_set_y(ui_BtnPeer1, -40);
+    lv_obj_set_y(ui_BtnPeer1, -30);
     lv_obj_set_align(ui_BtnPeer1, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_BtnPeer1, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_BtnPeer1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
@@ -70,7 +70,7 @@ void ui_ScrPeer_screen_init(void)
     lv_obj_set_width(ui_BtnPeer2, 70);
     lv_obj_set_height(ui_BtnPeer2, 30);
     lv_obj_set_x(ui_BtnPeer2, 40);
-    lv_obj_set_y(ui_BtnPeer2, -40);
+    lv_obj_set_y(ui_BtnPeer2, -30);
     lv_obj_set_align(ui_BtnPeer2, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_BtnPeer2, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_BtnPeer2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
@@ -92,7 +92,7 @@ void ui_ScrPeer_screen_init(void)
     lv_obj_set_width(ui_BtnPeer3, 70);
     lv_obj_set_height(ui_BtnPeer3, 30);
     lv_obj_set_x(ui_BtnPeer3, -40);
-    lv_obj_set_y(ui_BtnPeer3, 0);
+    lv_obj_set_y(ui_BtnPeer3, 10);
     lv_obj_set_align(ui_BtnPeer3, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_BtnPeer3, LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_BtnPeer3, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
@@ -114,7 +114,7 @@ void ui_ScrPeer_screen_init(void)
     lv_obj_set_width(ui_BtnPeer4, 70);
     lv_obj_set_height(ui_BtnPeer4, 30);
     lv_obj_set_x(ui_BtnPeer4, 40);
-    lv_obj_set_y(ui_BtnPeer4, 0);
+    lv_obj_set_y(ui_BtnPeer4, 10);
     lv_obj_set_align(ui_BtnPeer4, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_BtnPeer4, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_BtnPeer4, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
@@ -136,7 +136,7 @@ void ui_ScrPeer_screen_init(void)
     lv_obj_set_width(ui_BtnPeer5, 70);
     lv_obj_set_height(ui_BtnPeer5, 30);
     lv_obj_set_x(ui_BtnPeer5, -40);
-    lv_obj_set_y(ui_BtnPeer5, 40);
+    lv_obj_set_y(ui_BtnPeer5, 50);
     lv_obj_set_align(ui_BtnPeer5, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_BtnPeer5, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_BtnPeer5, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
@@ -158,7 +158,7 @@ void ui_ScrPeer_screen_init(void)
     lv_obj_set_width(ui_BtnPeer6, 70);
     lv_obj_set_height(ui_BtnPeer6, 30);
     lv_obj_set_x(ui_BtnPeer6, 40);
-    lv_obj_set_y(ui_BtnPeer6, 40);
+    lv_obj_set_y(ui_BtnPeer6, 50);
     lv_obj_set_align(ui_BtnPeer6, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_BtnPeer6, LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_BtnPeer6, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
@@ -178,43 +178,43 @@ void ui_ScrPeer_screen_init(void)
     lv_obj_set_style_text_opa(ui_BtnPeer6Lbl1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Image2 = lv_img_create(ui_ScrPeer);
-    lv_img_set_src(ui_Image2, &ui_img_module_4_png);
+    lv_img_set_src(ui_Image2, &ui_img_friedermodule_disp_png);
     lv_obj_set_width(ui_Image2, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Image2, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Image2, 102);
-    lv_obj_set_y(ui_Image2, -134);
+    lv_obj_set_x(ui_Image2, 93);
+    lv_obj_set_y(ui_Image2, -73);
     lv_obj_set_align(ui_Image2, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Image2, LV_OBJ_FLAG_HIDDEN | LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_add_flag(ui_Image2, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_Image2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     ui_Image3 = lv_img_create(ui_ScrPeer);
-    lv_img_set_src(ui_Image3, &ui_img_module_2_png);
+    lv_img_set_src(ui_Image3, &ui_img_horstrelais2_png);
     lv_obj_set_width(ui_Image3, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Image3, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Image3, -113);
-    lv_obj_set_y(ui_Image3, -116);
+    lv_obj_set_x(ui_Image3, -95);
+    lv_obj_set_y(ui_Image3, -70);
     lv_obj_set_align(ui_Image3, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Image3, LV_OBJ_FLAG_HIDDEN | LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_add_flag(ui_Image3, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_Image3, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     ui_Image4 = lv_img_create(ui_ScrPeer);
-    lv_img_set_src(ui_Image4, &ui_img_module_3_5_png);
+    lv_img_set_src(ui_Image4, &ui_img_1253518904);
     lv_obj_set_width(ui_Image4, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Image4, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Image4, -115);
-    lv_obj_set_y(ui_Image4, 137);
+    lv_obj_set_x(ui_Image4, -83);
+    lv_obj_set_y(ui_Image4, 110);
     lv_obj_set_align(ui_Image4, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Image4, LV_OBJ_FLAG_HIDDEN | LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_add_flag(ui_Image4, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_Image4, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     ui_Image5 = lv_img_create(ui_ScrPeer);
-    lv_img_set_src(ui_Image5, &ui_img_module_round_png);
+    lv_img_set_src(ui_Image5, &ui_img_rolfmodule_round_png);
     lv_obj_set_width(ui_Image5, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Image5, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Image5, 124);
+    lv_obj_set_x(ui_Image5, 75);
     lv_obj_set_y(ui_Image5, 112);
     lv_obj_set_align(ui_Image5, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Image5, LV_OBJ_FLAG_HIDDEN | LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_add_flag(ui_Image5, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_Image5, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     lv_obj_add_event_cb(ui_BtnPeer1Lbl, ui_event_BtnPeer1Lbl, LV_EVENT_ALL, NULL);

@@ -59,11 +59,11 @@ void Ui_Peer_Prepare(lv_event_t * e)
 		lv_label_set_text_static(ui_LblPeerName, ActivePeer->GetName());
 		switch (ActivePeer->GetType())
 		{
-			case SWITCH_1_WAY:	lv_img_set_src(ui_ImgPeerType, &ui_img_module_1_png); break;
-			case SWITCH_2_WAY:	lv_img_set_src(ui_ImgPeerType, &ui_img_module_2_png); break;
-			case SWITCH_4_WAY:	lv_img_set_src(ui_ImgPeerType, &ui_img_module_4_png); break;
-			case MONITOR_ROUND:	lv_img_set_src(ui_ImgPeerType, &ui_img_module_round_png); break;
-			case MONITOR_BIG:	lv_img_set_src(ui_ImgPeerType, &ui_img_module_3_5_png); break;
+			case SWITCH_1_WAY:	lv_img_set_src(ui_ImgPeerType, &ui_img_1253518904); break;
+			case SWITCH_2_WAY:	lv_img_set_src(ui_ImgPeerType, &ui_img_horstrelais2_png); break;
+			case SWITCH_4_WAY:	lv_img_set_src(ui_ImgPeerType, &ui_img_ansgarmodule_4_png); break;
+			case MONITOR_ROUND:	lv_img_set_src(ui_ImgPeerType, &ui_img_rolfmodule_round_png); break;
+			case MONITOR_BIG:	lv_img_set_src(ui_ImgPeerType, &ui_img_friedermodule_disp_png); break;
 		}	
 
 		if (ActivePeer->GetSleepMode()) {

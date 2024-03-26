@@ -175,11 +175,11 @@ LV_IMG_DECLARE(ui_img_menubtn2_png);    // assets\MenuBtn2.png
 LV_IMG_DECLARE(ui_img_menubtn3_png);    // assets\MenuBtn3.png
 LV_IMG_DECLARE(ui_img_menubtn4_png);    // assets\MenuBtn4.png
 LV_IMG_DECLARE(ui_img_rubicon_png);    // assets\Rubicon.png
-LV_IMG_DECLARE(ui_img_module_1_png);    // assets\Module_1.png
-LV_IMG_DECLARE(ui_img_module_4_png);    // assets\module_4.png
-LV_IMG_DECLARE(ui_img_module_2_png);    // assets\Module_2.png
-LV_IMG_DECLARE(ui_img_module_3_5_png);    // assets\Module_3_5.png
-LV_IMG_DECLARE(ui_img_module_round_png);    // assets\Module_round.png
+LV_IMG_DECLARE(ui_img_ansgarmodule_4_png);    // assets\AnsgarModule_4.png
+LV_IMG_DECLARE(ui_img_friedermodule_disp_png);    // assets\FriederModule_Disp.png
+LV_IMG_DECLARE(ui_img_horstrelais2_png);    // assets\HorstRelais2.png
+LV_IMG_DECLARE(ui_img_1253518904);    // assets\PeterRelais-1.png
+LV_IMG_DECLARE(ui_img_rolfmodule_round_png);    // assets\RolfModule_round.png
 LV_IMG_DECLARE(ui_img_btn_png);    // assets\Btn.png
 LV_IMG_DECLARE(ui_img_1527887470);    // assets\Btn-small-off-100.png
 LV_IMG_DECLARE(ui_img_551600910);    // assets\Btn-small-on-100.png

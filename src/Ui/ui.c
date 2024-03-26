@@ -174,9 +174,9 @@ lv_obj_t * ui____initial_actions0;
 const lv_img_dsc_t * ui_imgset_857919995[1] = {&ui_img_1527887470};
 const lv_img_dsc_t * ui_imgset_25820555[1] = {&ui_img_551600910};
 const lv_img_dsc_t * ui_imgset_menubtn[4] = {&ui_img_menubtn1_png, &ui_img_menubtn2_png, &ui_img_menubtn3_png, &ui_img_menubtn4_png};
-const lv_img_dsc_t * ui_imgset_module_[2] = {&ui_img_module_1_png, &ui_img_module_2_png};
-const lv_img_dsc_t * ui_imgset_module_3_[1] = {&ui_img_module_3_5_png};
-const lv_img_dsc_t * ui_imgset_module_[1] = {&ui_img_module_4_png};
+const lv_img_dsc_t * ui_imgset_ansgarmodule_[1] = {&ui_img_ansgarmodule_4_png};
+const lv_img_dsc_t * ui_imgset_horstrelais[1] = {&ui_img_horstrelais2_png};
+const lv_img_dsc_t * ui_imgset_1265058017[1] = {&ui_img_1253518904};
 
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16
