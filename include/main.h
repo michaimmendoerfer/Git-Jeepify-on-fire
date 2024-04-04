@@ -20,6 +20,7 @@ void   SendPing(lv_timer_t * timer);
 bool   ToggleSwitch(PeerClass *P, int PerNr);
 bool   ToggleSwitch(PeriphClass *Periph);
 void   SendCommand(PeerClass *Peer, String Cmd);
+void   SendCommand(PeerClass *P, int Cmd) ;
 void   SendPairingConfirm(PeerClass *Peer);
 void   MultiScreenAddPeriph(struct_Periph *Periph, uint8_t Pos);
 

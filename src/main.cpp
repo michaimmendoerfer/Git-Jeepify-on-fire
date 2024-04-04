@@ -86,12 +86,12 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
             //if (isBat(Peer)) TSMsgBat = TSMsgRcv;
             //if (isPDC(Peer)) TSMsgPDC = TSMsgRcv;
 
-            if (doc["Pairing"] == "add me") 
+            if ((int)doc["Order"] == SEND_CMD_PAIR_ME) 
             { 
                 SendPairingConfirm(P); 
             }
             // "Order"="UpdateName"; "Pos"="32; "NewName"="Horst";
-            else if (doc["Order"] == "UpdateName")   
+            else if ((int)doc["Order"] == SEND_CMD_UPDATE_NAME)   
             {
                 int Pos = (int) doc["Pos"];
                 String NewName = doc["NewName"];
@@ -133,7 +133,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
         } 
         else        // Peer unbekannt, ggf Pairing
         {        
-            if ((doc["Pairing"] == "add me") and (Self.GetPairMode())) // neuen Peer registrieren
+            if (((int)doc["Order"] == SEND_CMD_PAIR_ME) and (Self.GetPairMode())) // neuen Peer registrieren
             { 
                 int Status = doc["Status"];
 
@@ -256,7 +256,7 @@ void SendPing(lv_timer_t * timer) {
     PeerClass *P;
     
     doc["Node"] = NODE_NAME;   
-    doc["Order"] = "stay alive";
+    doc["Order"] = SEND_CMD_STAY_ALIVE;
 
     if (Self.GetPairMode())
     {
@@ -280,7 +280,7 @@ void SendPairingConfirm(PeerClass *P) {
   
   doc["Node"]     = Self.GetName();   
   doc["Peer"]     = P->GetName();
-  doc["Pairing"]  = "you are paired";
+  doc["Order"]    = SEND_CMD_YOU_ARE_PAIRED;
   doc["Type"]     = Self.GetType();
   doc["B0"]       = (uint8_t)Broadcast[0];
   doc["B1"]       = (uint8_t)Broadcast[1];
@@ -307,7 +307,7 @@ bool ToggleSwitch(PeerClass *P, int PerNr)
     doc.clear();
     
     doc["from"]  = NODE_NAME;   
-    doc["Order"] = "ToggleSwitch";
+    doc["Order"] = SEND_CMD_SWITCH_TOGGLE;
     doc["Value"] = P->GetPeriphName(PerNr);
     doc["Pos"]   = P->GetPeriphPos(PerNr);
     
@@ -328,7 +328,7 @@ bool ToggleSwitch(PeriphClass *Periph)
     doc.clear();
     
     doc["from"]  = NODE_NAME;   
-    doc["Order"] = "ToggleSwitch";
+    doc["Order"] = SEND_CMD_SWITCH_TOGGLE;
     doc["Value"] = Periph->GetName();
     doc["Pos"]   = Periph->GetPos();
     
@@ -342,6 +342,23 @@ bool ToggleSwitch(PeriphClass *Periph)
     return true;
 }
 void SendCommand(PeerClass *P, String Cmd) {
+  StaticJsonDocument<500> doc;
+  String jsondata;
+  jsondata = "";  //clearing String after data is being sent
+  doc.clear();
+  
+  doc["from"]  = Self.GetName();   
+  doc["Order"] = Cmd;
+  
+  serializeJson(doc, jsondata);  
+  
+  TSMsgSnd = millis();
+  esp_now_send(P->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
+  Serial.println(jsondata);
+  
+  jsondata = "";
+}
+void SendCommand(PeerClass *P, int Cmd) {
   StaticJsonDocument<500> doc;
   String jsondata;
   jsondata = "";  //clearing String after data is being sent
@@ -418,7 +435,7 @@ void CalibVolt() {
   doc.clear();
 
   doc["Node"]  = Self.GetName();  
-  doc["Order"] = "VoltCalib";
+  doc["Order"] = SEND_CMD_VOLTAGE_CALIB;
   doc["NewVoltage"] = lv_textarea_get_text(ui_TxtVolt);
   
   serializeJson(doc, jsondata);  
