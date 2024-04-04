@@ -2,6 +2,28 @@
 #define JEEPIFY_H
 #include <Arduino.h>
 
+#define SEND_CMD_STAY_ALIVE        1
+#define SEND_CMD_SLEEPMODE_ON      2
+#define SEND_CMD_SLEEPMODE_OFF     3
+#define SEND_CMD_SLEEPMODE_TOGGLE  4
+#define SEND_CMD_DEBUGMODE_ON      5
+#define SEND_CMD_DEBUGMODE_OFF     6
+#define SEND_CMD_DEBUGMODE_TOGGLE  7
+#define SEND_CMD_DEMOMODE_ON       8
+#define SEND_CMD_DEMOMODE_OFF      9
+#define SEND_CMD_DEMOMODE_TOGGLE  10
+#define SEND_CMD_PAIRMODE_ON      11
+#define SEND_CMD_PAIRMODE_OFF     12
+#define SEND_CMD_PAIRMODE_TOGGLE  13
+#define SEND_CMD_SWITCH_ON        14
+#define SEND_CMD_SWITCH_OFF       15
+#define SEND_CMD_SWITCH_TOGGLE    16
+#define SEND_CMD_CURRENT_CALIB    30
+#define SEND_CMD_VOLTAGE_CALIB    31
+#define SEND_CMD_UPDATE_NAME      40
+#define SEND_CMD_RESET            50
+#define SEND_CMD_RESTART          51
+
 #define MAX_PERIPHERALS 5
 #define MAX_PEERS       10
 #define MAX_STATUS      10
@@ -60,7 +82,7 @@ const int Rotation = 0;
 #define TOUCH_HEIGHT 320
 
 //structs
-struct struct_Periph {
+/*struct struct_Periph {
     char        Name[20];
     int         Id;
     int         Type;      //1=Switch, 2=Amp, 3=Volt
@@ -91,13 +113,13 @@ struct struct_Peer {
     struct_Periph Periph[MAX_PERIPHERALS]; 
 };
 typedef struct struct_Peer struct_Peer;
-
+*/
 #define MULTI_SCREENS 4
 #define MULTI_SCREEN_ROWS 2
 #define MULTI_SCREEN_COLS 2
 #define PERIPH_PER_SCREEN 4
 
-struct struct_MultiScreen {
+/*struct struct_MultiScreen {
   char           Name[20];
   int            Id;
   struct_Peer   *Peer    [PERIPH_PER_SCREEN];
@@ -108,6 +130,6 @@ struct struct_MultiScreen {
 };
 
 typedef struct struct_MultiScreen struct_MultiScreen;
-
+*/
 extern uint8_t broadcastAddressAll[6];
 #endif
