@@ -488,6 +488,9 @@ void Ui_Multi_Loaded(lv_event_t * e)
 				lv_label_set_text_fmt(SwitchButtonPeriphName, "%.6s", Screen[ActiveMultiScreen].GetPeriph(Pos)->GetName());
 				lv_label_set_text_fmt(SwitchButtonPos, "%d", Pos);
 
+				if (Screen[ActiveMultiScreen].GetPeriph(Pos)->GetValue() == 1) 
+					lv_imgbtn_set_state(SwitchButton, LV_IMGBTN_STATE_CHECKED_RELEASED);
+
 				lv_obj_add_event_cb(ui_ButtonSwitchSmall, Ui_Multi_Button_Clicked, LV_EVENT_ALL, NULL);  
 			}
 		}

@@ -84,7 +84,7 @@ const int Rotation = 0;
 #define TOUCH_HEIGHT 320
 
 //structs
-/*struct struct_Periph {
+struct struct_Periph {
     char        Name[20];
     int         Id;
     int         Type;      //1=Switch, 2=Amp, 3=Volt
@@ -115,7 +115,7 @@ struct struct_Peer {
     struct_Periph Periph[MAX_PERIPHERALS]; 
 };
 typedef struct struct_Peer struct_Peer;
-*/
+
 #define MULTI_SCREENS 4
 #define MULTI_SCREEN_ROWS 2
 #define MULTI_SCREEN_COLS 2
