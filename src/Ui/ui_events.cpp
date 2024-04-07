@@ -577,12 +577,12 @@ void MultiUpdateTimer(lv_timer_t * timer)
 					if (value == 1) 
 					{
 						Serial.printf("Button %d ist 1", Pos);
-						lv_obj_add_state(Button, LV_STATE_CHECKED);
+						lv_imgbtn_set_state(Button, LV_IMGBTN_STATE_CHECKED_RELEASED);
 					}
 					else
 					{
 						Serial.printf("Button %d ist 0", Pos);
-						lv_obj_clear_state(Button, LV_STATE_CHECKED);
+						lv_imgbtn_set_state(Button, LV_IMGBTN_STATE_RELEASED);
 					}
 
 					break;
