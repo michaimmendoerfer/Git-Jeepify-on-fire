@@ -24,7 +24,7 @@ void Ui_Single_Next(lv_event_t * e);
 void Ui_Single_Last(lv_event_t * e);
 void Ui_Single_Prepare(lv_event_t * e);
 void Ui_Single_Leave(lv_event_t * e);
-void Ui_Peer_Prepare(lv_event_t * e);
+void Ui_Peer_Loaded(lv_event_t * e);
 void Ui_Peer_Next(lv_event_t * e);
 void Ui_Peer_Last(lv_event_t * e);
 void Ui_Peer_Restart(lv_event_t * e);

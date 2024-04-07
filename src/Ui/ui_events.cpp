@@ -51,10 +51,8 @@ void Ui_Multi_Sensor_Clicked(lv_event_t * e);
 #pragma endregion Global_Definitions
 
 #pragma region Screen_Peer
-void Ui_Peer_Prepare(lv_event_t * e)
+void Ui_Peer_Prepare()
 {
-	if (!ActivePeer) ActivePeer = FindFirstPeer(MODULE_ALL);
-
 	if (ActivePeer) {
 		lv_label_set_text_static(ui_LblPeerName, ActivePeer->GetName());
 		switch (ActivePeer->GetType())
@@ -79,6 +77,12 @@ void Ui_Peer_Prepare(lv_event_t * e)
 			lv_obj_clear_state(ui_BtnPeer6, LV_STATE_CHECKED);
 		}
 	}
+}
+void Ui_Peer_Loaded(lv_event_t * e)
+{
+	if (!ActivePeer) ActivePeer = FindFirstPeer(MODULE_ALL);
+
+	Ui_Peer_Prepare();
 }
 
 void Ui_Peer_Restart(lv_event_t * e)
@@ -105,12 +109,12 @@ void Ui_Peer_Next(lv_event_t * e)
 {
 	Serial.println("Peer-Next");
 	ActivePeer = FindNextPeer(ActivePeer, MODULE_ALL, true); 
-	if (ActivePeer) _ui_screen_change(&ui_ScrPeer, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeer_screen_init);
+	if (ActivePeer) Ui_Peer_Prepare();
 }
 void Ui_Peer_Last(lv_event_t * e)
 {
 	ActivePeer = FindPrevPeer(ActivePeer, MODULE_ALL, true); 
-	if (ActivePeer) _ui_screen_change(&ui_ScrPeer, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrPeer_screen_init);
+	if (ActivePeer) Ui_Peer_Prepare();
 }
 #pragma endregion Screen_Peer
 #pragma region Screen_Settings
@@ -506,6 +510,7 @@ void Ui_Multi_Loaded(lv_event_t * e)
 void MultiUpdateTimer(lv_timer_t * timer)
 {
 	_lv_obj_t *ComponentValue;
+	_lv_obj_t *ComponentARC;
 	
 	static char ValueBuf[10];
 	static int nk = 0;
@@ -540,6 +545,10 @@ void MultiUpdateTimer(lv_timer_t * timer)
 
 					lv_obj_set_style_bg_color(MultiComponent[Pos], bg, LV_PART_MAIN | LV_STATE_DEFAULT);
 					lv_label_set_text(ComponentValue, ValueBuf);
+
+					ComponentARC = ui_comp_get_child(MultiComponent[Pos], UI_COMP_BUTTONSENSORSMALL_ARC2);
+					lv_arc_set_range(ComponentARC, 0, 400);
+					lv_arc_set_value(ComponentARC, value*10);
 					
 					break;
 				case SENS_TYPE_VOLT:
@@ -553,6 +562,10 @@ void MultiUpdateTimer(lv_timer_t * timer)
 
 					lv_obj_set_style_bg_color(MultiComponent[Pos], bg, LV_PART_MAIN | LV_STATE_DEFAULT);
 					lv_label_set_text(ComponentValue, ValueBuf);
+
+					ComponentARC = ui_comp_get_child(MultiComponent[Pos], UI_COMP_BUTTONSENSORSMALL_ARC2);
+					lv_arc_set_range(ComponentARC, 90, 150);
+					lv_arc_set_value(ComponentARC, value*10);
 
 					break;
 				case SENS_TYPE_SWITCH:
