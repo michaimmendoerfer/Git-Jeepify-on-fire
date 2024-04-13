@@ -926,3 +926,8 @@ void Ui_Volt_Start(lv_event_t * e)
 	CalibVolt();
 	_ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMenu_screen_init);
 }
+
+void Ui_Periph_Choice_prepare(lv_event_t * e)
+{
+	// Your code here
+}

@@ -114,6 +114,7 @@ lv_obj_t * ui_Image5;
 
 // SCREEN: ui_ScrEichen
 void ui_ScrEichen_screen_init(void);
+void ui_event_ScrEichen(lv_event_t * e);
 lv_obj_t * ui_ScrEichen;
 lv_obj_t * ui_Label1;
 void ui_event_BtnEichenStart(lv_event_t * e);
@@ -171,11 +172,11 @@ lv_obj_t * ui_LblSwitchPeer;
 lv_obj_t * ui_LblSwitchPeriph;
 void ui_event____initial_actions0(lv_event_t * e);
 lv_obj_t * ui____initial_actions0;
+const lv_img_dsc_t * ui_imgset_ansgarmodule_[1] = {&ui_img_ansgarmodule_4_png};
 const lv_img_dsc_t * ui_imgset_857919995[1] = {&ui_img_1527887470};
 const lv_img_dsc_t * ui_imgset_25820555[1] = {&ui_img_551600910};
-const lv_img_dsc_t * ui_imgset_menubtn[4] = {&ui_img_menubtn1_png, &ui_img_menubtn2_png, &ui_img_menubtn3_png, &ui_img_menubtn4_png};
-const lv_img_dsc_t * ui_imgset_ansgarmodule_[1] = {&ui_img_ansgarmodule_4_png};
 const lv_img_dsc_t * ui_imgset_horstrelais[1] = {&ui_img_horstrelais2_png};
+const lv_img_dsc_t * ui_imgset_menubtn[4] = {&ui_img_menubtn1_png, &ui_img_menubtn2_png, &ui_img_menubtn3_png, &ui_img_menubtn4_png};
 const lv_img_dsc_t * ui_imgset_1265058017[1] = {&ui_img_1253518904};
 
 ///////////////////// TEST LVGL SETTINGS ////////////////////
@@ -426,6 +427,15 @@ void ui_event_BtnPeer6(lv_event_t * e)
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_CLICKED) {
         Ui_Peer_ToggleDemo(e);
+    }
+}
+void ui_event_ScrEichen(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
+        lv_indev_wait_release(lv_indev_get_act());
+        _ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 100, 0, &ui_ScrMenu_screen_init);
     }
 }
 void ui_event_BtnEichenStart(lv_event_t * e)

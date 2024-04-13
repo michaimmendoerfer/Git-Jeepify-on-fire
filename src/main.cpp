@@ -77,21 +77,19 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
     {
         P = FindPeerByMAC(mac);
         TSMsgRcv = millis();
+        int Order = (int)doc["Order"];
 
         if (P)      // Peer bekannt
         { 
             P->SetTSLastSeen(millis());
             Serial.print("bekannter Node: "); Serial.print(P->GetName()); Serial.print(" - "); Serial.println(P->GetTSLastSeen());
             
-            //if (isBat(Peer)) TSMsgBat = TSMsgRcv;
-            //if (isPDC(Peer)) TSMsgPDC = TSMsgRcv;
-
-            if ((int)doc["Order"] == SEND_CMD_PAIR_ME) 
+            if (Order == SEND_CMD_PAIR_ME) 
             { 
                 SendPairingConfirm(P); 
             }
-            // "Order"="UpdateName"; "Pos"="32; "NewName"="Horst";
-            else if ((int)doc["Order"] == SEND_CMD_UPDATE_NAME)   
+            // "Order"="UpdateName"; "Pos"="32; "NewName"="Horst"; Pos 99 is moduleName
+            else if (Order == SEND_CMD_UPDATE_NAME)   
             {
                 int Pos = (int) doc["Pos"];
                 String NewName = doc["NewName"];
@@ -133,7 +131,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
         } 
         else        // Peer unbekannt, ggf Pairing
         {        
-            if (((int)doc["Order"] == SEND_CMD_PAIR_ME) and (Self.GetPairMode())) // neuen Peer registrieren
+            if ((Order == SEND_CMD_PAIR_ME) and (Self.GetPairMode())) // neuen Peer registrieren
             { 
                 int Status = doc["Status"];
 
@@ -165,7 +163,6 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
                 }
                 ReportAll();
                 SavePeers();
-                ReportAll();
                 RegisterPeers();
                 SendPairingConfirm(P);
                 

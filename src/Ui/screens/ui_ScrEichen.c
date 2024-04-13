@@ -56,5 +56,6 @@ void ui_ScrEichen_screen_init(void)
     lv_obj_set_style_text_font(ui_LblEichenPeer, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_BtnEichenStart, ui_event_BtnEichenStart, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_ScrEichen, ui_event_ScrEichen, LV_EVENT_ALL, NULL);
 
 }

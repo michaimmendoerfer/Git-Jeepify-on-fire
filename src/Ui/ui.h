@@ -119,6 +119,7 @@ extern lv_obj_t * ui_Image4;
 extern lv_obj_t * ui_Image5;
 // SCREEN: ui_ScrEichen
 void ui_ScrEichen_screen_init(void);
+void ui_event_ScrEichen(lv_event_t * e);
 extern lv_obj_t * ui_ScrEichen;
 extern lv_obj_t * ui_Label1;
 void ui_event_BtnEichenStart(lv_event_t * e);
