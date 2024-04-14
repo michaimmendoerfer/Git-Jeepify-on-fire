@@ -708,7 +708,7 @@ void Ui_Switch_Next(lv_event_t * e)
 }
 void Ui_Switch_Long(lv_event_t * e)
 {
-	ToggleSwitch(ActivePeriphSwitch);
+	if (ActivePeriphSwitch) ToggleSwitch(ActivePeriphSwitch);
 }
 void Ui_Switch_Prev(lv_event_t * e)
 {
