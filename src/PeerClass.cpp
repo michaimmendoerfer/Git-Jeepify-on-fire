@@ -334,12 +334,12 @@ PeriphClass *FindFirstPeriph(PeerClass *P, int Type)
     PeriphClass *Periph;
 
     if (PeriphList.size() == 0) return NULL;
-    Serial.printf("PeriphList.size() = %d",PeriphList.size());
+    // Serial.printf("PeriphList.size() = %d",PeriphList.size());
 
     for(int i = 0; i < PeriphList.size(); i++) 
     {   
         Periph = PeriphList.get(i);
-        Serial.printf("Checke %s, PeriphId:%d\n\r", Periph->GetName(), Periph->GetId());
+        //Serial.printf("Checke %s, PeriphId:%d\n\r", Periph->GetName(), Periph->GetId());
         
         if ((P == NULL) or (P->GetId() == Periph->GetPeerId()))
         // Peer fits
@@ -459,18 +459,18 @@ char *TypeInText(int Type)
 {
     switch (Type)
     {
-        case SENS_TYPE_VOLT:    return "Voltage-Sensor";
-        case SENS_TYPE_AMP:     return "Current-Sensor";
-        case SENS_TYPE_SWITCH:  return "Switch";
-        case SWITCH_1_WAY:      return "1-way Switch";
-        case SWITCH_2_WAY:      return "2-Way Switch";
-        case SWITCH_4_WAY:      return "4-way Switch";
-        case SWITCH_8_WAY:      return "8-Way Switch";
-        case PDC:               return "Power distributor";
-        case PDC_SENSOR_MIX:    return "Mixed Device";
-        case BATTERY_SENSOR:    return "Battery-Sensor";
-        case MONITOR_ROUND:     return "Round Monitor";
-        case MONITOR_BIG:       return "3.5' Monitor";
+        case SENS_TYPE_VOLT:    return (char *)"Voltage-Sensor";
+        case SENS_TYPE_AMP:     return (char *)"Current-Sensor";
+        case SENS_TYPE_SWITCH:  return (char *)"Switch";
+        case SWITCH_1_WAY:      return (char *)"1-way Switch";
+        case SWITCH_2_WAY:      return (char *)"2-Way Switch";
+        case SWITCH_4_WAY:      return (char *)"4-way Switch";
+        case SWITCH_8_WAY:      return (char *)"8-Way Switch";
+        case PDC:               return (char *)"Power distributor";
+        case PDC_SENSOR_MIX:    return (char *)"Mixed Device";
+        case BATTERY_SENSOR:    return (char *)"Battery-Sensor";
+        case MONITOR_ROUND:     return (char *)"Round Monitor";
+        case MONITOR_BIG:       return (char *)"3.5' Monitor";
     }
-    return "not known";
+    return (char *)"not known";
 }

@@ -35,6 +35,7 @@ _lv_obj_t *MultiComponent[PERIPH_PER_SCREEN];
 lv_timer_t *SingleTimer;
 lv_timer_t *MultiTimer;
 lv_timer_t *SwitchTimer;
+lv_timer_t *SettingsTimer;
 
 LV_IMG_DECLARE(ui_img_btn_off_png);   
 LV_IMG_DECLARE(ui_img_btn_png);      
@@ -45,6 +46,7 @@ void Keyboard_cb(lv_event_t * event);
 void SingleUpdateTimer(lv_timer_t * timer);
 void MultiUpdateTimer(lv_timer_t * timer);
 void SwitchUpdateTimer(lv_timer_t * timer);
+void SettingsUpdateTimer(lv_timer_t * timer);
 
 void Ui_Multi_Button_Clicked(lv_event_t * e);
 void Ui_Multi_Sensor_Clicked(lv_event_t * e);
@@ -119,37 +121,24 @@ void Ui_Peer_Last(lv_event_t * e)
 #pragma endregion Screen_Peer
 #pragma region Screen_Settings
 void UI_Set_Prepare(lv_event_t * e)
-{
-	if (Self.GetPairMode()) {
-		lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);
-	}
-	else {
-		lv_obj_clear_state(ui_BtnSet2, LV_STATE_CHECKED);
-	}
-
-	if (Self.GetDebugMode()) {
-		lv_obj_add_state(ui_BtnSet7, LV_STATE_CHECKED);
-	}
-	else {
-		lv_obj_clear_state(ui_BtnSet7, LV_STATE_CHECKED);
-	}
-
-	if (Self.GetChanged()) {
-		lv_obj_add_state(ui_BtnSet8, LV_STATE_CHECKED);
-	}
-	else {
-		lv_obj_clear_state(ui_BtnSet8, LV_STATE_CHECKED);
-	}
+{	
+	uint32_t user_data = 10;
+	if (SettingsTimer) 
+		{
+			lv_timer_resume(SettingsTimer);
+			
+			Serial.println("SettingsTimer resumed");
+		}
+		else 
+		{
+			SingleTimer = lv_timer_create(SettingsUpdateTimer, 500,  &user_data);
+			Serial.println("SettingsTimer created");
+		}
 }
 
 void Ui_Set_TogglePair(lv_event_t * e)
 {
-	if (TogglePairMode()) {
-		lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);
-	}
-	else {
-		lv_obj_clear_state(ui_BtnSet2, LV_STATE_CHECKED);
-	}
+	TogglePairMode();
 }
 
 void Ui_Set_Restart(lv_event_t * e)
@@ -165,24 +154,26 @@ void Ui_Set_Reset(lv_event_t * e)
 
 void Ui_Set_ToggleDebug(lv_event_t * e)
 {
-	if (ToggleDebugMode()) {
-		lv_obj_add_state(ui_BtnSet7, LV_STATE_CHECKED);
-	}
-	else {
-		lv_obj_clear_state(ui_BtnSet7, LV_STATE_CHECKED);
-	}
+	ToggleDebugMode();
 }
 
 void Ui_Set_SavePeers(lv_event_t * e)
 {
     SavePeers();
-	if (Self.GetChanged()) {
-		lv_obj_add_state(ui_BtnSet8, LV_STATE_CHECKED);
-	}
-	else {
-		lv_obj_clear_state(ui_BtnSet8, LV_STATE_CHECKED);
-	}
+	Self.SetChanged(false);
 }
+void SettingsUpdateTimer(lv_timer_t * timer)
+{
+	if (Self.GetPairMode()) lv_obj_add_state(ui_BtnSet2, LV_STATE_CHECKED);
+	else lv_obj_clear_state(ui_BtnSet2, LV_STATE_CHECKED);
+	
+	if (Self.GetDebugMode()) lv_obj_add_state(ui_BtnSet7, LV_STATE_CHECKED);
+	else lv_obj_clear_state(ui_BtnSet7, LV_STATE_CHECKED);
+	
+	if (Self.GetChanged()) lv_obj_add_state(ui_BtnSet8, LV_STATE_CHECKED);
+	else lv_obj_clear_state(ui_BtnSet8, LV_STATE_CHECKED);
+}
+
 #pragma endregion Screen_Settings
 #pragma region Screen_Peers
 void Ui_Peers_Prepare(lv_event_t * e)
@@ -790,6 +781,7 @@ void Ui_PeriphChoice_Last(lv_event_t * e)
 void Ui_PeriphChoice_Click(lv_event_t * e)
 {
 	Screen[ActiveMultiScreen].AddPeriph(MultiPosToChange, ActivePeriph);
+	Self.SetChanged(true);
 	_ui_screen_change(&ui_ScrMulti, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMulti_screen_init);
 }
 

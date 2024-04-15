@@ -63,7 +63,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
     PeerClass *P;
 
     char* buff = (char*) incomingData;   
-    StaticJsonDocument<500> doc; 
+    JsonDocument doc; 
     String jsondata = String(buff); 
     
     String BufS; char Buf[50] = {};
@@ -82,7 +82,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
         if (P)      // Peer bekannt
         { 
             P->SetTSLastSeen(millis());
-            Serial.print("bekannter Node: "); Serial.print(P->GetName()); Serial.print(" - "); Serial.println(P->GetTSLastSeen());
+            if (Self.GetDebugMode()) Serial.printf("bekannter Node: %s - LastSeen at %d", P->GetName(), P->GetTSLastSeen());
             
             if (Order == SEND_CMD_PAIR_ME) 
             { 
@@ -146,19 +146,19 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
                 // Message-Bsp: "Node":"ESP32-1"; "T0":"1"; "N0":"Switch1"
                 for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
                     snprintf(Buf, sizeof(Buf), "T%d", Si);                          // Check for T0 (Type of Periph 0)
-                    Serial.print("Check Pairing for: "); Serial.println(Buf);
+                    if (Self.GetDebugMode()) Serial.printf("Check Pairing for: %s", Buf);
                     
                     if (doc.containsKey(Buf)) 
                     {
-                        Serial.print("Pairing found: "); Serial.println(Buf);       // Set Periph[0].Type
-                        int  Type = doc[Buf];
+                        if (Self.GetDebugMode()) Serial.printf("Pairing found: %s", Buf);       
+                        int  Type = doc[Buf];                                       // Set Periph[0].Type
 
                         snprintf(Buf, sizeof(Buf), "N%d", Si);                      // get N0 (Name of Periph 0)
                         String PName = doc[Buf];
                         P->PeriphSetup(Si, PName.c_str(), Type, false, false, 0, 0, 0, P->GetId());
                         PeriphList.add(P->GetPeriphPtr(Si));
                         
-                        Serial.printf("%s->Periph[%d].Name is now: %s\n", P->GetName(), Si, P->GetPeriphName(Si));
+                        if (Self.GetDebugMode()) Serial.printf("%s->Periph[%d].Name is now: %s\n", P->GetName(), Si, P->GetPeriphName(Si));
                     } 
                 }
                 ReportAll();
@@ -239,17 +239,15 @@ void loop()
   delay(5);
 }
 #pragma endregion Main
-void MultiScreenAddPeriph(PeriphClass *Periph, uint8_t Pos)
+/*void MultiScreenAddPeriph(PeriphClass *Periph, uint8_t Pos)
 {
     Screen[ActiveMultiScreen].AddPeriph(Pos, Periph);
 }
-
+*/
 #pragma region Send-Things
 void SendPing(lv_timer_t * timer) {
-    StaticJsonDocument<500> doc;
-    String jsondata;
-    jsondata = "";  
-    doc.clear();
+    JsonDocument doc; String jsondata;
+
     PeerClass *P;
     
     doc["Node"] = NODE_NAME;   
@@ -269,9 +267,7 @@ void SendPing(lv_timer_t * timer) {
     }
 }
 void SendPairingConfirm(PeerClass *P) {
-  StaticJsonDocument<500> doc;
-  String jsondata;
-  jsondata = "";  doc.clear();
+  JsonDocument doc; String jsondata; 
   
   uint8_t *Broadcast = P->GetBroadcastAddress();
   
@@ -298,10 +294,7 @@ void SendPairingConfirm(PeerClass *P) {
 }
 bool ToggleSwitch(PeerClass *P, int PerNr)
 {
-    StaticJsonDocument<500> doc;
-    String jsondata;
-    jsondata = "";  //clearing String after data is being sent
-    doc.clear();
+    JsonDocument doc; String jsondata; 
     
     doc["from"]  = NODE_NAME;   
     doc["Order"] = SEND_CMD_SWITCH_TOGGLE;
@@ -312,17 +305,13 @@ bool ToggleSwitch(PeerClass *P, int PerNr)
     
     TSMsgSnd = millis();
     esp_now_send(P->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
-    Serial.println(jsondata);
-    
-    jsondata = "";
+    if (Self.GetDebugMode()) Serial.println(jsondata);
+
     return true;
 }
 bool ToggleSwitch(PeriphClass *Periph)
 {
-    StaticJsonDocument<500> doc;
-    String jsondata;
-    jsondata = "";  //clearing String after data is being sent
-    doc.clear();
+    JsonDocument doc; String jsondata; 
     
     doc["from"]  = NODE_NAME;   
     doc["Order"] = SEND_CMD_SWITCH_TOGGLE;
@@ -333,16 +322,12 @@ bool ToggleSwitch(PeriphClass *Periph)
     
     TSMsgSnd = millis();
     esp_now_send(FindPeerById(Periph->GetPeerId())->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
-    Serial.println(jsondata);
+    if (Self.GetDebugMode()) Serial.println(jsondata);
     
-    jsondata = "";
     return true;
 }
 void SendCommand(PeerClass *P, String Cmd) {
-  StaticJsonDocument<500> doc;
-  String jsondata;
-  jsondata = "";  //clearing String after data is being sent
-  doc.clear();
+  JsonDocument doc; String jsondata; 
   
   doc["from"]  = Self.GetName();   
   doc["Order"] = Cmd;
@@ -351,15 +336,10 @@ void SendCommand(PeerClass *P, String Cmd) {
   
   TSMsgSnd = millis();
   esp_now_send(P->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
-  Serial.println(jsondata);
-  
-  jsondata = "";
+  if (Self.GetDebugMode()) Serial.println(jsondata);
 }
 void SendCommand(PeerClass *P, int Cmd) {
-  StaticJsonDocument<500> doc;
-  String jsondata;
-  jsondata = "";  //clearing String after data is being sent
-  doc.clear();
+  JsonDocument doc; String jsondata; 
   
   doc["from"]  = Self.GetName();   
   doc["Order"] = Cmd;
@@ -368,16 +348,14 @@ void SendCommand(PeerClass *P, int Cmd) {
   
   TSMsgSnd = millis();
   esp_now_send(P->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
-  Serial.println(jsondata);
-  
-  jsondata = "";
+  if (Self.GetDebugMode()) Serial.println(jsondata);
 }
 #pragma endregion Send-Things
 
 #pragma region System-Screens
 void PrepareJSON() {
   if (jsondataBuf) {
-    StaticJsonDocument<500> doc;
+    JsonDocument doc;
   
     DeserializationError error = deserializeJson(doc, jsondataBuf);
     if (doc["Node"] != NODE_NAME) { 
@@ -425,12 +403,8 @@ bool TogglePairMode() {
   return Self.GetPairMode();
 }
 void CalibVolt() {
-  StaticJsonDocument<500> doc;
-  String jsondata;
-
-  jsondata = "";  
-  doc.clear();
-
+  JsonDocument doc; String jsondata;
+ 
   doc["Node"]  = Self.GetName();  
   doc["Order"] = SEND_CMD_VOLTAGE_CALIB;
   doc["NewVoltage"] = lv_textarea_get_text(ui_TxtVolt);
@@ -449,8 +423,11 @@ void PrintMAC(const uint8_t * mac_addr){
 }
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) { 
     if (Self.GetDebugMode()) {
-        //Serial.print("\r\nLast Packet Send Status:\t");
-        //Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+        if (Self.GetDebugMode()) 
+        {
+            Serial.print("\r\nLast Packet Send Status:\t");
+            Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+        }
     }
 }
 void my_disp_flush( lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p )
@@ -479,14 +456,6 @@ void my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data ) {
 
         data->point.x = TFT_HOR_RES - touchX;
         data->point.y = touchY;
-
-        
-        Serial.print( "Data x " );
-        Serial.print( touchX );
-
-        Serial.print( ", Data y " );
-        Serial.println( touchY );
-        
     }
 }
 #pragma endregion Other
