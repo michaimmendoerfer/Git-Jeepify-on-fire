@@ -118,6 +118,10 @@ void Ui_Peer_Last(lv_event_t * e)
 	ActivePeer = FindPrevPeer(ActivePeer, MODULE_ALL, true); 
 	if (ActivePeer) Ui_Peer_Prepare();
 }
+void Ui_Peer_Delete(lv_event_t * e)
+{
+	if (ActivePeer) DeletePeer(ActivePeer);
+}
 #pragma endregion Screen_Peer
 #pragma region Screen_Settings
 void UI_Set_Prepare(lv_event_t * e)
