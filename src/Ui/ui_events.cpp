@@ -89,22 +89,22 @@ void Ui_Peer_Loaded(lv_event_t * e)
 
 void Ui_Peer_Restart(lv_event_t * e)
 {
-	if (ActivePeer) SendCommand(ActivePeer, "Restart");
+	if (ActivePeer) SendCommand(ActivePeer, SEND_CMD_RESTART);
 }
 
 void Ui_Peer_Reset(lv_event_t * e)
 {
-	if (ActivePeer) SendCommand(ActivePeer, "Reset");
+	if (ActivePeer) SendCommand(ActivePeer, SEND_CMD_RESET);
 }
 
 void Ui_Peer_ToggleSleep(lv_event_t * e)
 {
-	if (ActivePeer) SendCommand(ActivePeer, "SleepMode Toggle");
+	if (ActivePeer) SendCommand(ActivePeer, SEND_CMD_SLEEPMODE_TOGGLE);
 }
 
 void Ui_Peer_ToggleDemo(lv_event_t * e)
 {
-	if (ActivePeer) SendCommand(ActivePeer, "DemoMode Toggle");
+	if (ActivePeer) SendCommand(ActivePeer, SEND_CMD_DEMOMODE_TOGGLE);
 }
 
 void Ui_Peer_Next(lv_event_t * e)
@@ -902,7 +902,7 @@ void Keyboard_cb(lv_event_t * event)
 #pragma region System_Eichen
 void Ui_Eichen_Start(lv_event_t * e)
 {
-	SendCommand(ActivePeer, "Eichen");
+	SendCommand(ActivePeer, SEND_CMD_CURRENT_CALIB);
 	TSMsgSnd = millis();
 	_ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMenu_screen_init);
 }
@@ -911,13 +911,14 @@ void Ui_Volt_Prepare(lv_event_t * e)
 {
 	if (ActivePeer) lv_label_set_text(ui_LblVoltPeer, ActivePeer->GetName());
 }
-#pragma endregion System_Eichen
-
 void Ui_Volt_Start(lv_event_t * e)
 {
 	CalibVolt();
 	_ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMenu_screen_init);
 }
+
+#pragma endregion System_Eichen
+
 
 void Ui_Periph_Choice_prepare(lv_event_t * e)
 {
