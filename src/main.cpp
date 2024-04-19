@@ -2,7 +2,7 @@
 #define NODE_TYPE MONITOR_ROUND
 #define KILL_NVS 1
 
-const char *_Version = "V 3.31";
+const char *_Version = "V 3.41";
 const char *_Name = "Monitor 2";
 const char _Protokoll_Version[] = "1.01";
 
@@ -178,7 +178,11 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 }
 void setup() 
 {
-    Serial.begin(115000);
+    #ifdef ARDUINO_USB_CDC_ON_BOOT
+        delay(3000);
+    #endif
+    
+    Serial.begin(460800);
 
     uint8_t broadcastAddressAll[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     
