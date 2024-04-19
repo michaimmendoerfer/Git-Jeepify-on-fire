@@ -370,11 +370,14 @@ void PrepareJSON() {
 }
 #pragma endregion System-Screens
 #pragma region Other
+void DeletePeer(PeerClass *P)
+{
+    
+}
 void WriteStringToCharArray(String S, char *C) {
   int   ArrayLength = S.length()+1;    //The +1 is for the 0x00h Terminator
   S.toCharArray(C,ArrayLength);
 }
-
 bool ToggleSleepMode() 
 {
     preferences.begin("JeepifyInit", false);
@@ -418,7 +421,6 @@ void CalibVolt() {
   esp_now_send(ActivePeer->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  
   if (Self.GetDebugMode()) Serial.println(jsondata);
 }
-
 void PrintMAC(const uint8_t * mac_addr){
   char macStr[18];
   snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",

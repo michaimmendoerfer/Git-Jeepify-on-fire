@@ -58,11 +58,12 @@ void Ui_Peer_Prepare()
 		lv_label_set_text_static(ui_LblPeerName, ActivePeer->GetName());
 		switch (ActivePeer->GetType())
 		{
-			case SWITCH_1_WAY:	lv_img_set_src(ui_ImgPeerType, &ui_img_1253518904); break;
-			case SWITCH_2_WAY:	lv_img_set_src(ui_ImgPeerType, &ui_img_horstrelais2_png); break;
-			case SWITCH_4_WAY:	lv_img_set_src(ui_ImgPeerType, &ui_img_ansgarmodule_4_png); break;
-			case MONITOR_ROUND:	lv_img_set_src(ui_ImgPeerType, &ui_img_rolfmodule_round_png); break;
-			case MONITOR_BIG:	lv_img_set_src(ui_ImgPeerType, &ui_img_friedermodule_disp_png); break;
+			case SWITCH_1_WAY:	 lv_img_set_src(ui_ImgPeerType, &ui_img_1253518904); break;
+			case SWITCH_2_WAY:	 lv_img_set_src(ui_ImgPeerType, &ui_img_horstrelais2_png); break;
+			case SWITCH_4_WAY:	 lv_img_set_src(ui_ImgPeerType, &ui_img_ansgarmodule_4_png); break;
+			case MONITOR_ROUND:	 lv_img_set_src(ui_ImgPeerType, &ui_img_rolfmodule_round_png); break;
+			case MONITOR_BIG:	 lv_img_set_src(ui_ImgPeerType, &ui_img_friedermodule_disp_png); break;
+			case BATTERY_SENSOR: lv_img_set_src(ui_ImgPeerType, &ui_img_friedermodule_disp_png); break;
 		}	
 
 		if (ActivePeer->GetSleepMode()) {
@@ -88,22 +89,22 @@ void Ui_Peer_Loaded(lv_event_t * e)
 
 void Ui_Peer_Restart(lv_event_t * e)
 {
-	if (ActivePeer) SendCommand(ActivePeer, "Restart");
+	if (ActivePeer) SendCommand(ActivePeer, SEND_CMD_RESTART);
 }
 
 void Ui_Peer_Reset(lv_event_t * e)
 {
-	if (ActivePeer) SendCommand(ActivePeer, "Reset");
+	if (ActivePeer) SendCommand(ActivePeer, SEND_CMD_RESET);
 }
 
 void Ui_Peer_ToggleSleep(lv_event_t * e)
 {
-	if (ActivePeer) SendCommand(ActivePeer, "SleepMode Toggle");
+	if (ActivePeer) SendCommand(ActivePeer, SEND_CMD_SLEEPMODE_TOGGLE);
 }
 
 void Ui_Peer_ToggleDemo(lv_event_t * e)
 {
-	if (ActivePeer) SendCommand(ActivePeer, "DemoMode Toggle");
+	if (ActivePeer) SendCommand(ActivePeer, SEND_CMD_DEMOMODE_TOGGLE);
 }
 
 void Ui_Peer_Next(lv_event_t * e)
@@ -116,6 +117,10 @@ void Ui_Peer_Last(lv_event_t * e)
 {
 	ActivePeer = FindPrevPeer(ActivePeer, MODULE_ALL, true); 
 	if (ActivePeer) Ui_Peer_Prepare();
+}
+void Ui_Peer_Delete(lv_event_t * e)
+{
+	if (ActivePeer) DeletePeer(ActivePeer);
 }
 #pragma endregion Screen_Peer
 #pragma region Screen_Settings
@@ -921,7 +926,7 @@ void Keyboard_cb(lv_event_t * event)
 #pragma region System_Eichen
 void Ui_Eichen_Start(lv_event_t * e)
 {
-	SendCommand(ActivePeer, "Eichen");
+	SendCommand(ActivePeer, SEND_CMD_CURRENT_CALIB);
 	TSMsgSnd = millis();
 	_ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMenu_screen_init);
 }
@@ -930,27 +935,15 @@ void Ui_Volt_Prepare(lv_event_t * e)
 {
 	if (ActivePeer) lv_label_set_text(ui_LblVoltPeer, ActivePeer->GetName());
 }
-
 void Ui_Volt_Start(lv_event_t * e)
 {
 	CalibVolt();
 	_ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMenu_screen_init);
 }
+
 #pragma endregion System_Eichen
-#pragma region Menu
-void Ui_Menu_Loaded(lv_event_t * e)
-{
-	lv_label_set_text(ui_LblMenuVersion, Self.GetVersion())
-}
 
-void Ui_Menu_Btn1_Clicked(lv_event_t * e)
-{
-	if (!ActivePeriphSingle) ActivePeriphSingle = FindFirstPeriph(NULL, SENS_TYPE_SENS);
-		
-	if (ActivePeriphSingle) _ui_screen_change(&ui_ScrSingle, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrSingle_screen_init);
-}
-
-void Ui_Menu_Btn2_Clicked(lv_event_t * e)
+void Ui_Periph_Choice_prepare(lv_event_t * e)
 {
 	if (!ActivePeriphSwitch) ActivePeriphSwitch = FindNextPeriph(NULL, NULL, SENS_TYPE_SWITCH, true);
 	if (ActivePeriphSwitch) _ui_screen_change(&ui_ScrSwitch, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrSwitch_screen_init);

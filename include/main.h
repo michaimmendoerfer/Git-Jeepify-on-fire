@@ -31,6 +31,7 @@ bool   TogglePairMode();
 
 void   CalibVolt();
 void   PrepareJSON();
+void   DeletePeer(PeerClass *Peer);
 void   PrintMAC(const uint8_t * mac_addr);
 void   WriteStringToCharArray(String S, char *C);
 
