@@ -948,4 +948,22 @@ void Ui_Periph_Choice_prepare(lv_event_t * e)
 	if (!ActivePeriphSwitch) ActivePeriphSwitch = FindNextPeriph(NULL, NULL, SENS_TYPE_SWITCH, true);
 	if (ActivePeriphSwitch) _ui_screen_change(&ui_ScrSwitch, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrSwitch_screen_init);
 }
+#pragma region Menu
+void Ui_Menu_Loaded(lv_event_t * e)
+{
+	lv_label_set_text(ui_LblMenuVersion, Self.GetVersion());
+}
+
+void Ui_Menu_Btn1_Clicked(lv_event_t * e)
+{
+	if (!ActivePeriphSingle) ActivePeriphSingle = FindFirstPeriph(NULL, SENS_TYPE_SENS);
+		
+	if (ActivePeriphSingle) _ui_screen_change(&ui_ScrSingle, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrSingle_screen_init);
+}
+
+void Ui_Menu_Btn2_Clicked(lv_event_t * e)
+{
+	if (!ActivePeriphSwitch) ActivePeriphSwitch = FindNextPeriph(NULL, NULL, SENS_TYPE_SWITCH, true);
+	if (ActivePeriphSwitch) _ui_screen_change(&ui_ScrSwitch, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrSwitch_screen_init);
+}
 #pragma endregion Menu

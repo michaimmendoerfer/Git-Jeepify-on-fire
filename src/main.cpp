@@ -370,10 +370,6 @@ void PrepareJSON() {
 }
 #pragma endregion System-Screens
 #pragma region Other
-void DeletePeer(PeerClass *P)
-{
-    
-}
 void WriteStringToCharArray(String S, char *C) {
   int   ArrayLength = S.length()+1;    //The +1 is for the 0x00h Terminator
   S.toCharArray(C,ArrayLength);
