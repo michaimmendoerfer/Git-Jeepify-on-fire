@@ -18,7 +18,7 @@ void ui_ScrPeer_screen_init(void)
     lv_obj_set_x(ui_ImgPeerType, 3);
     lv_obj_set_y(ui_ImgPeerType, -79);
     lv_obj_set_align(ui_ImgPeerType, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_ImgPeerType, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_add_flag(ui_ImgPeerType, LV_OBJ_FLAG_HIDDEN | LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_ImgPeerType, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     ui_LblPeerName = lv_label_create(ui_ScrPeer);
@@ -184,7 +184,7 @@ void ui_ScrPeer_screen_init(void)
     lv_obj_set_x(ui_Image2, 93);
     lv_obj_set_y(ui_Image2, -73);
     lv_obj_set_align(ui_Image2, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Image2, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_add_flag(ui_Image2, LV_OBJ_FLAG_HIDDEN | LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_Image2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     ui_Image3 = lv_img_create(ui_ScrPeer);
@@ -194,7 +194,7 @@ void ui_ScrPeer_screen_init(void)
     lv_obj_set_x(ui_Image3, -95);
     lv_obj_set_y(ui_Image3, -70);
     lv_obj_set_align(ui_Image3, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Image3, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_add_flag(ui_Image3, LV_OBJ_FLAG_HIDDEN | LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_Image3, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     ui_Image4 = lv_img_create(ui_ScrPeer);
@@ -204,7 +204,7 @@ void ui_ScrPeer_screen_init(void)
     lv_obj_set_x(ui_Image4, -83);
     lv_obj_set_y(ui_Image4, 110);
     lv_obj_set_align(ui_Image4, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Image4, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_add_flag(ui_Image4, LV_OBJ_FLAG_HIDDEN | LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_Image4, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     ui_Image5 = lv_img_create(ui_ScrPeer);
@@ -214,8 +214,30 @@ void ui_ScrPeer_screen_init(void)
     lv_obj_set_x(ui_Image5, 75);
     lv_obj_set_y(ui_Image5, 112);
     lv_obj_set_align(ui_Image5, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Image5, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_add_flag(ui_Image5, LV_OBJ_FLAG_HIDDEN | LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_Image5, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    ui_BtnPeer7 = lv_btn_create(ui_ScrPeer);
+    lv_obj_set_width(ui_BtnPeer7, 70);
+    lv_obj_set_height(ui_BtnPeer7, 30);
+    lv_obj_set_x(ui_BtnPeer7, -40);
+    lv_obj_set_y(ui_BtnPeer7, -70);
+    lv_obj_set_align(ui_BtnPeer7, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_BtnPeer7, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    lv_obj_clear_flag(ui_BtnPeer7, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(ui_BtnPeer7, lv_color_hex(0xAD0808), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_BtnPeer7, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_color(ui_BtnPeer7, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_opa(ui_BtnPeer7, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_width(ui_BtnPeer7, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_BtnPeer7Lbl1 = lv_label_create(ui_BtnPeer7);
+    lv_obj_set_width(ui_BtnPeer7Lbl1, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_BtnPeer7Lbl1, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_BtnPeer7Lbl1, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_BtnPeer7Lbl1, "Delete");
+    lv_obj_set_style_text_color(ui_BtnPeer7Lbl1, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_BtnPeer7Lbl1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_BtnPeer1Lbl, ui_event_BtnPeer1Lbl, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_BtnPeer1, ui_event_BtnPeer1, LV_EVENT_ALL, NULL);
@@ -224,6 +246,8 @@ void ui_ScrPeer_screen_init(void)
     lv_obj_add_event_cb(ui_BtnPeer4, ui_event_BtnPeer4, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_BtnPeer5, ui_event_BtnPeer5, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_BtnPeer6, ui_event_BtnPeer6, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_BtnPeer7Lbl1, ui_event_BtnPeer7Lbl1, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_BtnPeer7, ui_event_BtnPeer7, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_ScrPeer, ui_event_ScrPeer, LV_EVENT_ALL, NULL);
 
 }

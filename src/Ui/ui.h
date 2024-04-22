@@ -118,6 +118,10 @@ extern lv_obj_t * ui_Image2;
 extern lv_obj_t * ui_Image3;
 extern lv_obj_t * ui_Image4;
 extern lv_obj_t * ui_Image5;
+void ui_event_BtnPeer7(lv_event_t * e);
+extern lv_obj_t * ui_BtnPeer7;
+void ui_event_BtnPeer7Lbl1(lv_event_t * e);
+extern lv_obj_t * ui_BtnPeer7Lbl1;
 // SCREEN: ui_ScrEichen
 void ui_ScrEichen_screen_init(void);
 void ui_event_ScrEichen(lv_event_t * e);

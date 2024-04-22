@@ -185,9 +185,9 @@ void DeletePeer(PeerClass *P)
       {
           if (Screen[s].GetPeerId(Si) == P->GetId())
           {
-              Screen[s].SetPeerId(Si, -1);
+              Screen[s].SetPeerId(Si, 0);
               Screen[s].SetPeer(Si, NULL);
-              Screen[s].SetPeriphId(Si, -1);
+              Screen[s].SetPeriphId(Si, 0);
               Screen[s].SetPeer(Si, NULL);
               Screen[s].SetChanged(true);
           }
@@ -209,6 +209,8 @@ void DeletePeer(PeerClass *P)
             P = NULL;
         }
     }
+    SavePeers();
+    ESP.restart();
 }
 void RegisterPeers() 
 {

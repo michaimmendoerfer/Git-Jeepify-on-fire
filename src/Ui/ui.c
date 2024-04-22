@@ -111,6 +111,10 @@ lv_obj_t * ui_Image2;
 lv_obj_t * ui_Image3;
 lv_obj_t * ui_Image4;
 lv_obj_t * ui_Image5;
+void ui_event_BtnPeer7(lv_event_t * e);
+lv_obj_t * ui_BtnPeer7;
+void ui_event_BtnPeer7Lbl1(lv_event_t * e);
+lv_obj_t * ui_BtnPeer7Lbl1;
 
 
 // SCREEN: ui_ScrEichen
@@ -439,6 +443,22 @@ void ui_event_BtnPeer6(lv_event_t * e)
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_CLICKED) {
         Ui_Peer_ToggleDemo(e);
+    }
+}
+void ui_event_BtnPeer7(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_LONG_PRESSED) {
+        Ui_Peer_Delete(e);
+    }
+}
+void ui_event_BtnPeer7Lbl1(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_CLICKED) {
+        Ui_Peer_Restart(e);
     }
 }
 void ui_event_ScrEichen(lv_event_t * e)
