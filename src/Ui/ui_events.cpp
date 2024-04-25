@@ -602,7 +602,8 @@ void Ui_Multi_Button_Clicked(lv_event_t * e)
 	
 		int Pos = atoi(lv_label_get_text(Button));
 
-		ToggleSwitch(Screen[ActiveMultiScreen].GetPeer(Pos), Pos);
+		ToggleSwitch(Screen[ActiveMultiScreen].GetPeer(Pos), Screen[ActiveMultiScreen].GetPeriph(Pos)->GetPos());
+		Serial.printf("Toggleswitch Pos:%d, PeerName:%s\n\r", Screen[ActiveMultiScreen].GetPeriph(Pos)->GetPos(), Screen[ActiveMultiScreen].GetPeer(Pos)->GetName());
     }	
 	if(event_code == LV_EVENT_LONG_PRESSED) {
         lv_obj_t *Button = ui_comp_get_child(target, UI_COMP_BUTTONSWITCHSMALL_LBLPOSITION);
