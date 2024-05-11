@@ -31,7 +31,7 @@ class PeriphClass {
     
     public:
         PeriphClass();
-        void  Setup(const char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId, uint8_t *UId);
+        void  Setup(const char* Name, int Type, bool isADS, int IOPort, float Nullwert, float VperAmp, int Vin, int PeerId);
         
         bool  SetName(const char* Name) { strcpy(_Name, Name); return true; }
         char *GetName(){ return (_Name); }
@@ -208,8 +208,8 @@ PeriphClass *FindLastPeriph (PeerClass *P, int Type);
 PeriphClass *FindPrevPeriph(PeerClass *P, PeriphClass *Periph, int Type, bool circular);
 PeriphClass *FindNextPeriph(PeerClass *P, PeriphClass *Periph, int Type, bool circular);
 
-extern LinkedList<PeerClass*>   PeerList;
-extern LinkedList<PeriphClass*> PeriphList;
+extern MyLinkedList<PeerClass*>   PeerList;
+extern MyLinkedList<PeriphClass*> PeriphList;
 
 char *TypeInText(int Type);
 extern PeerClass *ActivePeer;

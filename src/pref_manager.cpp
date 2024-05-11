@@ -136,7 +136,10 @@ int GetPeers()
         P->Import(ScreenExportImportBuffer);
         
         PeerList.add(P);
-        for (int Si=0; Si<MAX_PERIPHERALS; Si++) PeriphList.add(P->GetPeriphPtr(Si));
+        for (int Si=0; Si<MAX_PERIPHERALS; Si++) 
+        {
+            if (P->GetPeriphType(Si) > 0) PeriphList.add(P->GetPeriphPtr(Si));
+        }
     }
   
     Serial.println("jetzt kommt Multi");

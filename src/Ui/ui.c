@@ -255,7 +255,7 @@ void ui_event_BtnSet1(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_CLICKED) {
-        _ui_screen_change(&ui_ScrJSON, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrJSON_screen_init);
+        Ui_Set_WebSvr(e);
     }
 }
 void ui_event_BtnSet2(lv_event_t * e)

@@ -16,6 +16,7 @@ void Ui_Menu_Btn1_Clicked(lv_event_t * e);
 void Ui_Menu_Btn2_Clicked(lv_event_t * e);
 void Ui_Set_Prepare(lv_event_t * e);
 void Ui_Set_Leave(lv_event_t * e);
+void Ui_Set_WebSvr(lv_event_t * e);
 void Ui_Set_TogglePair(lv_event_t * e);
 void Ui_Set_Restart(lv_event_t * e);
 void Ui_Set_Reset(lv_event_t * e);

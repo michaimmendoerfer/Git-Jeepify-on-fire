@@ -124,6 +124,11 @@ void Ui_Peer_Delete(lv_event_t * e)
 }
 #pragma endregion Screen_Peer
 #pragma region Screen_Settings
+void Ui_Set_WebSvr(lv_event_t * e)
+{
+	ToggleWebServer();
+}
+
 void Ui_Set_Prepare(lv_event_t * e)
 {	
 	uint32_t user_data = 10;
@@ -176,6 +181,9 @@ void SettingsUpdateTimer(lv_timer_t * timer)
 	
 	if (Self.GetChanged()) lv_obj_add_state(ui_BtnSet8, LV_STATE_CHECKED);
 	else lv_obj_clear_state(ui_BtnSet8, LV_STATE_CHECKED);
+
+	if (WebServerActive) lv_obj_add_state(ui_BtnSet1, LV_STATE_CHECKED);
+	else lv_obj_clear_state(ui_BtnSet1, LV_STATE_CHECKED);
 }
 void Ui_Set_Leave(lv_event_t * e)
 {

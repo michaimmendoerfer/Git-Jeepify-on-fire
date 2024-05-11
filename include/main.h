@@ -21,10 +21,11 @@ bool   ToggleSwitch(PeerClass *P, int PerNr);
 bool   ToggleSwitch(PeriphClass *Periph);
 void   SendCommand(PeerClass *Peer, String Cmd);
 void   SendCommand(PeerClass *P, int Cmd) ;
+void   SendCommand(PeerClass *P, int Cmd, String Value);
 void   SendPairingConfirm(PeerClass *Peer);
-void   MultiScreenAddPeriph(struct_Periph *Periph, uint8_t Pos);
+//void   MultiScreenAddPeriph(struct_Periph *Periph, uint8_t Pos);
 
-void   CheckButtonVars();
+//void   CheckButtonVars();
 bool   ToggleSleepMode();
 bool   ToggleDebugMode();
 bool   TogglePairMode();
@@ -34,6 +35,8 @@ void   PrepareJSON();
 void   PrintMAC(const uint8_t * mac_addr);
 void   WriteStringToCharArray(String S, char *C);
 
+void   InitWebServer();
+
 extern volatile uint32_t TSMsgRcv;
 extern volatile uint32_t TSMsgSnd;
 extern volatile uint32_t TSPair;
@@ -42,6 +45,8 @@ extern PeerClass Self;
 
 extern int ActiveMultiScreen;
 extern const char *_Version;
+extern void ToggleWebServer();
+extern bool WebServerActive;
 
 
 #endif

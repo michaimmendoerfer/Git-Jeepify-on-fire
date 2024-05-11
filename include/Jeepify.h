@@ -21,6 +21,9 @@
 #define SEND_CMD_CURRENT_CALIB    30
 #define SEND_CMD_VOLTAGE_CALIB    31
 #define SEND_CMD_UPDATE_NAME      40
+#define SEND_CMD_UPDATE_VIN       41
+#define SEND_CMD_UPDATE_VPERAMP   42
+#define SEND_CMD_UPDATE_NULLWERT  43
 #define SEND_CMD_RESET            50
 #define SEND_CMD_RESTART          51
 #define SEND_CMD_PAIR_ME          60

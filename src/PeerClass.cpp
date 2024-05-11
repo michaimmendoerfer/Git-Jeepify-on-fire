@@ -6,8 +6,8 @@
 PeerClass   *ActivePeer;
 PeriphClass *ActivePeriph;
 
-LinkedList<PeerClass*> PeerList = LinkedList<PeerClass*>();
-LinkedList<PeriphClass*> PeriphList = LinkedList<PeriphClass*>();
+MyLinkedList<PeerClass*> PeerList = MyLinkedList<PeerClass*>();
+MyLinkedList<PeriphClass*> PeriphList = MyLinkedList<PeriphClass*>();
 
 int  PeriphClass::_ClassId = 1;
 int  PeerClass::_ClassId = 1;
@@ -37,7 +37,7 @@ PeriphClass::PeriphClass()
     memset(_UId, 0, 7);
 }
 void  PeriphClass::Setup(const char* Name, int Type, bool isADS, int IOPort, 
-                         float Nullwert, float VperAmp, int Vin, int PeerId, uint8_t *UId)
+                         float Nullwert, float VperAmp, int Vin, int PeerId)
 {
     strcpy(_Name, Name);
     _Type = Type;
@@ -46,7 +46,6 @@ void  PeriphClass::Setup(const char* Name, int Type, bool isADS, int IOPort,
     _Nullwert = Nullwert;
     _VperAmp = VperAmp;
     _PeerId = PeerId;
-    memcpy(_UId, UId, 7);
 }
 bool PeriphClass::IsType(int Type)
 {
@@ -164,13 +163,7 @@ void PeerClass::Import(char *Buf)
 void  PeerClass::PeriphSetup(int Pos, const char* Name, int Type, bool isADS, int IOPort, 
                              float Nullwert, float VperAmp, int Vin, int PeerId)
 {
-    uint8_t UId[7];
-    byte PosByte = Pos;
-
-    memcpy(UId, _BroadcastAddress, 6);
-    UId[6] = PosByte;
-
-    Periph[Pos].Setup(Name, Type, isADS, IOPort, Nullwert, VperAmp, Vin, PeerId, UId);
+    Periph[Pos].Setup(Name, Type, isADS, IOPort, Nullwert, VperAmp, Vin, PeerId);
 }
 int   PeerClass::GetPeriphId(char *Name)
 {

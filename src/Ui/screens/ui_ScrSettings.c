@@ -17,7 +17,7 @@ void ui_ScrSettings_screen_init(void)
     lv_obj_set_x(ui_BtnSet1, -40);
     lv_obj_set_y(ui_BtnSet1, 60);
     lv_obj_set_align(ui_BtnSet1, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_BtnSet1, LV_OBJ_FLAG_HIDDEN | LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    lv_obj_add_flag(ui_BtnSet1, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_BtnSet1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_color(ui_BtnSet1, lv_color_hex(0xAD0808), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_BtnSet1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -29,7 +29,7 @@ void ui_ScrSettings_screen_init(void)
     lv_obj_set_width(ui_BtnSet1Lbl1, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_BtnSet1Lbl1, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_BtnSet1Lbl1, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_BtnSet1Lbl1, "Hidden");
+    lv_label_set_text(ui_BtnSet1Lbl1, "WebSvr");
     lv_obj_set_style_text_color(ui_BtnSet1Lbl1, lv_color_hex(0xDDDDDD), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_BtnSet1Lbl1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
