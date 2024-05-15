@@ -235,7 +235,10 @@ void InitWebServer()
     IPAddress IP = WiFi.softAPIP();
     Serial.print("AP IP address: ");
     Serial.println(IP);
-  
+    
+    ActiveWebPeer = &Self;
+    ActiveWebPeriph = NULL;
+    
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send_P(200, "text/html", index_html, processor);
     });
