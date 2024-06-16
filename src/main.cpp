@@ -469,6 +469,18 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
                                 SaveNeeded = true;
                                 if (Self.GetDebugMode()) Serial.printf("%s->Periph[%d].Name is now: %s\n", P->GetName(), Si, P->GetPeriphName(Si));
                         }
+
+                        snprintf(Buf, sizeof(Buf), "B%d", Si);                      // get B0 (Brother of Periph 0)
+                        if (doc.containsKey(Buf)) 
+                        {
+                            int Brother = (int) doc[Buf];
+
+                            if (Brother !=  P->GetPeriphBrotherId(Si))
+                            {
+                                P->SetPeriphBrotherId(Si, Brother);
+                                if (Self.GetDebugMode()) Serial.printf("%s->Periph[%d].Brother is now: %d\n", P->GetName(), Si, P->GetPeriphBrotherId(Si));
+                            }
+                        }
                     } 
                 }
                 SendPairingConfirm(P); 

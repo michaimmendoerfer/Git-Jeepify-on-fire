@@ -34,10 +34,10 @@ PeriphClass::PeriphClass()
     _OldValue = 0;
     _Changed = false;
     _PeerId = 0;
-    memset(_UId, 0, 7);
+    _Brother = -1;
 }
 void  PeriphClass::Setup(const char* Name, int Type, bool isADS, int IOPort, 
-                         float Nullwert, float VperAmp, int Vin, int PeerId)
+                         float Nullwert, float VperAmp, float Vin, int PeerId)
 {
     strcpy(_Name, Name);
     _Type = Type;
@@ -45,8 +45,16 @@ void  PeriphClass::Setup(const char* Name, int Type, bool isADS, int IOPort,
     _IOPort = IOPort;
     _Nullwert = Nullwert;
     _VperAmp = VperAmp;
+    _Vin = Vin;
     _PeerId = PeerId;
 }
+void  PeriphClass::Setup(const char* Name, int Type, bool isADS, int IOPort, 
+                         float Nullwert, float VperAmp, float Vin, int PeerId, int Brother)
+{
+    Setup(Name, Type, isADS, IOPort, Nullwert, VperAmp, Vin, PeerId);
+    _Brother = Brother;
+}
+
 bool PeriphClass::IsType(int Type)
 {
     switch (Type) { 
@@ -74,6 +82,7 @@ PeerClass::PeerClass()
     _Changed = false;
     _TSLastSeen = 0;
     memset(_BroadcastAddress, 0, 6);
+    _Brightness = 50;
 }
 void  PeerClass::Setup(const char* Name, int Type, const char *Version, const uint8_t *BroadcastAddress, 
                        bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode)
@@ -81,7 +90,7 @@ void  PeerClass::Setup(const char* Name, int Type, const char *Version, const ui
     strcpy(_Name, Name);
     _Type = Type;
     strcpy(_Version, Version);
-    memcpy(_BroadcastAddress, BroadcastAddress, 6);
+    if (BroadcastAddress) memcpy(_BroadcastAddress, BroadcastAddress, 6);
     _SleepMode = SleepMode;
     _DebugMode = DebugMode;
     _DemoMode  = DemoMode;
@@ -93,14 +102,7 @@ void  PeerClass::Setup(const char* Name, int Type, const char *Version, const ui
                     bool SleepMode, bool DebugMode, bool DemoMode, bool PairMode,
                     int VoltageMon, int RelayType, int ADCPort1, int ADCPort2, float VoltageDevider)
 {
-    strcpy(_Name, Name);
-    _Type = Type;
-    strcpy(_Version, Version);
-    if (BroadcastAddress) memcpy(_BroadcastAddress, BroadcastAddress, 6);
-    _SleepMode = SleepMode;
-    _DebugMode = DebugMode;
-    _DemoMode  = DemoMode;
-    _PairMode  = PairMode;
+    Setup(Name, Type, Version, BroadcastAddress, SleepMode, DebugMode, DemoMode, PairMode);
 
     _VoltageMon     = VoltageMon;
     _RelayType      = RelayType;
@@ -125,9 +127,7 @@ char* PeerClass::Export()
                         
     for (int Si=0; Si<MAX_PERIPHERALS; Si++)
     { 
-        snprintf(ReturnBufferPeriph, sizeof(ReturnBufferPeriph), ";%s;%d",
-                 Periph[Si].GetName(), Periph[Si].GetType());
-
+        snprintf(ReturnBufferPeriph, sizeof(ReturnBufferPeriph), ";%s;%d;%.3f;%.2f;%d", Periph[Si].GetName(), Periph[Si].GetType(), Periph[Si].GetNullwert(), Periph[Si].GetVin(), Periph[Si].GetBrotherId());
         strcat(ExportImportBuffer, ReturnBufferPeriph);
     }
 
@@ -154,17 +154,29 @@ void PeerClass::Import(char *Buf)
     {
         Periph[Si].SetName(strtok(NULL, ";"));
         Periph[Si].SetType(atoi(strtok(NULL, ";")));
+        Periph[Si].SetNullwert(atof(strtok(NULL, ";")));
+        Periph[Si].SetVin(atof(strtok(NULL, ";")));
+        Periph[Si].SetBrotherId(atoi(strtok(NULL, ";")));
         Periph[Si].SetPos(Si);
         Periph[Si].SetPeerId(_Id);
     }
-    //Serial.println("ende import");
+    Serial.println("ende import");
 }
         
 void  PeerClass::PeriphSetup(int Pos, const char* Name, int Type, bool isADS, int IOPort, 
-                             float Nullwert, float VperAmp, int Vin, int PeerId)
+                             float Nullwert, float VperAmp, float Vin, int PeerId)
 {
     Periph[Pos].Setup(Name, Type, isADS, IOPort, Nullwert, VperAmp, Vin, PeerId);
+    //Serial.printf("Nullwert von P%d ist jetzt %.3f\n\r", Pos, Periph[Pos].GetNullwert());
 }
+
+void  PeerClass::PeriphSetup(int Pos, const char* Name, int Type, bool isADS, int IOPort, 
+                             float Nullwert, float VperAmp, float Vin, int PeerId, int Brother)
+{
+    Periph[Pos].Setup(Name, Type, isADS, IOPort, Nullwert, VperAmp, Vin, PeerId, Brother);
+    //Serial.printf("Nullwert von P%d ist jetzt %.3f\n\r", Pos, Periph[Pos].GetNullwert());
+}
+
 int   PeerClass::GetPeriphId(char *Name)
 {
     for (int P=0; P<MAX_PERIPHERALS; P++)
@@ -260,7 +272,7 @@ PeerClass *FindNextPeer(PeerClass *P, int Type, bool circular)
 // returns next Peer, tries PeerList.size() times, otherwise returns NULL
 {
     PeerClass *Peer;
-    int ActualPeerIndex;
+    int ActualPeerIndex = 0;
 
     //Get PeerIndex in List
     for(int i = 0; i < PeerList.size(); i++) 
@@ -288,7 +300,7 @@ PeerClass *FindPrevPeer(PeerClass *P, int Type, bool circular)
 // returns previous Peer, tries PeerList.size() times, otherwise returns NULL
 {
     PeerClass *Peer;
-    int ActualPeerIndex;
+    int ActualPeerIndex = 0;
 
     //Get PeerIndex in List
     for(int i = 0; i < PeerList.size(); i++) 
@@ -327,12 +339,12 @@ PeriphClass *FindFirstPeriph(PeerClass *P, int Type)
     PeriphClass *Periph;
 
     if (PeriphList.size() == 0) return NULL;
-    // Serial.printf("PeriphList.size() = %d",PeriphList.size());
+    Serial.printf("PeriphList.size() = %d",PeriphList.size());
 
     for(int i = 0; i < PeriphList.size(); i++) 
     {   
         Periph = PeriphList.get(i);
-        //Serial.printf("Checke %s, PeriphId:%d\n\r", Periph->GetName(), Periph->GetId());
+        Serial.printf("Checke %s, PeriphId:%d\n\r", Periph->GetName(), Periph->GetId());
         
         if ((P == NULL) or (P->GetId() == Periph->GetPeerId()))
         // Peer fits
@@ -452,18 +464,18 @@ char *TypeInText(int Type)
 {
     switch (Type)
     {
-        case SENS_TYPE_VOLT:    return (char *)"Voltage-Sensor";
-        case SENS_TYPE_AMP:     return (char *)"Current-Sensor";
-        case SENS_TYPE_SWITCH:  return (char *)"Switch";
-        case SWITCH_1_WAY:      return (char *)"1-way Switch";
-        case SWITCH_2_WAY:      return (char *)"2-Way Switch";
-        case SWITCH_4_WAY:      return (char *)"4-way Switch";
-        case SWITCH_8_WAY:      return (char *)"8-Way Switch";
-        case PDC:               return (char *)"Power distributor";
-        case PDC_SENSOR_MIX:    return (char *)"Mixed Device";
-        case BATTERY_SENSOR:    return (char *)"Battery-Sensor";
-        case MONITOR_ROUND:     return (char *)"Round Monitor";
-        case MONITOR_BIG:       return (char *)"3.5' Monitor";
+        case SENS_TYPE_VOLT:    return (char*) "Voltage-Sensor";
+        case SENS_TYPE_AMP:     return (char*) "Current-Sensor";
+        case SENS_TYPE_SWITCH:  return (char*) "Switch";
+        case SWITCH_1_WAY:      return (char*) "1-way Switch";
+        case SWITCH_2_WAY:      return (char*) "2-Way Switch";
+        case SWITCH_4_WAY:      return (char*) "4-way Switch";
+        case SWITCH_8_WAY:      return (char*) "8-Way Switch";
+        case PDC:               return (char*) "Power distributor";
+        case PDC_SENSOR_MIX:    return (char*) "Mixed Device";
+        case BATTERY_SENSOR:    return (char*) "Battery-Sensor";
+        case MONITOR_ROUND:     return (char*) "Round Monitor";
+        case MONITOR_BIG:       return (char*) "3.5' Monitor";
     }
-    return (char *)"not known";
+    return (char*) "not known";
 }
