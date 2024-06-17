@@ -706,14 +706,44 @@ void Ui_Multi_Prev(lv_event_t * e)
 #pragma region Screen_Switch
 void SwitchUpdateTimer(lv_timer_t * timer)
 {
-	if (ActivePeriphSwitch){
+	if (ActivePeriphSwitch)
+	{
 		if (ActivePeriphSwitch->GetValue() == 1)
 		{
 			lv_obj_set_style_bg_img_src(ui_ScrSwitch, &ui_img_btn_png, LV_PART_MAIN | LV_STATE_DEFAULT);
+			
+			//ggf show Sens-brother
+			if (ActivePeriphSwitch->GetBrotherId() != -1)   
+			{
+				PeriphClass *Brother = FindPeriphById(ActivePeriphSwitch->GetBrotherId());
+				if (Brother)
+				{
+					char buf[10];
+					int nk = 0;
+					float value = Brother->GetValue();
+					
+					if      (value<10)  nk = 2;
+					else if (value<100) nk = 1;
+					else                nk = 0;
+
+					if (value == -99) strcpy(buf, "--"); 
+					else dtostrf(value, 0, nk, buf);
+
+					strcat(buf, " V");
+
+					lv_label_set_text(ui_LblSwitchBrother, buf);
+					lv_obj_clear_flag(ui_LblSwitchBrother, LV_OBJ_FLAG_HIDDEN);
+				}
+				else
+				{
+					lv_obj_add_flag(ui_LblSwitchBrother, LV_OBJ_FLAG_HIDDEN);
+				}
+			}
 		}
 		else
 		{
 			lv_obj_set_style_bg_img_src(ui_ScrSwitch, &ui_img_btn_off_png, LV_PART_MAIN | LV_STATE_DEFAULT);
+			lv_obj_add_flag(ui_LblSwitchBrother, LV_OBJ_FLAG_HIDDEN);
 		}
 	}
 }
