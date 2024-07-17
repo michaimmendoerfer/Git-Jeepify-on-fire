@@ -206,6 +206,7 @@ class PeerClass
 PeerClass *FindPeerByMAC(const uint8_t *BroadcastAddress);
 PeerClass *FindPeerById(int Id);
 PeerClass *FindPeerByName(char *Name);
+PeerClass *PeerOf(PeriphClass *P);
 
 PeerClass *FindFirstPeer(int Type);
 PeerClass *FindNextPeer(PeerClass *P, int Type, bool circular);

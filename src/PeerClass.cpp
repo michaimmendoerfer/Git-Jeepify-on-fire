@@ -259,6 +259,10 @@ PeerClass *FindPeerByName(char *Name)
     }
     return NULL;
 }
+PeerClass *PeerOf(PeriphClass *P)
+{
+    return FindPeerById(P->GetPeerId());
+}
 PeerClass *FindFirstPeer(int Type)
 // returns first Peer with Type, otherwise NULL
 {

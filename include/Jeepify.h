@@ -33,7 +33,7 @@
 #define MAX_PERIPHERALS 5
 #define MAX_PEERS       10
 #define MAX_STATUS      10
-#define SCHWELLE        0.0005
+#define SCHWELLE        0.1
 
 #define MSG_CHANGED_SWITCH     10 // Payload PeriphId
 #define MSG_CHANGED_SENSOR     20 // Payload PeriphId

@@ -2,7 +2,7 @@
 #define NODE_TYPE MONITOR_ROUND
 //#define KILL_NVS 1
 
-const char *_Version = "V 3.41";
+const char *_Version = "V 3.51";
 const char *_Name = "Monitor 2";
 const char _Protokoll_Version[] = "1.01";
 
@@ -23,6 +23,7 @@ const char _Protokoll_Version[] = "1.01";
 #include "Ui\ui_events.h" 
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
+#include <nvs_flash.h>
 #pragma endregion Includes
 
 #define TFT_HOR_RES   240
@@ -557,6 +558,11 @@ void setup()
     
     Self.Setup(_Name, MONITOR_ROUND, _Version, broadcastAddressAll, false, true, false, false);
     
+    #ifdef KILL_NVS
+        nvs_flash_erase(); nvs_flash_init(); ESP.restart();
+        while(1)
+        {}
+    #endif
     //TFT & LVGL
     tft.init();
     tft.setRotation(0);

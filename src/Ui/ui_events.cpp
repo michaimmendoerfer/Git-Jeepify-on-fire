@@ -36,6 +36,7 @@ lv_timer_t *MultiTimer;
 lv_timer_t *SwitchTimer;
 lv_timer_t *SettingsTimer;
 
+LV_IMG_DECLARE(ui_img_1253518904);   
 LV_IMG_DECLARE(ui_img_btn_off_png);   
 LV_IMG_DECLARE(ui_img_btn_png);      
 
@@ -291,7 +292,7 @@ void Ui_Single_Prepare(lv_event_t * e)
 	if (ActivePeriphSingle)
 	{
 		lv_label_set_text(ui_LblSinglePeriph, ActivePeriphSingle->GetName());
-		lv_label_set_text(ui_LblSinglePeer, FindPeerById(ActivePeriphSingle->GetPeerId())->GetName());
+		lv_label_set_text(ui_LblSinglePeer, PeerOf(ActivePeriphSingle)->GetName());
 	}
 	else
 	{
@@ -335,6 +336,7 @@ void SingleUpdateTimer(lv_timer_t * timer)
 	{
 		value = ActivePeriphSingle->GetValue();
 		//if (DebugMode) Serial.printf("Sensor: %s: %f\n", ActiveSens->Name, value);
+		if (abs(value) < SCHWELLE) value = 0;
 
 		if      (value<10)  nk = 2;
 		else if (value<100) nk = 1;
@@ -475,7 +477,7 @@ void Ui_Multi_Loaded(lv_event_t * e)
 				lv_obj_t *SensButtonPeriphName = ui_comp_get_child(ui_ButtonSensorSmall, UI_COMP_BUTTONSENSORSMALL_LBLSENSSMALLPERIPH);
 				lv_obj_t *SensButtonPos        = ui_comp_get_child(ui_ButtonSensorSmall, UI_COMP_BUTTONSENSORSMALL_LBLSENSPOS);
 				
-				lv_label_set_text_fmt(SensButtonPeerName,   "%.6s", FindPeerById(Screen[ActiveMultiScreen].GetPeriph(Pos)->GetPeerId())->GetName());
+				lv_label_set_text_fmt(SensButtonPeerName,   "%.6s", PeerOf(Screen[ActiveMultiScreen].GetPeriph(Pos))->GetName());
 				lv_label_set_text_fmt(SensButtonPeriphName, "%.6s", Screen[ActiveMultiScreen].GetPeriph(Pos)->GetName());
 				lv_label_set_text_fmt(SensButtonPos, "%d", Pos);
 
@@ -532,11 +534,12 @@ void MultiUpdateTimer(lv_timer_t * timer)
 
 	Serial.printf("MultiTimer - Screen[%d] \n\r",ActiveMultiScreen);
 	
-	for (int Pos=0; Pos<4; Pos++) 
+	for (int Pos=0; Pos<PERIPH_PER_SCREEN; Pos++) 
 	{
 		if (Screen[ActiveMultiScreen].GetPeriphId(Pos) > 0)
 		{
 			value = Screen[ActiveMultiScreen].GetPeriph(Pos)->GetValue();
+			if (abs(value) < SCHWELLE) value = 0;
 		
 			if      (value<10)  nk = 2;
 			else if (value<100) nk = 1;
@@ -627,16 +630,16 @@ void Ui_Multi_Sensor_Clicked(lv_event_t * e)
     lv_obj_t * target = lv_event_get_target(e);
     
 	if(event_code == LV_EVENT_CLICKED) {
-        lv_obj_t *Sensor = ui_comp_get_child(target, UI_COMP_BUTTONSWITCHSMALL_LBLPOSITION);
+        lv_obj_t *Sensor = ui_comp_get_child(target, UI_COMP_BUTTONSENSORSMALL_LBLSENSPOS);
 	
 		int Pos = atoi(lv_label_get_text(Sensor));
-		ActivePeriph = Screen[ActiveMultiScreen].GetPeriph(Pos);
-		ActivePeer   = Screen[ActiveMultiScreen].GetPeer(Pos);
+		ActivePeriphSingle = Screen[ActiveMultiScreen].GetPeriph(Pos);
+		//ActivePeer   = Screen[ActiveMultiScreen].GetPeer(Pos);
 		
 		_ui_screen_change(&ui_ScrSingle, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrSingle_screen_init);
     }	
 	if(event_code == LV_EVENT_LONG_PRESSED) {
-        lv_obj_t *Button = ui_comp_get_child(target, UI_COMP_BUTTONSWITCHSMALL_LBLPOSITION);
+        lv_obj_t *Button = ui_comp_get_child(target, UI_COMP_BUTTONSENSORSMALL_LBLSENSPOS);
 	
 		MultiPosToChange = atoi(lv_label_get_text(Button));
 
