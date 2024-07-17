@@ -477,8 +477,8 @@ void Ui_Multi_Loaded(lv_event_t * e)
 				lv_obj_t *SensButtonPeriphName = ui_comp_get_child(ui_ButtonSensorSmall, UI_COMP_BUTTONSENSORSMALL_LBLSENSSMALLPERIPH);
 				lv_obj_t *SensButtonPos        = ui_comp_get_child(ui_ButtonSensorSmall, UI_COMP_BUTTONSENSORSMALL_LBLSENSPOS);
 				
-				lv_label_set_text_fmt(SensButtonPeerName,   "%.6s", PeerOf(Screen[ActiveMultiScreen].GetPeriph(Pos))->GetName());
-				lv_label_set_text_fmt(SensButtonPeriphName, "%.6s", Screen[ActiveMultiScreen].GetPeriph(Pos)->GetName());
+				lv_label_set_text_fmt(SensButtonPeerName,   "%.6s", Screen[ActiveMultiScreen].GetPeerName(Pos));
+				lv_label_set_text_fmt(SensButtonPeriphName, "%.6s", Screen[ActiveMultiScreen].GetPeriphName(Pos));
 				lv_label_set_text_fmt(SensButtonPos, "%d", Pos);
 
 				lv_obj_add_event_cb(ui_ButtonSensorSmall, Ui_Multi_Sensor_Clicked, LV_EVENT_ALL, NULL);  
@@ -496,11 +496,11 @@ void Ui_Multi_Loaded(lv_event_t * e)
 				lv_obj_t *SwitchButtonPeriphName = ui_comp_get_child(ui_ButtonSwitchSmall, UI_COMP_BUTTONSWITCHSMALL_LBLPERIPH);
 				lv_obj_t *SwitchButtonPos        = ui_comp_get_child(ui_ButtonSwitchSmall, UI_COMP_BUTTONSWITCHSMALL_LBLPOSITION);
 				
-				lv_label_set_text_fmt(SwitchButtonPeerName,   "%.6s", FindPeerById(Screen[ActiveMultiScreen].GetPeriph(Pos)->GetPeerId())->GetName());
-				lv_label_set_text_fmt(SwitchButtonPeriphName, "%.6s", Screen[ActiveMultiScreen].GetPeriph(Pos)->GetName());
+				lv_label_set_text_fmt(SwitchButtonPeerName,   "%.6s", Screen[ActiveMultiScreen].GetPeerName(Pos));
+				lv_label_set_text_fmt(SwitchButtonPeriphName, "%.6s", Screen[ActiveMultiScreen].GetPeriphName(Pos));
 				lv_label_set_text_fmt(SwitchButtonPos, "%d", Pos);
 
-				if (Screen[ActiveMultiScreen].GetPeriph(Pos)->GetValue() == 1) 
+				if (Screen[ActiveMultiScreen].GetPeriphValue(Pos) == 1) 
 					lv_imgbtn_set_state(SwitchButton, LV_IMGBTN_STATE_CHECKED_RELEASED);
 
 				lv_obj_add_event_cb(ui_ButtonSwitchSmall, Ui_Multi_Button_Clicked, LV_EVENT_ALL, NULL);  
@@ -790,7 +790,7 @@ void Ui_Switch_Loaded(lv_event_t * e)
 		Serial.println(ActivePeriphSwitch->GetName());
 		
 		lv_label_set_text(ui_LblSwitchPeriph, ActivePeriphSwitch->GetName());
-		lv_label_set_text(ui_LblSwitchPeer, FindPeerById(ActivePeriphSwitch->GetPeerId())->GetName());
+		lv_label_set_text(ui_LblSwitchPeer, PeerOf(ActivePeriphSwitch)->GetName());
 	}
 	else
 	{
@@ -863,7 +863,7 @@ void Ui_Periph_Choice_Loaded(lv_event_t * e)
 	if (ActivePeriph) {
 		Serial.println("ActivePeriph in PeriphCoice");
 
-		P = FindPeerById(ActivePeriph->GetPeerId());
+		P = PeerOf(ActivePeriph);
 
 		lv_label_set_text(ui_LblPeriphChoicePeriph, ActivePeriph->GetName());
 		lv_label_set_text(ui_LblPeriphChoicePeer, P->GetName());
