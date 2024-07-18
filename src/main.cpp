@@ -628,11 +628,7 @@ void loop()
   delay(5);
 }
 #pragma endregion Main
-/*void MultiScreenAddPeriph(PeriphClass *Periph, uint8_t Pos)
-{
-    Screen[ActiveMultiScreen].AddPeriph(Pos, Periph);
-}
-*/
+
 #pragma region Send-Things
 void SendPing(lv_timer_t * timer) {
     JsonDocument doc; String jsondata;
