@@ -59,7 +59,7 @@ volatile uint32_t TSPair    = 0;
 lv_timer_t *WDButtonVars;
 
 int ActiveMultiScreen;
-bool WebServerActive = true;
+bool WebServerActive = false;
 
 #pragma endregion Globals
 #pragma region WebServer
