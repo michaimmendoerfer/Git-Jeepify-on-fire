@@ -1,10 +1,11 @@
-#define NODE_NAME "Monitor-2"
+#define NODE_NAME "M240_1"
 #define NODE_TYPE MONITOR_ROUND
+#define DEBUG if (Self.GetDebugMode())
 //#define KILL_NVS 1
 
-const char *_Version = "V 3.51";
-const char *_Name = "Monitor 2";
-const char _Protokoll_Version[] = "1.01";
+const char *_Version = "V 3.81";
+const char *_Name = "M240_1";
+const char _Protokoll_Version[] = "2.00";
 
 #pragma region Includes
 #include <Arduino.h>
@@ -28,18 +29,37 @@ const char _Protokoll_Version[] = "1.01";
 
 #define TFT_HOR_RES   240
 #define TFT_VER_RES   240
-#define DRAW_BUF_SIZE (TFT_HOR_RES * TFT_VER_RES / 10 * (LV_COLOR_DEPTH / 8))
+#define DRAW_BUF_SIZE (TFT_HOR_RES * TFT_VER_RES / 20 * (LV_COLOR_DEPTH / 8))
+
+const char *T[MAX_PERIPHERALS] = {"T0", "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8"};
+const char *N[MAX_PERIPHERALS] = {"N0", "N1", "N2", "N3", "N4", "N5", "N6", "N7", "N8"};
+const char *B[MAX_PERIPHERALS] = {"Br0", "Br1", "Br2", "Br3", "Br4", "B5r", "B6r", "B7r", "B8r"};
+const char *ArrNullwert[MAX_PERIPHERALS] = {"NW0", "NW1", "NW2", "NW3", "NW4", "NW5", "NW6", "NW7", "NW8"};
+const char *ArrVperAmp[MAX_PERIPHERALS] = {"VpA0", "VpA1", "VpA2", "VpA3", "VpA4", "VpA5", "VpA6", "VpA7", "VpA8"};
+const char *ArrVin[MAX_PERIPHERALS] = {"Vin0", "Vin1", "Vin2", "Vin3", "Vin4", "Vin5", "Vin6", "Vin7", "Vin8"};
+const char *ArrPeriph[MAX_PERIPHERALS]   = {"Per0", "Per1", "Per2", "Per3", "Per4", "Per5", "Per6", "Per6", "Per7"};
 
 TFT_eSPI tft = TFT_eSPI(TFT_HOR_RES, TFT_VER_RES); /* TFT instance */
 CST816D Touch(I2C_SDA, I2C_SCL, TP_RST, TP_INT);
 
 #pragma region Globals
 static lv_disp_draw_buf_t draw_buf;
-static lv_color_t buf1[ TFT_HOR_RES * TFT_VER_RES / 10 ];
+static lv_color_t buf1[ TFT_HOR_RES * TFT_VER_RES / 20 ];
 
 int PeerCount;
 Preferences preferences;
 uint8_t broadcastAddressAll[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+
+struct ConfirmStruct {
+    uint8_t  Address[6];
+    char     Message[250];
+    volatile uint32_t TSMessage;
+    int      Try;
+    bool     Confirmed;
+};
+#define JEEPIFY_SEND_MAX_TRIES 10
+
+MyLinkedList<ConfirmStruct*> ConfirmList = MyLinkedList<ConfirmStruct*>();
 
 PeerClass Self;
 
@@ -55,11 +75,12 @@ volatile uint32_t TSMsgVolt = 0;
 volatile uint32_t TSMsgEich = 0;
 volatile uint32_t TSMsgPair = 0;
 volatile uint32_t TSPair    = 0;
+volatile uint32_t TSConfirm = 0;
 
 lv_timer_t *WDButtonVars;
 
 int ActiveMultiScreen;
-bool WebServerActive = false;
+bool WebServerActive = true;
 
 #pragma endregion Globals
 #pragma region WebServer
@@ -85,7 +106,7 @@ body{ margin: 0;padding: 0;font-family: Arial, Helvetica, sans-serif;background-
 h1{ text-transform: uppercase; font-weight: 500;}
 input{ border: 0; display: block; background: none; margin: 20px auto; text-align: center; border: 2px solid #4834d4; padding: 14px 10px; width: 30%%; outline: none; border-radius: 24px; color: white; font-size: smaller; transition: 0.3s;}
 input:focus{ width: 90%%; border-color:#22a6b3 ;}
-input[type='submit']{ border: 0; display: block; background: none; margin: 20px auto; text-align: center; border: 2px solid #22a6b3; padding: 14px 10px; width: 140px; outline: none; border-radius: 24px; color: white; transition: 0.3s; cursor: pointer;}
+input[type='submit']{ border: 0; display: block; background: none; margin: 20px auto; text-align: center; border: 2px solid #22a6b3; padding: 14px 10px; width: 90px; outline: none; border-radius: 24px; color: white; transition: 0.3s; cursor: pointer;}
 input[type='submit']:hover{ background-color: #22a6b3;}
 </style>
 </head>
@@ -106,7 +127,7 @@ input[type='submit']:hover{ background-color: #22a6b3;}
 </div>
 <div class="part">
 <input name="Vin" type="%TYPE%" placeholder="%Vin%">
-<input type="submit" name="message" value="update module" />
+<input type="submit" name="message" value="upd module" />
 </div>
 <div class="part">
 <table align=center>
@@ -227,7 +248,7 @@ bool SendWebNullwertChange()
 
 void InitWebServer()
 {
-    WiFi.softAP(ssid, password);
+    Serial.printf("create AP = %d", WiFi.softAP(ssid, password));
     WiFi.setTxPower(WIFI_POWER_8_5dBm);
     int txPower = WiFi.getTxPower();
     Serial.print("TX power: ");
@@ -387,22 +408,31 @@ void InitWebServer()
     });
 
   server.onNotFound(notFound);
-  server.begin();
-  
 }
 void ToggleWebServer()
 {   
     WebServerActive = !WebServerActive;
-    if (WebServerActive) server.begin();
-    else server.end();
+    if (WebServerActive) 
+    {
+        ActiveWebPeer = PeerList.get(0);
+        ActiveWebPeriph = PeriphList.get(0);
+        Serial.println("Server startet");
+        server.begin();
+    }
+    else 
+    {
+        Serial.println("Server beendet");
+        server.end();
+    }
 }
 #pragma endregion WebServer
 
 #pragma region Main
-void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) 
+//void OnDataRecv(const esp_now_recv_info *info, const uint8_t* incomingData, int len)
+void   OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 {
     PeerClass *P;
-
+    
     char* buff = (char*) incomingData;   
     JsonDocument doc; 
     String jsondata = String(buff); 
@@ -410,6 +440,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
     String BufS; char Buf[50] = {};
     bool SaveNeeded = false;
     bool NewPeer    = false;
+    char buf[100];
     
     jsondataBuf = jsondata;
     PrepareJSON();
@@ -418,132 +449,142 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 
     if (!error) // erfolgreich JSON
     {
-        P = FindPeerByMAC(mac);
-        TSMsgRcv = millis();
-        int Order = (int)doc["Order"];
+        strcpy(buf, doc["Node"]);
 
-        if ((!P) and (Order == SEND_CMD_PAIR_ME) and (Self.GetPairMode())) // neuen Peer registrieren
-        { 
-            P = new PeerClass();
-            PeerList.add(P);
-            SaveNeeded = true;
-            NewPeer    = true;
-            Self.SetPairMode(false); TSPair = 0;
+        char       *_PeerName    = strtok(buf, ";");
+        uint32_t    _Uptime      = atoi(strtok(NULL, ";"));
+        int         _Status      = atoi(strtok(NULL, ";"));
+        int         _Type        = (int) (doc["Type"]);
+        const char *_PeerVersion = doc["Version"];
+        int         _Order       = (int)doc["Order"];   
+
+        //P = FindPeerByMAC(info->src_addr);
+        P = FindPeerByMAC(mac);
+        if (P)
+        {
+            if ((P) and (Self.GetDebugMode()) and (millis() - P->GetTSLastSeen() > OFFLINE_INTERVAL)) ShowMessageBox("Peer online", P->GetName(), 1000, 200);
+            P->SetTSLastSeen(millis());
         }
 
-        if (P)      // Peer bekannt
-        { 
-            P->SetTSLastSeen(millis());
-            if (Self.GetDebugMode()) Serial.printf("bekannter Node: %s - LastSeen at %d", P->GetName(), P->GetTSLastSeen());
-            
-            if (Order == SEND_CMD_PAIR_ME) 
-            // check or init names
-            { 
-                int    Status       = doc["Status"];
-                String PeerName     = doc["Node"];
-                String PeerVersion  = doc["Version"];
+        TSMsgRcv = millis();
 
-                if ((strcmp(PeerName.c_str(), P->GetName()) != 0) or (strcmp(PeerVersion.c_str(), P->GetVersion()) != 0))
+        switch (_Order)
+        {
+            case SEND_CMD_PAIR_ME:
+                // new Peer wants to pair and module too - create it
+                if ((!P) and Self.GetPairMode())
                 {
+                    P = new PeerClass();
+                    PeerList.add(P);
                     SaveNeeded = true;
-                    P->Setup(PeerName.c_str(), (int)doc["Type"], PeerVersion.c_str(), mac, 
-                        (bool) bitRead(Status, 1), (bool) bitRead(Status, 0), (bool) bitRead(Status, 2), (bool) bitRead(Status, 3));
-                } 
-                
-                // Message-Bsp: "Node":"ESP32-1"; "T0":"1"; "N0":"Switch1"
-                for (int Si=0; Si<MAX_PERIPHERALS; Si++) {
-                    snprintf(Buf, sizeof(Buf), "T%d", Si);                          // Check for T0 (Type of Periph 0)
-                    if (Self.GetDebugMode()) Serial.printf("Check Pairing for: %s", Buf);
+                    NewPeer    = true;
+                    Self.SetPairMode(false); TSPair = 0;
                     
-                    if (doc.containsKey(Buf)) 
+                    P->Setup(_PeerName, _Type, _PeerVersion, mac, (bool) bitRead(_Status, 1), (bool) bitRead(_Status, 0), (bool) bitRead(_Status, 2), (bool) bitRead(_Status, 3));
+                    DEBUG ShowMessageBox("Peer added...", doc["Node"], 2000, 150);
+                    SendPairingConfirm(P); 
+
+                    for (int Si=0; Si<MAX_PERIPHERALS; Si++) 
                     {
-                        if (Self.GetDebugMode()) Serial.printf("Pairing found: %s", Buf);       
-                        int  Type = doc[Buf];                                       // Set Periph[0].Type
-
-                        snprintf(Buf, sizeof(Buf), "N%d", Si);                      // get N0 (Name of Periph 0)
-                        String PName = doc[Buf];
-
-                        if ((strcmp(PName.c_str(), P->GetPeriphName(Si)) != 0) or (Type != P->GetPeriphType(Si)))
-                        {
-                                P->PeriphSetup(Si, PName.c_str(), Type, false, false, 0, 0, 0, P->GetId());
-                                if (NewPeer) PeriphList.add(P->GetPeriphPtr(Si));
-                                SaveNeeded = true;
-                                if (Self.GetDebugMode()) Serial.printf("%s->Periph[%d].Name is now: %s\n", P->GetName(), Si, P->GetPeriphName(Si));
-                        }
-
-                        snprintf(Buf, sizeof(Buf), "B%d", Si);                      // get B0 (Brother of Periph 0)
-                        if (doc.containsKey(Buf)) 
-                        {
-                            int Brother = (int) doc[Buf];
-
-                            if (Brother !=  P->GetPeriphBrotherId(Si))
-                            {
-                                P->SetPeriphBrotherId(Si, Brother);
-                                if (Self.GetDebugMode()) Serial.printf("%s->Periph[%d].Brother is now: %d\n", P->GetName(), Si, P->GetPeriphBrotherId(Si));
-                            }
-                        }
-                    } 
-                }
-                SendPairingConfirm(P); 
-            }
-            /*// "Order"="UpdateName"; "Pos"="32; "NewName"="Horst"; Pos 99 is moduleName
-            else if (Order == SEND_CMD_UPDATE_NAME)// vieleicht bald weg
-            {
-                int Pos = (int) doc["Pos"];
-                String NewName = doc["NewName"];
-
-                if (NewName != "") 
-                {
-                    if (Pos == 99) P->SetName(NewName.c_str());
-                    else           P->SetPeriphName(Pos, NewName.c_str());
-                }
-
-                SavePeers();
-            }*/
-            else // Peer known - no status, no pairing so read new values
-            {
-                for (int i=0; i<MAX_PERIPHERALS; i++) 
-                {
-                    if (doc.containsKey((const char*)P->GetPeriphName(i))) {
-                        float TempSensor = (float)doc[P->GetPeriphName(i)];
+                        DEBUG Serial.printf("Check Pairing for: %s\n\r", ArrPeriph[Si]);
                         
-                        //Serial.print(P->GetPeriphName(i)); Serial.print(" found = "); Serial.println(TempSensor);
-                        
-                        if (TempSensor != P->GetPeriphValue(i)) {
-                            P->SetPeriphOldValue(i, P->GetPeriphValue(i));
-                            P->SetPeriphValue(i, TempSensor);
-                            P->SetPeriphChanged(i, true);
+                        if (doc[ArrPeriph[Si]].is<JsonVariant>())
+                        {
+                            strcpy(buf, doc[ArrPeriph[Si]]);
+                            int   _PeriphType = atoi(strtok(buf, ";"));
+                            char *_PeriphName = strtok(NULL, ";");
+                            P->PeriphSetup(Si, _PeriphName, _PeriphType, false, 0,0,0,0, 0, 0, 0, P->GetId());
+                            P->SetPeriphChanged(Si, true);
+                            PeriphList.add(P->GetPeriphPtr(Si));
+                            SaveNeeded = true;
+                            DEBUG Serial.printf("%s->Periph[%d].Name is now: %s\n\r", P->GetName(), Si, P->GetPeriphName(Si));
                         }
                     }
+                }
+                break;
+            case SEND_CMD_STATUS:
+                if (P)
+                {
+                    // check for module name change
+                    if (strcmp(_PeerName, P->GetName())) P->SetName(_PeerName);
 
-                    if (doc.containsKey("Status")) 
+                    for (int Si=0; Si<MAX_PERIPHERALS; Si++) 
                     {
-                        int Status = doc["Status"];
-                        P->SetDebugMode ((bool) bitRead(Status, 0));
-                        P->SetSleepMode ((bool) bitRead(Status, 1));
-                        P->SetDemoMode  ((bool) bitRead(Status, 2));
-                        P->SetPairMode  ((bool) bitRead(Status, 3));
-                    } 
-                } 
-            }
+                        DEBUG Serial.printf("Check values of: %s\n\r", ArrPeriph[Si]);
+                        
+                        if (doc[ArrPeriph[Si]].is<JsonVariant>())
+                        {
+                            strcpy(buf, doc[ArrPeriph[Si]]);
+                            int   _PeriphType = atoi(strtok(buf, ";"));
+                            char *_PeriphName = strtok(NULL, ";");
+                            float _Value0     = atof(strtok(NULL, ";"));
+                            float _Value1     = atof(strtok(NULL, ";"));
+                            float _Value2     = atof(strtok(NULL, ";"));
+                            float _Value3     = atof(strtok(NULL, ";"));
+
+
+                            // check for periph name change
+                            if (strcmp(_PeriphName, P->GetPeriphName(Si))) P->SetPeriphName(Si, _PeriphName);
+                            
+                            P->SetPeriphOldValue(Si, P->GetPeriphValue(Si, 0), 0);
+                            P->SetPeriphValue(Si, _Value0, 0);
+                            P->SetPeriphOldValue(Si, P->GetPeriphValue(Si, 1), 1);
+                            P->SetPeriphValue(Si, _Value1, 1);
+                            P->SetPeriphOldValue(Si, P->GetPeriphValue(Si, 2), 2);
+                            P->SetPeriphValue(Si, _Value2, 2);
+                            P->SetPeriphOldValue(Si, P->GetPeriphValue(Si, 3), 3);
+                            P->SetPeriphValue(Si, _Value3, 3);
+                            
+                            P->SetPeriphChanged(Si, true);
+
+                            if (_Status)
+                            {
+                                P->SetDebugMode ((bool) bitRead(_Status, 0));
+                                P->SetSleepMode ((bool) bitRead(_Status, 1));
+                                P->SetDemoMode  ((bool) bitRead(_Status, 2));
+                                P->SetPairMode  ((bool) bitRead(_Status, 3));
+                            } 
+                            
+                            DEBUG Serial.printf("%s->%s values are: %.2f - %.2f - %.2f - %.2f\n\r", P->GetName(), P->GetPeriphName(Si), 
+                                P->GetPeriphValue(Si, 0), P->GetPeriphValue(Si, 1), P->GetPeriphValue(Si, 2), P->GetPeriphValue(Si, 3));
+                        }
+                    }
+                }
+                break;
+    
+            case SEND_CMD_CONFIRM:
+                if ((P) and (doc["TSConfirm"].is<JsonVariant>()))
+                {
+                    uint32_t _TSConfirm = doc[TSConfirm];
+                    
+                    DEBUG Serial.printf("Confirm (%d) empfangen von %s\n\r", _TSConfirm, P->GetName());
+                    for (int i=0; i<ConfirmList.size(); i++)
+                    {
+                        ConfirmStruct *TempConfirm;
+                        TempConfirm = ConfirmList.get(i);
+                        DEBUG Serial.printf("empfangener TS ist: %d - durchsuchter TS (List[%d]) ist: %d\n\r", _TSConfirm, i, TempConfirm->TSMessage);
+                        if (TempConfirm->TSMessage == _TSConfirm)
+                        {
+                            TempConfirm->Confirmed = true;
+                            DEBUG Serial.printf("Found at list[%d] - DELETED\n\r", i);
+                        }
+                    }
+                }
+                break;
         } 
         
         if (SaveNeeded)
         {
             SavePeers();
             SaveNeeded = false;
-        }
-        if (NewPeer)
-        {
-            ReportAll();
-            RegisterPeers();
-            NewPeer = false;
+            DEBUG ShowMessageBox("Saving...", "complete", 1000, 200);
         }
     }
-    else 
-    {        // Error bei JSON
+    else // Error bei JSON
+    {        
         Serial.print(F("deserializeJson() failed: ")); 
         Serial.println(error.f_str());
+        Serial.printf("jsondata was: %s\n\r", jsondata);
         return;
     }
 }
@@ -551,29 +592,21 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
 void setup() 
 {
     #ifdef ARDUINO_USB_CDC_ON_BOOT
-        delay(3000);
+        delay(2000);
     #endif
+    Serial.begin(115200);
     
-    Serial.begin(460800);
-    
-    Self.Setup(_Name, MONITOR_ROUND, _Version, broadcastAddressAll, false, true, false, false);
-    
-    #ifdef KILL_NVS
-        nvs_flash_erase(); nvs_flash_init(); ESP.restart();
-        while(1)
-        {}
-    #endif
     //TFT & LVGL
     tft.init();
     tft.setRotation(0);
-    tft.setSwapBytes(true);
+    tft.setSwapBytes(false);
     tft.begin();
     Touch.begin();
-      
+
     lv_init();
     
-    lv_disp_draw_buf_init( &draw_buf, buf1, NULL, TFT_HOR_RES * TFT_VER_RES / 10 );
-
+    lv_disp_draw_buf_init( &draw_buf, buf1, NULL, TFT_HOR_RES * TFT_VER_RES / 20 );
+ 
     //Display-Driver
     static lv_disp_drv_t disp_drv;
     lv_disp_drv_init( &disp_drv );
@@ -589,17 +622,22 @@ void setup()
     indev_drv.type = LV_INDEV_TYPE_POINTER;
     indev_drv.read_cb = my_touchpad_read;
     lv_indev_drv_register( &indev_drv );
+    
+    Self.Setup(_Name, MONITOR_ROUND, _Version, broadcastAddressAll, false, true, false, false);
 
+    #ifdef KILL_NVS
+        nvs_flash_erase(); nvs_flash_init(); ESP.restart();
+        while(1)
+        {}
+    #endif
+    
     WiFi.mode(WIFI_AP_STA);
+
     //ESP-Now
     InitWebServer();
-    if (WebServerActive) 
-    {
-            ActiveWebPeer = PeerList.get(0);
-            ActiveWebPeriph = PeriphList.get(0);
-            server.begin();
-    }
-    //WiFi.mode(WIFI_AP);
+    
+    WebServerActive = !WebServerActive;
+    ToggleWebServer();
     
     if (esp_now_init() != ESP_OK) { Serial.println("Error initializing ESP-NOW"); return; }
 
@@ -630,6 +668,26 @@ void loop()
 #pragma endregion Main
 
 #pragma region Send-Things
+esp_err_t  JeepifySend(PeerClass *P, const uint8_t *data, size_t len, uint32_t TSConfirm, bool ConfirmNeeded = false)
+{
+    esp_err_t SendStatus = esp_now_send(P->GetBroadcastAddress(), data, len);
+    
+    Serial.printf("SendStatus was %d, ConfirmNeeded = %d\n\r", SendStatus, ConfirmNeeded);
+    if (ConfirmNeeded)
+    {   
+        ConfirmStruct *Confirm = new ConfirmStruct;
+        memcpy(Confirm->Address, P->GetBroadcastAddress(), 6);
+        strcpy(Confirm->Message, (const char *)data);
+        Confirm->Confirmed = false;
+        Confirm->TSMessage = TSConfirm;
+        Confirm->Try = 1;
+
+        ConfirmList.add(Confirm);
+
+        DEBUG Serial.printf("added Msg: %s to ConfirmList\n\r", Confirm->Message, Confirm->Try);   
+    }
+    return SendStatus;
+}
 void SendPing(lv_timer_t * timer) {
     JsonDocument doc; String jsondata;
 
@@ -648,7 +706,43 @@ void SendPing(lv_timer_t * timer) {
     for (int i=0; i<PeerList.size(); i++)
     {
         P = PeerList.get(i);
+        //PrintMAC(P->GetBroadcastAddress());
+        //Serial.printf(" - Sende Stay Alive an: %s\n\r", P->GetName());
+        
         if (P->GetType() > 0) esp_now_send(P->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  
+    }
+
+    if (ConfirmList.size() > 0)
+    { 
+        for (int i=ConfirmList.size()-1; i>=0; i--)
+        {
+            ConfirmStruct *Confirm = ConfirmList.get(i);
+            Confirm->Try++;
+            
+            if (Confirm->Confirmed == true)
+            {
+                //Serial.printf("deleted Msg: %s from ConfirmList: SUCCESS (tries: %d)\n\r", Confirm->Message, Confirm->Try);
+                char TxtBuf[100];
+                DEBUG sprintf(TxtBuf, "SUCCESS - Message to %s successful confirmed after %d tries!", FindPeerByMAC(Confirm->Address)->GetName(), Confirm->Try);
+                DEBUG ShowMessageBox("SUCCESS", TxtBuf, 1000, 200);
+                ConfirmList.remove(i);
+                delete Confirm;
+            }
+            else if (Confirm->Try == JEEPIFY_SEND_MAX_TRIES+1)
+            {
+                //Serial.printf("deleted Msg: %s from ConfirmList: FAILED (tries: %d)\n\r", Confirm->Message, Confirm->Try);
+                char TxtBuf[100];
+                DEBUG sprintf(TxtBuf, "FAILED - Message to %s deleted after %d tries!", FindPeerByMAC(Confirm->Address)->GetName(), Confirm->Try);
+                DEBUG ShowMessageBox("FAILED", TxtBuf, 1000, 200);
+                ConfirmList.remove(i);
+                delete Confirm;
+            }
+            else
+            {
+                DEBUG Serial.printf("%d: reSending Msg: %s from ConfirmList Try: %d\n\r", millis(), Confirm->Message, Confirm->Try);
+                esp_err_t SendStatus = esp_now_send(Confirm->Address, (uint8_t*) Confirm->Message, 200); 
+            }     
+        }
     }
 }
 void SendPairingConfirm(PeerClass *P) {
@@ -660,18 +754,14 @@ void SendPairingConfirm(PeerClass *P) {
   doc["Peer"]     = P->GetName();
   doc["Order"]    = SEND_CMD_YOU_ARE_PAIRED;
   doc["Type"]     = Self.GetType();
-  doc["B0"]       = (uint8_t)Broadcast[0];
-  doc["B1"]       = (uint8_t)Broadcast[1];
-  doc["B2"]       = (uint8_t)Broadcast[2];
-  doc["B3"]       = (uint8_t)Broadcast[3];
-  doc["B4"]       = (uint8_t)Broadcast[4];
-  doc["B5"]       = (uint8_t)Broadcast[5];
+  doc["B0"]       = (uint8_t)Broadcast[0]; doc["B1"] = (uint8_t)Broadcast[1]; doc["B2"] = (uint8_t)Broadcast[2];
+  doc["B3"]       = (uint8_t)Broadcast[3]; doc["B4"] = (uint8_t)Broadcast[4]; doc["B5"] = (uint8_t)Broadcast[5];
 
   serializeJson(doc, jsondata);  
   
   TSMsgSnd = millis();
   esp_now_send(broadcastAddressAll, (uint8_t *) jsondata.c_str(), 200); 
-  if (Self.GetDebugMode())
+  DEBUG
   {
       Serial.print("Sent you are paired"); 
       Serial.println(jsondata);  
@@ -679,77 +769,41 @@ void SendPairingConfirm(PeerClass *P) {
 }
 bool ToggleSwitch(PeerClass *P, int PerNr)
 {
-    JsonDocument doc; String jsondata; 
-    
-    doc["from"]  = NODE_NAME;   
-    doc["Order"] = SEND_CMD_SWITCH_TOGGLE;
-    doc["Value"] = P->GetPeriphName(PerNr);
-    doc["Pos"]   = P->GetPeriphPos(PerNr);
-    
-    serializeJson(doc, jsondata);  
-    
-    TSMsgSnd = millis();
-    esp_now_send(P->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
-    if (Self.GetDebugMode()) Serial.println(jsondata);
-
-    return true;
+    return ToggleSwitch(P->GetPeriphPtr(PerNr));
 }
 bool ToggleSwitch(PeriphClass *Periph)
 {
     JsonDocument doc; String jsondata; 
     
-    doc["from"]  = NODE_NAME;   
-    doc["Order"] = SEND_CMD_SWITCH_TOGGLE;
-    doc["Value"] = Periph->GetName();
-    doc["Pos"]   = Periph->GetPos();
+    doc["From"]         = Self.GetName();  
+    doc["Order"]        = SEND_CMD_SWITCH_TOGGLE;
+    doc["PeriphName"]   = Periph->GetName();
+    doc["PeriphPos"]    = Periph->GetPos();
+
+    //Serial.printf("Toggle Value = %f\n\r", Periph->GetValue());
     
     serializeJson(doc, jsondata);  
     
     TSMsgSnd = millis();
     esp_now_send(FindPeerById(Periph->GetPeerId())->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
-    if (Self.GetDebugMode()) Serial.println(jsondata);
+    DEBUG Serial.println(jsondata);
     
     return true;
-}
-void SendCommand(PeerClass *P, String Cmd) {
-  JsonDocument doc; String jsondata; 
-  
-  doc["from"]  = Self.GetName();   
-  doc["Order"] = Cmd;
-  
-  serializeJson(doc, jsondata);  
-  
-  TSMsgSnd = millis();
-  esp_now_send(P->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
-  if (Self.GetDebugMode()) Serial.println(jsondata);
-}
-void SendCommand(PeerClass *P, int Cmd) {
-  JsonDocument doc; String jsondata; 
-  
-  doc["from"]  = Self.GetName();   
-  doc["Order"] = Cmd;
-  
-  serializeJson(doc, jsondata);  
-  
-  TSMsgSnd = millis();
-  esp_now_send(P->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
-  if (Self.GetDebugMode()) Serial.println(jsondata);
 }
 void SendCommand(PeerClass *P, int Cmd, String Value) {
   JsonDocument doc; String jsondata; 
   
-  doc["from"]  = Self.GetName();   
+  doc["From"]  = Self.GetName();   
   doc["Order"] = Cmd;
-  doc["Value"] = Value;
+  if (Value != "") doc["Value"] = Value;
   
   serializeJson(doc, jsondata);  
   
   TSMsgSnd = millis();
   esp_now_send(P->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
-  if (Self.GetDebugMode()) Serial.println(jsondata);
+  DEBUG Serial.println(jsondata);
 }
 #pragma endregion Send-Things
-
 #pragma region System-Screens
 void PrepareJSON() {
   if (jsondataBuf) {
@@ -764,10 +818,25 @@ void PrepareJSON() {
 }
 #pragma endregion System-Screens
 #pragma region Other
-void WriteStringToCharArray(String S, char *C) {
-  int   ArrayLength = S.length()+1;    //The +1 is for the 0x00h Terminator
-  S.toCharArray(C,ArrayLength);
-}
+void ShowMessageBox(const char * Titel, const char *Txt, int delay, int opa)
+{
+    static const char * btns[] = {""};
+
+    lv_obj_t *MsgBox = lv_msgbox_create(lv_scr_act(), Titel, Txt, NULL, false);
+    lv_obj_set_style_bg_color(MsgBox, lv_color_hex(0xAD0808), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(MsgBox, opa, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_color(MsgBox, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_opa(MsgBox, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_width(MsgBox, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(MsgBox, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(MsgBox, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(MsgBox, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    lv_obj_set_style_text_font(lv_msgbox_get_title(MsgBox), &lv_font_montserrat_22, LV_PART_MAIN | LV_STATE_DEFAULT);
+    
+    lv_obj_center(MsgBox);
+    lv_obj_del_delayed(MsgBox, delay);
+}  
 bool ToggleSleepMode() 
 {
     preferences.begin("JeepifyInit", false);
@@ -795,22 +864,42 @@ bool TogglePairMode() {
       TSPair = millis();
   };
 
-  if (Self.GetDebugMode()) { Serial.print("PairMode changed to: "); Serial.println(Self.GetPairMode()); }
+  DEBUG { Serial.print("PairMode changed to: "); Serial.println(Self.GetPairMode()); }
   
   return Self.GetPairMode();
 }
 void CalibVolt() {
-  JsonDocument doc; String jsondata;
- 
-  doc["Node"]  = Self.GetName();  
-  doc["Order"] = SEND_CMD_VOLTAGE_CALIB;
-  doc["NewVoltage"] = lv_textarea_get_text(ui_TxtVolt);
-  
-  serializeJson(doc, jsondata);  
+    JsonDocument doc; String jsondata;
+    
+    uint32_t TSConfirm = millis();
 
-  esp_now_send(ActivePeer->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  
-  if (Self.GetDebugMode()) Serial.println(jsondata);
+    doc["Node"]  = Self.GetName();  
+    doc["Order"] = SEND_CMD_VOLTAGE_CALIB;
+    doc["NewVoltage"] = lv_textarea_get_text(ui_TxtVolt);
+    doc["TSConfirm"] = TSConfirm;
+    
+    serializeJson(doc, jsondata);  
+
+    JeepifySend(ActivePeer, (uint8_t *) jsondata.c_str(), 100, TSConfirm, true);  
+    
+    DEBUG Serial.println(jsondata);
 }
+void CalibAmp() 
+{
+    JsonDocument doc; String jsondata;
+
+    uint32_t TSConfirm = millis();
+
+    doc["Node"]  = Self.GetName();  
+    doc["Order"] = SEND_CMD_CURRENT_CALIB;
+    doc["TSConfirm"] = TSConfirm;
+    
+    serializeJson(doc, jsondata);  
+    JeepifySend(ActivePeer, (uint8_t *) jsondata.c_str(), 100, TSConfirm, true);  
+
+    DEBUG Serial.println(jsondata);
+}
+
 void PrintMAC(const uint8_t * mac_addr){
   char macStr[18];
   snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
@@ -818,14 +907,22 @@ void PrintMAC(const uint8_t * mac_addr){
   Serial.print(macStr);
 }
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) { 
-    if (Self.GetDebugMode()) {
-        if (Self.GetDebugMode()) 
+    DEBUG 
+    {
+        //Serial.print("Last Packet Send Status: ");
+        //Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+        
+        if (status == ESP_NOW_SEND_SUCCESS)
         {
-            Serial.print("\r\nLast Packet Send Status:\t");
-            Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+            //Serial.println("Message send SUCCESS");
+        }
+        else 
+        {
+            Serial.println("Message send FAILED");
         }
     }
 }
+//
 void my_disp_flush( lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p )
 {
     uint32_t w = ( area->x2 - area->x1 + 1 );

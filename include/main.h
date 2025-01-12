@@ -10,6 +10,8 @@
 
 void   PrintMAC(const uint8_t * mac_addr);
 
+//void   OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status);
+//void   OnDataRecv(const esp_now_recv_info *info, const uint8_t* incomingData, int len);
 void   OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status);
 void   OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len);
 
@@ -19,11 +21,11 @@ void   my_touchpad_read( lv_indev_drv_t * indev_driver, lv_indev_data_t * data )
 void   SendPing(lv_timer_t * timer);
 bool   ToggleSwitch(PeerClass *P, int PerNr);
 bool   ToggleSwitch(PeriphClass *Periph);
-void   SendCommand(PeerClass *Peer, String Cmd);
-void   SendCommand(PeerClass *P, int Cmd) ;
-void   SendCommand(PeerClass *P, int Cmd, String Value);
+
+void   SendCommand(PeerClass *P, int Cmd, String Value="");
 void   SendPairingConfirm(PeerClass *Peer);
-//void   MultiScreenAddPeriph(struct_Periph *Periph, uint8_t Pos);
+
+void   ShowMessageBox(const char * Titel, const char *Txt, int delay, int opa=255);
 
 //void   CheckButtonVars();
 bool   ToggleSleepMode();
@@ -31,9 +33,9 @@ bool   ToggleDebugMode();
 bool   TogglePairMode();
 
 void   CalibVolt();
+void   CalibAmp();
 void   PrepareJSON();
 void   PrintMAC(const uint8_t * mac_addr);
-void   WriteStringToCharArray(String S, char *C);
 
 void   InitWebServer();
 
