@@ -444,7 +444,7 @@ void   OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
     
     jsondataBuf = jsondata;
     PrepareJSON();
-    
+    Serial.println(jsondata);
     DeserializationError error = deserializeJson(doc, jsondata);
 
     if (!error) // erfolgreich JSON

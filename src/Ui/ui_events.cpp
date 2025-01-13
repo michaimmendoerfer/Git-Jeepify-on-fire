@@ -736,17 +736,26 @@ void Ui_Periph_Choice_Loaded(lv_event_t * e)
       	else 
 			lv_label_set_text(ui_LblPeriphChoiceOnline, "Online");
 
-		switch (ActivePeriph->GetType()) {
-			case SENS_TYPE_SWITCH:	lv_label_set_text(ui_LblPeriphChoiceType, "Switch"); 
-									lv_img_set_src(ui_ImgPeerChoice, &ui_img_menubtn2_png);
-									break;
-			case SENS_TYPE_AMP:		lv_label_set_text(ui_LblPeriphChoiceType, "Amp-Sensor"); 
-									lv_img_set_src(ui_ImgPeerChoice, &ui_img_menubtn1_png);
-									break;
-			case SENS_TYPE_VOLT:	lv_label_set_text(ui_LblPeriphChoiceType, "Volt-Sensor"); 
-									lv_img_set_src(ui_ImgPeerChoice, &ui_img_menubtn1_png);
-									break;
-			default:				lv_label_set_text(ui_LblPeriphChoiceType, "unknown type"); break;
+		int _Type = ActivePeriph->GetType();
+		
+		if (ActivePeriph->IsSwitch())
+		{
+			lv_label_set_text(ui_LblPeriphChoiceType, "Switch"); 
+			lv_img_set_src(ui_ImgPeerChoice, &ui_img_menubtn2_png);
+		}
+		else if (_Type == SENS_TYPE_AMP)
+		{
+			lv_label_set_text(ui_LblPeriphChoiceType, "Amp-Sensor"); 
+			lv_img_set_src(ui_ImgPeerChoice, &ui_img_menubtn1_png);
+		}
+		else if (_Type == SENS_TYPE_VOLT)
+		{
+			lv_label_set_text(ui_LblPeriphChoiceType, "Volt-Sensor"); 
+			lv_img_set_src(ui_ImgPeerChoice, &ui_img_menubtn1_png);
+		}
+		else
+		{
+			lv_label_set_text(ui_LblPeriphChoiceType, "unknown type"); 
 		}
 		Serial.println("ActivePeriph in PeriphCoice fertig");
 	}
