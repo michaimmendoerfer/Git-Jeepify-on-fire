@@ -388,6 +388,7 @@ void Ui_Multi_Loaded(lv_event_t * e)
 	for (int Pos=0; Pos<PERIPH_PER_SCREEN; Pos++)
 	{
 		int x; int y;
+		
 		switch (Pos) {
 			case 0: x= -65; y=-50; break;
 			case 1: x=  65; y=-50; break;
@@ -412,14 +413,14 @@ void Ui_Multi_Loaded(lv_event_t * e)
 			{	
 				CompThingArray[Pos] = new CompSensor;
 				Serial.println("nach new sensor");
-				CompThingArray[Pos]->Setup(ui_ScrMulti, x, y, Pos, 1, Periph, Ui_Multi_Clicked);
+				CompThingArray[Pos]->Setup(ui_ScrMulti, x, y, Pos, 3, Periph, Ui_Multi_Clicked);
 				Serial.println("nach setup");
 				CompThingArray[Pos]->Update();
 			}
 			else if (Periph->IsSwitch())
 			{
 				CompThingArray[Pos] = new CompButton;
-				CompThingArray[Pos]->Setup(ui_ScrMulti, x, y, Pos, 1, Periph, Ui_Multi_Clicked);
+				CompThingArray[Pos]->Setup(ui_ScrMulti, x, y, Pos, 3, Periph, Ui_Multi_Clicked);
 				CompThingArray[Pos]->Update();
 			}
 		}
@@ -806,18 +807,18 @@ void Ui_Init_Custom(lv_event_t * e)
 
 	Ui_LedRcv  = lv_led_create(lv_layer_top());
 	lv_obj_set_size(Ui_LedRcv, LEDSize, LEDSize);
-    lv_obj_align(Ui_LedRcv, LV_ALIGN_CENTER, 0, 170);
+    lv_obj_align(Ui_LedRcv, LV_ALIGN_CENTER, 0, 110);
     lv_led_set_color(Ui_LedRcv, lv_palette_main(LV_PALETTE_GREEN));
 	lv_led_off(Ui_LedRcv);
 
     Ui_LedSnd  = lv_led_create(lv_layer_top());
 	lv_obj_set_size(Ui_LedSnd, LEDSize, LEDSize);
-    lv_obj_align(Ui_LedSnd, LV_ALIGN_CENTER, -20, 167);
+    lv_obj_align(Ui_LedSnd, LV_ALIGN_CENTER, -20, 107);
     lv_led_set_color(Ui_LedSnd, lv_palette_main(LV_PALETTE_BLUE));
 
     Ui_LedPair  = lv_led_create(lv_layer_top());
     lv_obj_set_size(Ui_LedPair, LEDSize, LEDSize);
-	lv_obj_align(Ui_LedPair, LV_ALIGN_CENTER, 20, 167);
+	lv_obj_align(Ui_LedPair, LV_ALIGN_CENTER, 20, 107);
     lv_led_set_color(Ui_LedPair, lv_palette_main(LV_PALETTE_RED));
 
 	//Keyboard

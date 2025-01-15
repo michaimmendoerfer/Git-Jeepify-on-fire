@@ -1,5 +1,6 @@
-#define NODE_NAME "M240_1"
-#define NODE_TYPE MONITOR_ROUND
+#define NODE_NAME       "M240_1"
+#define NODE_TYPE       MONITOR_ROUND
+
 #define DEBUG if (Self.GetDebugMode())
 //#define KILL_NVS 1
 
@@ -535,7 +536,7 @@ void   OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
                             P->SetPeriphOldValue(Si, P->GetPeriphValue(Si, 3), 3);
                             P->SetPeriphValue(Si, _Value3, 3);
                             
-                            P->SetPeriphChanged(Si, true);
+                            P->SetPeriphChanged(Si, false); //werte wieder uptodate
 
                             if (_Status)
                             {
@@ -626,7 +627,7 @@ void setup()
     Self.Setup(_Name, MONITOR_ROUND, _Version, broadcastAddressAll, false, true, false, false);
 
     #ifdef KILL_NVS
-        nvs_flash_erase(); nvs_flash_init(); ESP.restart();
+        nvs_flash_erase(); nvs_flash_init(); while(1);
         while(1)
         {}
     #endif

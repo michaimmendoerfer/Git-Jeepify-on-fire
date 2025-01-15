@@ -24,11 +24,22 @@ void ui_ScrMulti_screen_init(void)
     lv_obj_set_style_text_color(ui_LblMultiScreenName, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LblMultiScreenName, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_ButtonMulti1 = lv_btn_create(ui_ScrMulti);
-    lv_obj_set_width(ui_ButtonMulti1, lv_pct(30));
-    lv_obj_set_height(ui_ButtonMulti1, lv_pct(30));
+    ui_Container2 = lv_obj_create(ui_ScrMulti);
+    lv_obj_remove_style_all(ui_Container2);
+    lv_obj_set_width(ui_Container2, lv_pct(75));
+    lv_obj_set_height(ui_Container2, lv_pct(75));
+    lv_obj_set_align(ui_Container2, LV_ALIGN_CENTER);
+    lv_obj_set_flex_flow(ui_Container2, LV_FLEX_FLOW_ROW_WRAP);
+    lv_obj_set_flex_align(ui_Container2, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_clear_flag(ui_Container2, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_pad_row(ui_Container2, 30, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_column(ui_Container2, 30, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_ButtonMulti1 = lv_btn_create(ui_Container2);
+    lv_obj_set_width(ui_ButtonMulti1, lv_pct(40));
+    lv_obj_set_height(ui_ButtonMulti1, lv_pct(40));
     lv_obj_set_x(ui_ButtonMulti1, lv_pct(-18));
-    lv_obj_set_y(ui_ButtonMulti1, lv_pct(-18));
+    lv_obj_set_y(ui_ButtonMulti1, lv_pct(-20));
     lv_obj_set_align(ui_ButtonMulti1, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_ButtonMulti1, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_ButtonMulti1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
@@ -45,11 +56,11 @@ void ui_ScrMulti_screen_init(void)
     lv_label_set_text(ui_Label6, "+");
     lv_obj_set_style_text_font(ui_Label6, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_ButtonMulti2 = lv_btn_create(ui_ScrMulti);
-    lv_obj_set_width(ui_ButtonMulti2, lv_pct(30));
-    lv_obj_set_height(ui_ButtonMulti2, lv_pct(30));
-    lv_obj_set_x(ui_ButtonMulti2, lv_pct(18));
-    lv_obj_set_y(ui_ButtonMulti2, lv_pct(-18));
+    ui_ButtonMulti2 = lv_btn_create(ui_Container2);
+    lv_obj_set_width(ui_ButtonMulti2, lv_pct(40));
+    lv_obj_set_height(ui_ButtonMulti2, lv_pct(40));
+    lv_obj_set_x(ui_ButtonMulti2, lv_pct(20));
+    lv_obj_set_y(ui_ButtonMulti2, lv_pct(-20));
     lv_obj_set_align(ui_ButtonMulti2, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_ButtonMulti2, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_ButtonMulti2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
@@ -66,11 +77,11 @@ void ui_ScrMulti_screen_init(void)
     lv_label_set_text(ui_Label2, "+");
     lv_obj_set_style_text_font(ui_Label2, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_ButtonMulti3 = lv_btn_create(ui_ScrMulti);
-    lv_obj_set_width(ui_ButtonMulti3, lv_pct(30));
-    lv_obj_set_height(ui_ButtonMulti3, lv_pct(30));
+    ui_ButtonMulti3 = lv_btn_create(ui_Container2);
+    lv_obj_set_width(ui_ButtonMulti3, lv_pct(40));
+    lv_obj_set_height(ui_ButtonMulti3, lv_pct(40));
     lv_obj_set_x(ui_ButtonMulti3, lv_pct(-18));
-    lv_obj_set_y(ui_ButtonMulti3, lv_pct(18));
+    lv_obj_set_y(ui_ButtonMulti3, lv_pct(20));
     lv_obj_set_align(ui_ButtonMulti3, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_ButtonMulti3, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_ButtonMulti3, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
@@ -87,11 +98,11 @@ void ui_ScrMulti_screen_init(void)
     lv_label_set_text(ui_Label3, "+");
     lv_obj_set_style_text_font(ui_Label3, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_ButtonMulti4 = lv_btn_create(ui_ScrMulti);
-    lv_obj_set_width(ui_ButtonMulti4, lv_pct(30));
-    lv_obj_set_height(ui_ButtonMulti4, lv_pct(30));
+    ui_ButtonMulti4 = lv_btn_create(ui_Container2);
+    lv_obj_set_width(ui_ButtonMulti4, lv_pct(40));
+    lv_obj_set_height(ui_ButtonMulti4, lv_pct(40));
     lv_obj_set_x(ui_ButtonMulti4, lv_pct(18));
-    lv_obj_set_y(ui_ButtonMulti4, lv_pct(18));
+    lv_obj_set_y(ui_ButtonMulti4, lv_pct(20));
     lv_obj_set_align(ui_ButtonMulti4, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_ButtonMulti4, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_ButtonMulti4, LV_OBJ_FLAG_SCROLLABLE);      /// Flags

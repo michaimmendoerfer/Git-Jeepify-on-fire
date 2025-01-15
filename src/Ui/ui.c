@@ -169,6 +169,7 @@ void ui_ScrMulti_screen_init(void);
 void ui_event_ScrMulti(lv_event_t * e);
 lv_obj_t * ui_ScrMulti;
 lv_obj_t * ui_LblMultiScreenName;
+lv_obj_t * ui_Container2;
 void ui_event_ButtonMulti1(lv_event_t * e);
 lv_obj_t * ui_ButtonMulti1;
 lv_obj_t * ui_Label6;

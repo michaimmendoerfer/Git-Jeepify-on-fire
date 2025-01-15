@@ -73,6 +73,7 @@ CompButton::~CompButton()
 }
 void CompButton::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, PeriphClass *Periph, lv_event_cb_t event_cb)
 {
+    // Size 1: 360-klein, 2: 360-groß, 3:240-klein, 4: 360-groß
     _Periph = Periph;
     _event_cb = event_cb;
     _Pos = Pos;
@@ -81,25 +82,41 @@ void CompButton::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
     _x = x;
     _y = y;			
 	
-    if (size == 1)
+    switch (size)
     {
-        _Width  =  70;
-        _Height = 120;
-        _PeerVisible = false;
-        _PeriphVisible = true;
-        _ValueVisible = true;
-        _PeriphValueCombo = true;
-    }
-    else
-    {
-        _Width  = 120;
-        _Height = 205;
-        _PeerVisible = true;
-        _PeriphVisible = true;
-        _ValueVisible = true;
-        _PeriphValueCombo = false;
-    }
-	
+        case 1:
+            _Width  =  70;
+            _Height = 120;
+            _PeerVisible = false;
+            _PeriphVisible = true;
+            _ValueVisible = true;
+            _PeriphValueCombo = true;
+            break;
+        case 2:
+            _Width  = 120;
+            _Height = 205;
+            _PeerVisible = true;
+            _PeriphVisible = true;
+            _ValueVisible = true;
+            _PeriphValueCombo = false;
+            break;
+        case 3:
+            _Width  =  60;
+            _Height = 105;
+            _PeerVisible = false;
+            _PeriphVisible = true;
+            _ValueVisible = true;
+            _PeriphValueCombo = true;
+            break;
+        case 4:
+            _Width  = 120;
+            _Height = 205;
+            _PeerVisible = true;
+            _PeriphVisible = true;
+            _ValueVisible = true;
+            _PeriphValueCombo = false;
+            break;  
+    }     
     _Spinner = lv_spinner_create(comp_parent, 1000, 90);
     
     lv_obj_set_align(_Spinner, LV_ALIGN_CENTER);
@@ -126,12 +143,26 @@ void CompButton::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
         lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_CHECKED_PRESSED, NULL, &ui_img_743505413, NULL);
         lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_CHECKED_RELEASED, NULL, &ui_img_888658411, NULL);
     }
-    else
+    if (size == 2)
     {
 	    lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_1134846501, NULL);
 		lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_PRESSED, NULL, &ui_img_1528892059, NULL);
 		lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_CHECKED_PRESSED, NULL, &ui_img_1528892059, NULL);
 		lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_CHECKED_RELEASED, NULL, &ui_img_715952573, NULL);
+    }
+    if (size == 3)
+    {
+	    lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_1640860301, NULL);
+        lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_PRESSED, NULL, &ui_img_743505413, NULL);
+        lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_CHECKED_PRESSED, NULL, &ui_img_743505413, NULL);
+        lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_CHECKED_RELEASED, NULL, &ui_img_888658411, NULL);
+    }
+    if (size == 4)
+    {
+	    lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_1640860301, NULL);
+        lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_PRESSED, NULL, &ui_img_743505413, NULL);
+        lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_CHECKED_PRESSED, NULL, &ui_img_743505413, NULL);
+        lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_CHECKED_RELEASED, NULL, &ui_img_888658411, NULL);
     }
 
     //set Switch-state
@@ -175,12 +206,17 @@ void CompButton::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
 		SetPeriphPos(0, -55);
         lv_obj_set_style_text_font(_LblPeriph, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
 	}
-	else
+	else if (size == 2)
 	{
 		SetPeriphPos(0, lv_pct(-70));
         lv_obj_set_style_text_font(_LblPeriph, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 	}
-    
+    else if (size == 3)
+	{
+		SetPeriphPos(0, lv_pct(-50));
+        lv_obj_set_style_text_font(_LblPeriph, &lv_font_montserrat_12, LV_PART_MAIN | LV_STATE_DEFAULT);
+	}
+
     _LblValue = lv_label_create(_Button);
     SetStyle(_LblPeriph);
     lv_obj_add_flag(_LblValue, LV_OBJ_FLAG_HIDDEN);
@@ -192,10 +228,15 @@ void CompButton::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
 		SetValuePos(50, 70);
     	lv_obj_set_style_text_font(_LblValue, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
 	}
-	else 
+	else if (size == 2)
 	{
 		SetValuePos(70, lv_pct(-40));
 		lv_obj_set_style_text_font(_LblValue, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+	}
+    else if (size == 3)
+	{
+		SetValuePos(50, lv_pct(-40));
+		lv_obj_set_style_text_font(_LblValue, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
 	}
     
 	lv_label_set_text(_LblValue, "--.- A");
@@ -227,9 +268,15 @@ void CompButton::Update()
 
     //set Switch-state
     if (_Periph->GetValue(0) == 0) 
+    {
         lv_imgbtn_set_state(_Button, LV_IMGBTN_STATE_RELEASED);
-    else 			  
+        Serial.printf("Button ist an : %0.2f\n\r", _Periph->GetValue(0));
+    }
+    else 
+    {			  
         lv_imgbtn_set_state(_Button, LV_IMGBTN_STATE_CHECKED_RELEASED);
+        Serial.printf("Button ist an : %0.2f\n\r", _Periph->GetValue(0));
+    }
 
     // show Spinner if Value is in changed state
     if (_Periph->GetChanged()) ShowSpinner();
@@ -313,6 +360,7 @@ CompSensor::~CompSensor()
 }
 void CompSensor::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, PeriphClass *Periph, lv_event_cb_t event_cb)
 {
+    // Size 1: 360-klein, 2: 360-groß, 3:240-klein, 4: 360-groß
     _Periph = Periph;
     _event_cb = event_cb;
     _Pos = Pos;
@@ -320,8 +368,18 @@ void CompSensor::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
     _x = x;
     _y = y;		
 
-    _Width  = 100;
-    _Height = 100;
+    switch (size)
+    {
+        case 1:
+            _Width  = 100;
+            _Height = 100;
+            break;
+        case 3:
+            _Width  = 50;
+            _Height = 50;
+            break;
+    }
+
     _PeerVisible = true;
     _PeriphVisible = true;
     _ValueVisible = true;
