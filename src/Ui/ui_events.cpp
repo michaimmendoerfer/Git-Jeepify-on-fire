@@ -304,7 +304,7 @@ void Ui_Single_Prepare(lv_event_t * e)
 
 		CompThingArray[Pos] = new CompMeter;
 		//Serial.println("nach new Meter");
-		CompThingArray[Pos]->Setup(ui_ScrSingle, 0, 0, 0, 360, ActivePeriphSingle, Ui_Single_Clicked);
+		CompThingArray[Pos]->Setup(ui_ScrSingle, 0, 0, 0, TFT_HOR_RES, ActivePeriphSingle, Ui_Single_Clicked);
 		//Serial.println("nach new Meter-Setup");
 		CompThingArray[Pos]->Update();
 		
@@ -390,10 +390,10 @@ void Ui_Multi_Loaded(lv_event_t * e)
 		int x; int y;
 		
 		switch (Pos) {
-			case 0: x= -65; y=-50; break;
-			case 1: x=  65; y=-50; break;
-			case 2: x= -65; y= 70; break;
-			case 3: x=  65; y= 70; break;
+			case 0: x= -TFT_HOR_RES/5; y=-TFT_VER_RES/7; break;
+			case 1: x=  TFT_HOR_RES/5; y=-TFT_VER_RES/7; break;
+			case 2: x= -TFT_HOR_RES/5; y= TFT_VER_RES/5; break;
+			case 3: x=  TFT_HOR_RES/5; y= TFT_VER_RES/5; break;
 		}
 
 		PeriphClass *Periph =  Screen[ActiveMultiScreen].GetPeriph(Pos);
@@ -573,8 +573,7 @@ void Ui_Multi_Prev(lv_event_t * e)
 	
 	Ui_Multi_Unload(e);
 	Ui_Multi_Loaded(e);
-	//_ui_screen_change(&ui_ScrMulti, LV_SCR_LOAD_ANIM_NONE, 0, 0, &ui_ScrMulti_screen_init);
-}
+	}
 #pragma endregion Screen_MultiMeter
 #pragma region Screen_Switch
 void SwitchUpdateTimer(lv_timer_t * timer)

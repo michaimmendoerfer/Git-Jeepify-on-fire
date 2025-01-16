@@ -105,7 +105,7 @@ void ui_ScrPeer_screen_init(void)
                                            _ui_theme_color_BtnTxt);
     ui_object_set_themeable_style_property(ui_Container3, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_TEXT_OPA,
                                            _ui_theme_alpha_BtnTxt);
-    lv_obj_set_style_text_font(ui_Container3, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Container3, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_BtnPeer1 = lv_btn_create(ui_Container3);
     lv_obj_set_width(ui_BtnPeer1, lv_pct(40));

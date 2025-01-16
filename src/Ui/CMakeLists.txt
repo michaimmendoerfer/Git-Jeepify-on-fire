@@ -33,6 +33,9 @@ SET(SOURCES components/ui_comp_buttonsensorsmall.c
     images/ui_img_1134846501.c
     images/ui_img_1640860301.c
     images/ui_img_715952573.c
-    images/ui_img_888658411.c)
+    images/ui_img_888658411.c
+    images/ui_img_1471590615.c
+    images/ui_img_237434643.c
+    images/ui_img_434995191.c)
 
 add_library(ui ${SOURCES})

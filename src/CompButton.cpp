@@ -101,8 +101,8 @@ void CompButton::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
             _PeriphValueCombo = false;
             break;
         case 3:
-            _Width  =  60;
-            _Height = 105;
+            _Width  =  45;
+            _Height = 77;
             _PeerVisible = false;
             _PeriphVisible = true;
             _ValueVisible = true;
@@ -120,8 +120,8 @@ void CompButton::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
     _Spinner = lv_spinner_create(comp_parent, 1000, 90);
     
     lv_obj_set_align(_Spinner, LV_ALIGN_CENTER);
-    lv_obj_set_width(_Spinner,  _Width+30);
-    lv_obj_set_height(_Spinner, _Width+30);
+    lv_obj_set_width(_Spinner,  _Width+TFT_HOR_RES/12);
+    lv_obj_set_height(_Spinner, _Width+TFT_VER_RES/12);
 	
     lv_obj_set_pos(_Spinner, _x, _y);
     lv_obj_add_flag(_Spinner, LV_OBJ_FLAG_HIDDEN);     
@@ -152,10 +152,10 @@ void CompButton::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
     }
     if (size == 3)
     {
-	    lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_1640860301, NULL);
-        lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_PRESSED, NULL, &ui_img_743505413, NULL);
-        lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_CHECKED_PRESSED, NULL, &ui_img_743505413, NULL);
-        lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_CHECKED_RELEASED, NULL, &ui_img_888658411, NULL);
+	    lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_237434643, NULL);
+        lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_PRESSED, NULL, &ui_img_1471590615, NULL);
+        lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_CHECKED_PRESSED, NULL, &ui_img_1471590615, NULL);
+        lv_imgbtn_set_src(_Button, LV_IMGBTN_STATE_CHECKED_RELEASED, NULL, &ui_img_434995191, NULL);
     }
     if (size == 4)
     {
@@ -213,7 +213,7 @@ void CompButton::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
 	}
     else if (size == 3)
 	{
-		SetPeriphPos(0, lv_pct(-50));
+		SetPeriphPos(0, lv_pct(-70));
         lv_obj_set_style_text_font(_LblPeriph, &lv_font_montserrat_12, LV_PART_MAIN | LV_STATE_DEFAULT);
 	}
 
