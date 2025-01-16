@@ -18,7 +18,7 @@ void ui_ScrMulti_screen_init(void)
     lv_obj_set_width(ui_LblMultiScreenName, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_LblMultiScreenName, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_LblMultiScreenName, 0);
-    lv_obj_set_y(ui_LblMultiScreenName, -148);
+    lv_obj_set_y(ui_LblMultiScreenName, -100);
     lv_obj_set_align(ui_LblMultiScreenName, LV_ALIGN_CENTER);
     lv_label_set_text(ui_LblMultiScreenName, "Screen");
     lv_obj_set_style_text_color(ui_LblMultiScreenName, lv_color_hex(0xDBDBDB), LV_PART_MAIN | LV_STATE_DEFAULT);

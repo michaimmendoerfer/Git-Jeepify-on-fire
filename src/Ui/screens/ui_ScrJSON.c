@@ -32,8 +32,8 @@ void ui_ScrJSON_screen_init(void)
     ui_LblJSON2 = lv_label_create(ui_ScrJSON);
     lv_obj_set_width(ui_LblJSON2, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_LblJSON2, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_LblJSON2, -4);
-    lv_obj_set_y(ui_LblJSON2, 100);
+    lv_obj_set_x(ui_LblJSON2, 0);
+    lv_obj_set_y(ui_LblJSON2, 85);
     lv_obj_set_align(ui_LblJSON2, LV_ALIGN_CENTER);
     lv_label_set_text(ui_LblJSON2, "JSON");
     lv_obj_set_style_text_color(ui_LblJSON2, lv_color_hex(0xAD0808), LV_PART_MAIN | LV_STATE_DEFAULT);

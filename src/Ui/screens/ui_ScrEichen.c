@@ -29,7 +29,7 @@ void ui_ScrEichen_screen_init(void)
     lv_obj_set_width(ui_BtnEichenStart, lv_pct(35));
     lv_obj_set_height(ui_BtnEichenStart, lv_pct(12));
     lv_obj_set_x(ui_BtnEichenStart, 0);
-    lv_obj_set_y(ui_BtnEichenStart, 57);
+    lv_obj_set_y(ui_BtnEichenStart, 50);
     lv_obj_set_align(ui_BtnEichenStart, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_BtnEichenStart, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_BtnEichenStart, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
@@ -51,8 +51,8 @@ void ui_ScrEichen_screen_init(void)
     ui_LblEichenPeer = lv_label_create(ui_ScrEichen);
     lv_obj_set_width(ui_LblEichenPeer, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_LblEichenPeer, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_LblEichenPeer, 1);
-    lv_obj_set_y(ui_LblEichenPeer, 101);
+    lv_obj_set_x(ui_LblEichenPeer, 0);
+    lv_obj_set_y(ui_LblEichenPeer, 85);
     lv_obj_set_align(ui_LblEichenPeer, LV_ALIGN_CENTER);
     lv_label_set_text(ui_LblEichenPeer, "Peer");
     lv_obj_set_style_text_color(ui_LblEichenPeer, lv_color_hex(0xAD0808), LV_PART_MAIN | LV_STATE_DEFAULT);

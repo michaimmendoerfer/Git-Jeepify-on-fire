@@ -382,7 +382,7 @@ static void SingleMeter_cb(lv_event_t * e) {
 void Ui_Multi_Loaded(lv_event_t * e)
 {
 	static uint32_t user_data = 10;
-		
+	Serial.println("Multi-loaded");	
 	lv_label_set_text(ui_LblMultiScreenName,Screen[ActiveMultiScreen].GetName());
 					
 	for (int Pos=0; Pos<PERIPH_PER_SCREEN; Pos++)
@@ -390,14 +390,15 @@ void Ui_Multi_Loaded(lv_event_t * e)
 		int x; int y;
 		
 		switch (Pos) {
-			case 0: x= -TFT_HOR_RES/5; y=-TFT_VER_RES/7; break;
-			case 1: x=  TFT_HOR_RES/5; y=-TFT_VER_RES/7; break;
-			case 2: x= -TFT_HOR_RES/5; y= TFT_VER_RES/5; break;
-			case 3: x=  TFT_HOR_RES/5; y= TFT_VER_RES/5; break;
+			case 0: x= (int)-TFT_HOR_RES/5; y=(int)-TFT_VER_RES/7; break;
+			case 1: x= (int) TFT_HOR_RES/5; y=(int)-TFT_VER_RES/7; break;
+			case 2: x= (int)-TFT_HOR_RES/5; y=(int) TFT_VER_RES/5; break;
+			case 3: x= (int) TFT_HOR_RES/5; y=(int) TFT_VER_RES/5; break;
 		}
 
 		PeriphClass *Periph =  Screen[ActiveMultiScreen].GetPeriph(Pos);
-
+		//if (Periph) Serial.printf("Periph: %s found", Periph->GetName());
+		//else Serial.println("Periph ist NULL");
 		if (Periph)
 		{
 			Serial.printf("Name %s at Pos %d has Type %d\n\r", Periph->GetName(), Pos, Periph->GetType());
@@ -426,7 +427,7 @@ void Ui_Multi_Loaded(lv_event_t * e)
 		}
 		else
 		{
-			lv_obj_clear_flag(lv_obj_get_child(lv_scr_act(), Pos+1), LV_OBJ_FLAG_HIDDEN);
+			lv_obj_clear_flag(lv_obj_get_child(ui_Container2, Pos), LV_OBJ_FLAG_HIDDEN);
 			CompThingArray[Pos] = NULL;
 		}
 	}

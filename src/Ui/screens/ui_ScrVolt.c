@@ -42,8 +42,8 @@ void ui_ScrVolt_screen_init(void)
     ui_LblVoltPeer = lv_label_create(ui_ScrVolt);
     lv_obj_set_width(ui_LblVoltPeer, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_LblVoltPeer, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_LblVoltPeer, -1);
-    lv_obj_set_y(ui_LblVoltPeer, 98);
+    lv_obj_set_x(ui_LblVoltPeer, 0);
+    lv_obj_set_y(ui_LblVoltPeer, 85);
     lv_obj_set_align(ui_LblVoltPeer, LV_ALIGN_CENTER);
     lv_label_set_text(ui_LblVoltPeer, "Peer");
     lv_obj_set_style_text_color(ui_LblVoltPeer, lv_color_hex(0xAD0808), LV_PART_MAIN | LV_STATE_DEFAULT);
