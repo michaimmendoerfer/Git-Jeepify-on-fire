@@ -390,10 +390,10 @@ void Ui_Multi_Loaded(lv_event_t * e)
 		int x; int y;
 		
 		switch (Pos) {
-			case 0: x= (int)-TFT_HOR_RES/5; y=(int)-TFT_VER_RES/7; break;
-			case 1: x= (int) TFT_HOR_RES/5; y=(int)-TFT_VER_RES/7; break;
-			case 2: x= (int)-TFT_HOR_RES/5; y=(int) TFT_VER_RES/5; break;
-			case 3: x= (int) TFT_HOR_RES/5; y=(int) TFT_VER_RES/5; break;
+			case 0: x= (int)-TFT_HOR_RES/5; y=(int)-TFT_VER_RES/5; break;
+			case 1: x= (int) TFT_HOR_RES/5; y=(int)-TFT_VER_RES/5; break;
+			case 2: x= (int)-TFT_HOR_RES/5; y=(int) TFT_VER_RES/6; break;
+			case 3: x= (int) TFT_HOR_RES/5; y=(int) TFT_VER_RES/6; break;
 		}
 
 		PeriphClass *Periph =  Screen[ActiveMultiScreen].GetPeriph(Pos);
@@ -401,8 +401,8 @@ void Ui_Multi_Loaded(lv_event_t * e)
 		//else Serial.println("Periph ist NULL");
 		if (Periph)
 		{
-			Serial.printf("Name %s at Pos %d has Type %d\n\r", Periph->GetName(), Pos, Periph->GetType());
-			lv_obj_add_flag(lv_obj_get_child(lv_scr_act(), Pos+1), LV_OBJ_FLAG_HIDDEN);
+			//Serial.printf("Name %s at Pos %d has Type %d\n\r", Periph->GetName(), Pos, Periph->GetType());
+			lv_obj_add_flag(lv_obj_get_child(ui_Container2, Pos), LV_OBJ_FLAG_HIDDEN);
 			
 			if (CompThingArray[Pos]) 
 				{
@@ -413,9 +413,7 @@ void Ui_Multi_Loaded(lv_event_t * e)
 			if (Periph->IsSensor())
 			{	
 				CompThingArray[Pos] = new CompSensor;
-				Serial.println("nach new sensor");
 				CompThingArray[Pos]->Setup(ui_ScrMulti, x, y, Pos, 3, Periph, Ui_Multi_Clicked);
-				Serial.println("nach setup");
 				CompThingArray[Pos]->Update();
 			}
 			else if (Periph->IsSwitch())
