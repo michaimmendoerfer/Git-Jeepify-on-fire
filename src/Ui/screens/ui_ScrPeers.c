@@ -16,8 +16,8 @@ void ui_ScrPeers_screen_init(void)
     ui_RollerPeers1 = lv_roller_create(ui_ScrPeers);
     lv_roller_set_options(ui_RollerPeers1, "Option 1\nOption 2\nOption 3", LV_ROLLER_MODE_NORMAL);
     lv_obj_set_width(ui_RollerPeers1, lv_pct(70));
-    lv_obj_set_height(ui_RollerPeers1, lv_pct(51));
-    lv_obj_set_x(ui_RollerPeers1, 2);
+    lv_obj_set_height(ui_RollerPeers1, lv_pct(45));
+    lv_obj_set_x(ui_RollerPeers1, 0);
     lv_obj_set_y(ui_RollerPeers1, -17);
     lv_obj_set_align(ui_RollerPeers1, LV_ALIGN_CENTER);
     lv_obj_set_style_text_font(ui_RollerPeers1, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -27,8 +27,8 @@ void ui_ScrPeers_screen_init(void)
     ui_LabelPeersName = lv_label_create(ui_ScrPeers);
     lv_obj_set_width(ui_LabelPeersName, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_LabelPeersName, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_LabelPeersName, -2);
-    lv_obj_set_y(ui_LabelPeersName, 98);
+    lv_obj_set_x(ui_LabelPeersName, 0);
+    lv_obj_set_y(ui_LabelPeersName, 85);
     lv_obj_set_align(ui_LabelPeersName, LV_ALIGN_CENTER);
     lv_label_set_text(ui_LabelPeersName, "Peers");
     lv_obj_set_style_text_color(ui_LabelPeersName, lv_color_hex(0xAD0808), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -39,7 +39,7 @@ void ui_ScrPeers_screen_init(void)
     lv_obj_set_width(ui_BtnPeer9, lv_pct(30));
     lv_obj_set_height(ui_BtnPeer9, lv_pct(10));
     lv_obj_set_x(ui_BtnPeer9, lv_pct(20));
-    lv_obj_set_y(ui_BtnPeer9, lv_pct(28));
+    lv_obj_set_y(ui_BtnPeer9, lv_pct(23));
     lv_obj_set_align(ui_BtnPeer9, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_BtnPeer9, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_BtnPeer9, LV_OBJ_FLAG_SCROLLABLE);      /// Flags

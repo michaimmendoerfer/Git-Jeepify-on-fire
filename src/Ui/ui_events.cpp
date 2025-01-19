@@ -653,7 +653,7 @@ void Ui_Switch_Loaded(lv_event_t * e)
 		if (CompThingArray[Pos]) delete CompThingArray[Pos];
 
 		CompThingArray[Pos] = new CompButton();
-		CompThingArray[Pos]->Setup(ui_ScrSwitch, 0, 0, 0, 2, ActivePeriphSwitch, Ui_Switch_Clicked);
+		CompThingArray[Pos]->Setup(ui_ScrSwitch, 0, 0, 0, 4, ActivePeriphSwitch, Ui_Switch_Clicked);
 		CompThingArray[Pos]->Update();
 	}
 
@@ -715,7 +715,8 @@ void Ui_PeriphChoice_Click(lv_event_t * e)
 void Ui_Periph_Choice_Loaded(lv_event_t * e)
 {
 	Serial.println("PeriphChoice loaded");
-
+	Screen[ActiveMultiScreen].DelPeriph(MultiPosToChange);
+	
 	PeerClass *P;
 	if (!ActivePeriph) {
 		ActivePeriph = FindFirstPeriph(NULL, SENS_TYPE_ALL);

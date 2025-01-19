@@ -109,8 +109,8 @@ void CompButton::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
             _PeriphValueCombo = true;
             break;
         case 4:
-            _Width  = 120;
-            _Height = 205;
+            _Width  =  70;
+            _Height = 120;
             _PeerVisible = true;
             _PeriphVisible = true;
             _ValueVisible = true;
@@ -184,15 +184,22 @@ void CompButton::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
 	lv_obj_set_width (_LblPeer, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(_LblPeer, LV_SIZE_CONTENT);    /// 1
 	
-	if (size == 1)
-	{
-        	SetPeerPos(-50, -5);
+	switch (size)
+    {
+        case 1:
+        	SetPeerPos(-TFT_HOR_RES/7, -5);
 	    	lv_obj_set_style_text_font(_LblPeer, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
-	}
-	else
-	{
+            break;
+        case 2:
         	SetPeerPos(0, lv_pct(58));
 	    	lv_obj_set_style_text_font(_LblPeer, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+            break;
+        case 3:
+            break;
+        case 4:
+            SetPeerPos(0, lv_pct(65));
+	    	lv_obj_set_style_text_font(_LblPeer, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+            break;
 	}
     
 	_LblPeriph = lv_label_create(_Button);
@@ -201,20 +208,24 @@ void CompButton::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
     lv_obj_set_width(_LblPeriph, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(_LblPeriph, LV_SIZE_CONTENT);    /// 1
     
-    if (size == 1)
-	{
-		SetPeriphPos(0, -55);
-        lv_obj_set_style_text_font(_LblPeriph, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
-	}
-	else if (size == 2)
-	{
-		SetPeriphPos(0, lv_pct(-70));
-        lv_obj_set_style_text_font(_LblPeriph, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-	}
-    else if (size == 3)
-	{
-		SetPeriphPos(0, lv_pct(-70));
-        lv_obj_set_style_text_font(_LblPeriph, &lv_font_montserrat_12, LV_PART_MAIN | LV_STATE_DEFAULT);
+    switch (size)
+    {
+        case 1:
+            SetPeriphPos(0, -55);
+            lv_obj_set_style_text_font(_LblPeriph, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
+            break;
+        case 2:
+            SetPeriphPos(0, lv_pct(-70));
+            lv_obj_set_style_text_font(_LblPeriph, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            break;
+        case 3:
+            SetPeriphPos(0, lv_pct(-70));
+            lv_obj_set_style_text_font(_LblPeriph, &lv_font_montserrat_12, LV_PART_MAIN | LV_STATE_DEFAULT);
+            break;
+        case 4:
+            SetPeriphPos(0, lv_pct(-65));
+            lv_obj_set_style_text_font(_LblPeriph, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+            break;
 	}
 
     _LblValue = lv_label_create(_Button);
@@ -223,22 +234,26 @@ void CompButton::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
     lv_obj_set_width(_LblValue, LV_SIZE_CONTENT);
     lv_obj_set_height(_LblValue, LV_SIZE_CONTENT);  
 	
-	if (size == 1)
-	{
-		SetValuePos(50, 70);
-    	lv_obj_set_style_text_font(_LblValue, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
-	}
-	else if (size == 2)
-	{
-		SetValuePos(70, lv_pct(-40));
-		lv_obj_set_style_text_font(_LblValue, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
-	}
-    else if (size == 3)
-	{
-		SetValuePos(50, lv_pct(-40));
-		lv_obj_set_style_text_font(_LblValue, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
-	}
-    
+	switch (size)
+    {
+        case 1:
+            SetValuePos(50, 70);
+    	    lv_obj_set_style_text_font(_LblValue, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
+            break;
+	    case 2:
+            SetValuePos(70, lv_pct(-40));
+		    lv_obj_set_style_text_font(_LblValue, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+            break;
+	    case 3:
+            SetValuePos(50, lv_pct(-40));
+		    lv_obj_set_style_text_font(_LblValue, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
+            break;
+        case 4:
+            SetValuePos(50, 70);
+    	    lv_obj_set_style_text_font(_LblValue, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
+            break;
+    }
+
 	lv_label_set_text(_LblValue, "--.- A");
 
     _LblPeriphId = lv_label_create(_Button);
