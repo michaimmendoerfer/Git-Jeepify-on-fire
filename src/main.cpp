@@ -1,7 +1,6 @@
 #define NODE_NAME       "M240_1"
 #define NODE_TYPE       MONITOR_ROUND
 
-//#define DEBUG if (Self.GetDebugMode())
 #define DEBUG(...) if (Self.GetDebugMode()) Serial.printf(__VA_ARGS__)
 //#define KILL_NVS 1
 

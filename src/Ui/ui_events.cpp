@@ -3,6 +3,7 @@
 // LVGL version: 8.3.6
 // Project name: Jeepify
 
+#define DEBUG(...) if (Self.GetDebugMode()) Serial.printf(__VA_ARGS__)
 #include <Arduino.h>
 #include <String.h>
 #include <nvs_flash.h>
@@ -112,7 +113,7 @@ void Ui_Peer_ToggleDemo(lv_event_t * e)
 
 void Ui_Peer_Next(lv_event_t * e)
 {
-	Serial.println("Peer-Next");
+	DEBUG("Peer-Next");
 	ActivePeer = FindNextPeer(ActivePeer, MODULE_ALL, true); 
 	if (ActivePeer) Ui_Peer_Prepare();
 }
@@ -137,12 +138,12 @@ void Ui_Set_Prepare(lv_event_t * e)
 	if (SettingsTimer) 
 		{
 			lv_timer_resume(SettingsTimer);
-			if (Self.GetDebugMode()) Serial.println("SettingsTimer resumed");
+			DEBUG ("SettingsTimer resumed");
 		}
 		else 
 		{
 			SettingsTimer = lv_timer_create(SettingsUpdateTimer, 500,  &user_data);
-			if (Self.GetDebugMode()) Serial.println("SettingsTimer created");
+			DEBUG ("SettingsTimer created");
 		}
 }
 
@@ -192,7 +193,7 @@ void Ui_Set_Leave(lv_event_t * e)
 	lv_timer_del(SettingsTimer);
 	SettingsTimer = NULL;
 
-	if (Self.GetDebugMode()) Serial.println("SettingsTimer deleted");
+	DEBUG ("SettingsTimer deleted");
 }
 
 #pragma endregion Screen_Settings
@@ -232,15 +233,15 @@ void Ui_Peers_Selected(lv_event_t * e)
 	char SelectedName[50];
 	
 	lv_roller_get_selected_str(ui_RollerPeers1, buf, 100);
-	Serial.print("Selected: ");
-	Serial.println(buf);
+	
+	DEBUG ("Selected: %s\n\r", buf);
 
   	char *Start = strchr(buf,'<'); 
 	char *End = strchr(buf,'>'); 
 	
   	memcpy(SelectedName, Start+1, End-Start-1);
 	SelectedName[End-Start-1] = 0;
-	Serial.println(SelectedName);
+	DEBUG("%s", SelectedName);
 
 	PeerClass *TempPeer = FindPeerByName(SelectedName);
 
@@ -288,13 +289,13 @@ void Ui_Single_Last(lv_event_t * e)
 void Ui_Single_Prepare(lv_event_t * e)
 {
 	int Pos = 0;
-	if (Self.GetDebugMode()) Serial.println("Single-Prepare");
+	DEBUG ("Single-Prepare");
 	
 	if (!ActivePeriphSingle) ActivePeriphSingle = FindFirstPeriph(NULL, SENS_TYPE_SENS);
 		
 	if (ActivePeriphSingle)
 	{
-		Serial.println("ActivePeriphSingle true");
+		DEBUG ("ActivePeriphSingle true");
 		
 		if (CompThingArray[Pos]) 
 			{
@@ -303,31 +304,28 @@ void Ui_Single_Prepare(lv_event_t * e)
 			}
 
 		CompThingArray[Pos] = new CompMeter;
-		//Serial.println("nach new Meter");
 		CompThingArray[Pos]->Setup(ui_ScrSingle, 0, 0, 0, TFT_HOR_RES, ActivePeriphSingle, Ui_Single_Clicked);
-		//Serial.println("nach new Meter-Setup");
 		CompThingArray[Pos]->Update();
 		
 		static uint32_t user_data = 10;
 		if (SingleTimer) 
 		{
 			lv_timer_resume(SingleTimer);
-			
-			//Serial.println("SingleTimer resumed");
+			//DEBUG ("SingleTimer resumed\n\r");
 		}
 		else 
 		{
 			SingleTimer = lv_timer_create(SingleUpdateTimer, 500,  &user_data);
-			//Serial.println("SingleTimer created");
+			//DEBUG ("SingleTimer created\n\r");
 		}
 
-		Serial.println((unsigned)SingleTimer);
+		DEBUG ("%lu", SingleTimer);
 	}
 }
 
 void SingleUpdateTimer(lv_timer_t * timer)
 {
-	Serial.println("SinglUpdateTimer");
+	DEBUG ("SinglUpdateTimer\n\r");
 	int Pos= 0;
 	if (CompThingArray[Pos]) CompThingArray[Pos]->Update();
 }
@@ -355,7 +353,7 @@ void Ui_Single_Leave(lv_event_t * e)
 	lv_timer_del(SingleTimer);
 	SingleTimer = NULL;
 
-	//Serial.println("SingleTimer deleted");
+	DEBUG ("SingleTimer deleted\n\r");
     	int Pos = 0;
 
 	if (CompThingArray[Pos]) 
@@ -382,7 +380,7 @@ static void SingleMeter_cb(lv_event_t * e) {
 void Ui_Multi_Loaded(lv_event_t * e)
 {
 	static uint32_t user_data = 10;
-	Serial.println("Multi-loaded");	
+	DEBUG ("Multi-loaded\n\r");	
 	lv_label_set_text(ui_LblMultiScreenName,Screen[ActiveMultiScreen].GetName());
 					
 	for (int Pos=0; Pos<PERIPH_PER_SCREEN; Pos++)
@@ -397,11 +395,9 @@ void Ui_Multi_Loaded(lv_event_t * e)
 		}
 
 		PeriphClass *Periph =  Screen[ActiveMultiScreen].GetPeriph(Pos);
-		//if (Periph) Serial.printf("Periph: %s found", Periph->GetName());
-		//else Serial.println("Periph ist NULL");
+		
 		if (Periph)
 		{
-			//Serial.printf("Name %s at Pos %d has Type %d\n\r", Periph->GetName(), Pos, Periph->GetType());
 			lv_obj_add_flag(lv_obj_get_child(ui_Container2, Pos), LV_OBJ_FLAG_HIDDEN);
 			
 			if (CompThingArray[Pos]) 
@@ -432,12 +428,12 @@ void Ui_Multi_Loaded(lv_event_t * e)
 	if (MultiTimer) 
 	{
 		lv_timer_resume(MultiTimer);
-		Serial.println("MultiTimer resumed");
+		DEBUG ("MultiTimer resumed\n\r");
 	}
 	else 
 	{
 		MultiTimer = lv_timer_create(MultiUpdateTimer, 500,  &user_data);
-		Serial.println("MultiTimer created");
+		DEBUG ("MultiTimer created\n\r");
 	}
 }
 void MultiUpdateTimer(lv_timer_t * timer)
@@ -536,7 +532,7 @@ void Ui_Multi_Unload(lv_event_t * e)
 {
 	if (MultiTimer) lv_timer_del(MultiTimer);
 	MultiTimer = NULL;
-	Serial.println("MultiTimer deleted");
+	DEBUG ("MultiTimer deleted\n\r");
 	
 	lv_obj_invalidate(lv_scr_act());
 	
@@ -547,10 +543,10 @@ void Ui_Multi_Unload(lv_event_t * e)
 			//CompThingArray[Pos]->Hide();
 			//Serial.printf("CompThing[%d] (%s) hat Class %d\n\r", Pos, CompThingArray[Pos]->GetPeriph()->GetName(), CompThingArray[Pos]->GetClassType());
 			
-			Serial.println("will irgendeine Klasse löschen");
+			DEBUG ("will irgendeine Klasse löschen\n\r");
 			delete CompThingArray[Pos];
 			CompThingArray[Pos] = NULL;
-			//Serial.println("Buttonclass gelöscht");
+			//DEBUG ("Buttonclass gelöscht\n\r");
 		}
 	}
 }
@@ -579,7 +575,7 @@ void SwitchUpdateTimer(lv_timer_t * timer)
 {
 	int Pos = 0;
 
-	Serial.println("Begin SwitchTimer");
+	DEBUG ("Begin SwitchTimer\n\r");
 	CompThingArray[Pos]->Update();
 }
 void Ui_Switch_Next(lv_event_t * e)
@@ -645,7 +641,7 @@ void Ui_Switch_Loaded(lv_event_t * e)
 	int Pos = 0;
 	if (!ActivePeriphSwitch) 
 	{
-		Serial.println("No ActivePeriphSwitch");
+		DEBUG ("No ActivePeriphSwitch\n\r");
 		ActivePeriphSwitch = FindNextPeriph(NULL, NULL, SENS_TYPE_SWITCH, true);
 	}	
 	if (ActivePeriphSwitch)
@@ -714,9 +710,9 @@ void Ui_PeriphChoice_Click(lv_event_t * e)
 }
 void Ui_Periph_Choice_Loaded(lv_event_t * e)
 {
-	Serial.println("PeriphChoice loaded");
+	DEBUG ("PeriphChoice loaded\n\r");
 	Screen[ActiveMultiScreen].DelPeriph(MultiPosToChange);
-	
+
 	PeerClass *P;
 	if (!ActivePeriph) {
 		ActivePeriph = FindFirstPeriph(NULL, SENS_TYPE_ALL);
@@ -724,7 +720,7 @@ void Ui_Periph_Choice_Loaded(lv_event_t * e)
 	Serial.printf("aktueller Periph: %s", ActivePeriph->GetName());
 
 	if (ActivePeriph) {
-		Serial.println("ActivePeriph in PeriphCoice");
+		DEBUG ("ActivePeriph in PeriphCoice\n\r");
 
 		P = PeerOf(ActivePeriph);
 
@@ -757,9 +753,9 @@ void Ui_Periph_Choice_Loaded(lv_event_t * e)
 		{
 			lv_label_set_text(ui_LblPeriphChoiceType, "unknown type"); 
 		}
-		Serial.println("ActivePeriph in PeriphCoice fertig");
+		DEBUG ("ActivePeriph in PeriphCoice fertig\n\r");
 	}
-	Serial.println("PeriphCoice ende");
+	DEBUG ("PeriphCoice ende\n\r");
 }
 /*void Ui_Periph_Choice_prepare(lv_event_t * e)
 {

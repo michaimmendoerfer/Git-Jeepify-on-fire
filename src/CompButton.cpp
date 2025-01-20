@@ -7,12 +7,8 @@
 #include "main.h"
 #include "CompButton.h"
 
-//#define DEBUG 1
+#define DEBUG(...) if (Self.GetDebugMode()) Serial.printf(__VA_ARGS__)
 
-/*
-size 1: 360 - big
-size 0: 360 - small
-*/
 
 CompThing::CompThing()
 {
@@ -25,7 +21,7 @@ CompThing::CompThing()
 CompThing::~CompThing()
 {
 	if (_Button)  { lv_obj_del(_Button); _Button = NULL; }
-    Serial.println("CompThing-Destructor - Button weg");
+    DEBUG ("CompThing-Destructor - Button weg\n\r");
 	
 }
 void CompThing::Update()
@@ -68,7 +64,7 @@ CompButton::~CompButton()
 	
     if (_Spinner) { lv_obj_del(_Spinner); _Spinner = NULL; }
     #ifdef DEBUG 
-	Serial.println("CompButton Destructor - Spinner weg");
+	DEBUG ("CompButton Destructor - Spinner weg\n\r");
     #endif
 }
 void CompButton::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, PeriphClass *Periph, lv_event_cb_t event_cb)
@@ -114,7 +110,7 @@ void CompButton::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
             _PeerVisible = true;
             _PeriphVisible = true;
             _ValueVisible = true;
-            _PeriphValueCombo = false;
+            _PeriphValueCombo = true;
             break;  
     }     
     _Spinner = lv_spinner_create(comp_parent, 1000, 90);
@@ -285,19 +281,16 @@ void CompButton::Update()
     if (_Periph->GetValue(0) == 0) 
     {
         lv_imgbtn_set_state(_Button, LV_IMGBTN_STATE_RELEASED);
-        Serial.printf("Button ist an : %0.2f\n\r", _Periph->GetValue(0));
     }
     else 
     {			  
         lv_imgbtn_set_state(_Button, LV_IMGBTN_STATE_CHECKED_RELEASED);
-        Serial.printf("Button ist an : %0.2f\n\r", _Periph->GetValue(0));
     }
 
     // show Spinner if Value is in changed state
     if (_Periph->GetChanged()) ShowSpinner();
     else HideSpinner();
-    //(Periph->GetChanged() ? ShowSpinner() : HideSpinner();
-	
+    
 	// - show Peer if named and visible
 	if ((PeerOf(_Periph)->GetName() == NULL) or (!_PeerVisible))
 	{
@@ -371,7 +364,7 @@ CompSensor::CompSensor()
 CompSensor::~CompSensor()
 {
     lv_obj_remove_event_cb(_Button, _event_cb);
-    Serial.println("CompSensor Destructor");
+    DEBUG ("CompSensor Destructor\n\r");
 }
 void CompSensor::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, PeriphClass *Periph, lv_event_cb_t event_cb)
 {
@@ -401,14 +394,13 @@ void CompSensor::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
     _PeriphValueCombo = false;
     _SystemVisible = true;
     
-    //Serial.printf("Pos: %d, x:%d, y:%d\n\r", Pos, x, y);
-    
     _Button = lv_btn_create(comp_parent);
     lv_obj_set_width(_Button, _Width);
     lv_obj_set_height(_Button, _Height);
     lv_obj_set_pos(_Button, _x, _y);
     lv_obj_set_align(_Button, LV_ALIGN_CENTER);
     lv_obj_add_flag(_Button, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    lv_obj_add_flag(_Button, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
     lv_obj_clear_flag(_Button, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_radius(_Button, 50, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(_Button, lv_color_hex(0x165420), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -426,14 +418,15 @@ void CompSensor::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
     lv_obj_set_width(_LblPeer, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(_LblPeer, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(_LblPeer, LV_ALIGN_CENTER);
-    SetPeerPos(0, 30);
+    SetStyle(_LblPeer);
+    SetPeerPos(0,lv_pct(75));
     switch (size)
     {
         case 1:
             lv_obj_set_style_text_font(_LblPeer, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
             break;
         case 3:
-            lv_obj_set_style_text_font(_LblPeer, &lv_font_montserrat_10, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_font(_LblPeer, &lv_font_montserrat_12, LV_PART_MAIN | LV_STATE_DEFAULT);
             break;
     }
 	
@@ -449,7 +442,7 @@ void CompSensor::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
             break;
         case 3:
             lv_obj_set_style_text_font(_LblPeriph, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
-            SetPeriphPos(0, -10);
+            SetPeriphPos(0, -15);
             break;
     }
     _LblValue = lv_label_create(_Button);
@@ -604,7 +597,7 @@ CompMeter::CompMeter()
 CompMeter::~CompMeter() 
 {
 	lv_obj_remove_event_cb(_Button, _event_cb);
-    Serial.println("CompMeter Destructor");
+    DEBUG ("CompMeter Destructor\n\r");
 }
 static void Meter_cb(lv_event_t * e) {
 
