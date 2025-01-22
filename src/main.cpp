@@ -50,9 +50,9 @@ Preferences preferences;
 uint8_t broadcastAddressAll[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
 struct ConfirmStruct {
-    uint8_t  Address[6];
-    char     Message[250];
-    volatile uint32_t TSMessage;
+    uint8_t  Address[10];
+    char     Message[300];
+    uint32_t TSMessage;
     int      Try;
     bool     Confirmed;
 };
@@ -455,7 +455,7 @@ void   OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
         int         _Type        = (int) (doc["Type"]);
         const char *_PeerVersion = doc["Version"];
         int         _Order       = (int)doc["Order"];   
-
+        int         _TSConfirm   = (int)doc["TSConfirm"];
         //P = FindPeerByMAC(info->src_addr);
         P = FindPeerByMAC(mac);
         if (P)
@@ -551,15 +551,13 @@ void   OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
     
             case SEND_CMD_CONFIRM:
                 if ((P) and (doc["TSConfirm"].is<JsonVariant>()))
-                {
-                    uint32_t _TSConfirm = doc[TSConfirm];
-                    
-                    DEBUG ("Confirm (%d) empfangen von %s\n\r", _TSConfirm, P->GetName());
+                {                    
+                    DEBUG ("Confirm (%lu) empfangen von %s\n\r", _TSConfirm, P->GetName());
                     for (int i=0; i<ConfirmList.size(); i++)
                     {
                         ConfirmStruct *TempConfirm;
                         TempConfirm = ConfirmList.get(i);
-                        DEBUG ("empfangener TS ist: %d - durchsuchter TS (List[%d]) ist: %d\n\r", _TSConfirm, i, TempConfirm->TSMessage);
+                        DEBUG ("empfangener TS ist: %lu - durchsuchter TS (List[%d]) ist: %lu\n\r", _TSConfirm, i, TempConfirm->TSMessage);
                         if (TempConfirm->TSMessage == _TSConfirm)
                         {
                             TempConfirm->Confirmed = true;
@@ -668,7 +666,7 @@ esp_err_t  JeepifySend(PeerClass *P, const uint8_t *data, size_t len, uint32_t T
 {
     esp_err_t SendStatus = esp_now_send(P->GetBroadcastAddress(), data, len);
     
-    Serial.printf("SendStatus was %d, ConfirmNeeded = %d\n\r", SendStatus, ConfirmNeeded);
+    Serial.printf("SendStatus was %d, ConfirmNeeded = %d\n\r", SendStatus, (int) ConfirmNeeded);
     if (ConfirmNeeded)
     {   
         ConfirmStruct *Confirm = new ConfirmStruct;
@@ -680,7 +678,7 @@ esp_err_t  JeepifySend(PeerClass *P, const uint8_t *data, size_t len, uint32_t T
 
         ConfirmList.add(Confirm);
 
-        DEBUG("added Msg: %s to ConfirmList\n\r", Confirm->Message, Confirm->Try);   
+        //DEBUG("added Msg: %s to ConfirmList\n\r", Confirm->Message);   
     }
     return SendStatus;
 }
