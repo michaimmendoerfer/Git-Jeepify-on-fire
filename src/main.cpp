@@ -520,7 +520,6 @@ void   OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
                             float _Value2     = atof(strtok(NULL, ";"));
                             float _Value3     = atof(strtok(NULL, ";"));
 
-
                             // check for periph name change
                             if (strcmp(_PeriphName, P->GetPeriphName(Si))) P->SetPeriphName(Si, _PeriphName);
                             
@@ -631,7 +630,6 @@ void setup()
     
     WiFi.mode(WIFI_AP_STA);
 
-    //ESP-Now
     InitWebServer();
     
     WebServerActive = !WebServerActive;
@@ -719,7 +717,6 @@ void SendPing(lv_timer_t * timer) {
             
             if (Confirm->Confirmed == true)
             {
-                //Serial.printf("deleted Msg: %s from ConfirmList: SUCCESS (tries: %d)\n\r", Confirm->Message, Confirm->Try);
                 char TxtBuf[100];
                 if (Self.GetDebugMode()) sprintf(TxtBuf, "SUCCESS - Message to %s successful confirmed after %d tries!", FindPeerByMAC(Confirm->Address)->GetName(), Confirm->Try);
                 if (Self.GetDebugMode()) ShowMessageBox("SUCCESS", TxtBuf, 1000, 200);
@@ -728,7 +725,6 @@ void SendPing(lv_timer_t * timer) {
             }
             else if (Confirm->Try == JEEPIFY_SEND_MAX_TRIES+1)
             {
-                //Serial.printf("deleted Msg: %s from ConfirmList: FAILED (tries: %d)\n\r", Confirm->Message, Confirm->Try);
                 char TxtBuf[100];
                 if (Self.GetDebugMode()) sprintf(TxtBuf, "FAILED - Message to %s deleted after %d tries!", FindPeerByMAC(Confirm->Address)->GetName(), Confirm->Try);
                 if (Self.GetDebugMode()) ShowMessageBox("FAILED", TxtBuf, 1000, 200);
@@ -775,8 +771,6 @@ bool ToggleSwitch(PeriphClass *Periph)
     doc["PeriphName"]   = Periph->GetName();
     doc["PeriphPos"]    = Periph->GetPos();
 
-    //Serial.printf("Toggle Value = %f\n\r", Periph->GetValue());
-    
     serializeJson(doc, jsondata);  
     
     TSMsgSnd = millis();
