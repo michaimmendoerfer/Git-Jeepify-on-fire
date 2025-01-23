@@ -669,17 +669,22 @@ esp_err_t  JeepifySend(PeerClass *P, const uint8_t *data, size_t len, uint32_t T
     Serial.printf("SendStatus was %d, ConfirmNeeded = %d\n\r", SendStatus, (int) ConfirmNeeded);
     if (ConfirmNeeded)
     {   
+        Serial.println("Creating Confirmstruct");
         ConfirmStruct *Confirm = new ConfirmStruct;
         memcpy(Confirm->Address, P->GetBroadcastAddress(), 6);
         strcpy(Confirm->Message, (const char *)data);
         Confirm->Confirmed = false;
         Confirm->TSMessage = TSConfirm;
         Confirm->Try = 1;
-
+        
+        Serial.println("adding to confirmlist");
+        
         ConfirmList.add(Confirm);
 
         //DEBUG("added Msg: %s to ConfirmList\n\r", Confirm->Message);   
     }
+    Serial.println("JeepifySend ende");
+        
     return SendStatus;
 }
 void SendPing(lv_timer_t * timer) {
@@ -868,11 +873,15 @@ void CalibVolt() {
     serializeJson(doc, jsondata);  
 
     JeepifySend(ActivePeer, (uint8_t *) jsondata.c_str(), 100, TSConfirm, true);  
-    
-    DEBUG ("%s", jsondata);
+    Serial.println("zurück von JeepifySend-warte");
+    delay(1000);
+    Serial.println("zurück von JeepifySend");
+        
+    DEBUG ("%s", jsondata.c_str());
 }
 void CalibAmp() 
 {
+    Serial.println("CalibAmp beginnd");
     JsonDocument doc; String jsondata;
 
     uint32_t TSConfirm = millis();
@@ -884,7 +893,7 @@ void CalibAmp()
     serializeJson(doc, jsondata);  
     JeepifySend(ActivePeer, (uint8_t *) jsondata.c_str(), 100, TSConfirm, true);  
 
-    DEBUG ("%s", jsondata);
+    DEBUG ("%s", jsondata.c_str());
 }
 
 void PrintMAC(const uint8_t * mac_addr){

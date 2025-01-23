@@ -833,8 +833,8 @@ void Ui_Init_Custom(lv_event_t * e)
 
 void Keyboard_cb(lv_event_t * event)
 {
-    CalibVolt();
-	_ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMenu_screen_init);
+    //CalibVolt();
+	//_ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMenu_screen_init);
 }
 #pragma endregion System_TimerAndInit
 #pragma region System_Eichen
@@ -853,7 +853,9 @@ void Ui_Volt_Prepare(lv_event_t * e)
 }
 void Ui_Volt_Start(lv_event_t * e)
 {
-	CalibVolt();
+	Serial.println("start calibvolt");
+    CalibVolt();
+	Serial.println("zurück von calibvolt");   
 	_ui_screen_change(&ui_ScrMenu, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_ScrMenu_screen_init);
 }
 
