@@ -392,7 +392,7 @@ void CompSensor::Setup(lv_obj_t * comp_parent, int x, int y, int Pos, int size, 
     _PeriphVisible = true;
     _ValueVisible = true;
     _PeriphValueCombo = false;
-    _SystemVisible = true;
+    _SystemVisible = false;
     
     _Button = lv_btn_create(comp_parent);
     lv_obj_set_width(_Button, _Width);
@@ -744,9 +744,11 @@ void CompMeter::Update()
 
     char buf[10];
 	int nk = 0;
-	float value = _Periph->GetValue();
+	float value = 0;
+    if (_Periph->GetType() == SENS_TYPE_AMP)  value = _Periph->GetValue(3);
+    if (_Periph->GetType() == SENS_TYPE_VOLT) value = _Periph->GetValue(2);
 	    
-		//if (DebugMode) Serial.printf("Sensor: %s: %f\n", ActiveSens->Name, value);
+		Serial.printf("Sensor: %s: %f\n\r", _Periph->GetName(), value);
 		if (abs(value) < SCHWELLE) value = 0;
 
 		if      (value<10)  nk = 2;
