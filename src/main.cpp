@@ -1,11 +1,11 @@
-#define NODE_NAME       "M240_1"
+#define NODE_NAME       "M240_2"
 #define NODE_TYPE       MONITOR_ROUND
 
 #define DEBUG(...) if (Self.GetDebugMode()) Serial.printf(__VA_ARGS__)
 //#define KILL_NVS 1
 
 const char *_Version = "V 3.81";
-const char *_Name = "M240_1";
+const char *_Name = "M240_2";
 const char _Protokoll_Version[] = "2.00";
 
 #pragma region Includes
@@ -491,7 +491,8 @@ void   OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len)
                             strcpy(buf, doc[ArrPeriph[Si]]);
                             int   _PeriphType = atoi(strtok(buf, ";"));
                             char *_PeriphName = strtok(NULL, ";");
-                            P->PeriphSetup(Si, _PeriphName, _PeriphType, false, 0,0,0,0, 0, 0, 0, P->GetId());
+                            P->PeriphSetup(Si, _PeriphName, _PeriphType, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0, P->GetId()); 
+                         //P->PeriphSetup(Si, _PeriphName, _PeriphType, false, 0,0,0,0, 0, 0, 0, P->GetId());
                             P->SetPeriphChanged(Si, true);
                             PeriphList.add(P->GetPeriphPtr(Si));
                             SaveNeeded = true;
@@ -778,7 +779,7 @@ bool ToggleSwitch(PeriphClass *Periph)
     
     TSMsgSnd = millis();
     esp_now_send(FindPeerById(Periph->GetPeerId())->GetBroadcastAddress(), (uint8_t *) jsondata.c_str(), 100);  //Sending "jsondata"  
-    DEBUG ("%s", jsondata);
+    DEBUG ("%s", jsondata.c_str());
     
     return true;
 }
